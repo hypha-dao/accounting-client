@@ -34,10 +34,6 @@ export default {
       required: 'This field is required',
       token: 'The field must contain between 2 and 6 characters',
       tokenDecimals: 'The decimals must be between 2 and 9'
-    },
-    hints: {
-      selectCountrie: 'Please select your country',
-      pressToAddHobbie: 'Press enter to add a tag'
     }
   },
   menu: {
@@ -72,50 +68,6 @@ export default {
     }
   },
   pages: {
-    accounts: {
-      add: {
-        buttons: {
-          continue: 'Continue',
-          goToProfile: 'Take me to my profile',
-          verify: 'Verify phone number'
-        },
-        congratulationsTitle: 'Congratulations',
-        congratulationsSubtitle: 'Your account {account} has been created',
-        createAccountHint: 'A verification code will be sent',
-        createAccountTitle: 'Create an Account',
-        forms: {
-          account: 'Account name',
-          accountHint: '12 characters, alphanumeric a-z, 1-5',
-          phoneCode: 'Code',
-          smsNumber: 'Phone number',
-          verificationCode: 'Verification code'
-        },
-        keyCopyClipboard: 'Key copied to clipboard',
-        title: 'Signup',
-        verifyAccountGeneratingKey: 'Generating key pairs',
-        verifyAccountHint: 'Copy both keys to a safe place before sending your verification code',
-        verifyOTPTitle: 'Enter your verification code'
-      }
-    },
-    trails: {
-      ballots: {
-        castVote: 'Cast vote',
-        ends: 'Ends',
-        starts: 'Starts'
-      },
-      treasuries: {
-        card: {
-          maxSupply: 'Max supply',
-          openedBallots: 'Opened decisions',
-          supply: 'Supply',
-          registered: 'Registered',
-          registerVoter: 'Register as a voter'
-        },
-        registerVoterDialog: {
-          title: 'Do you want to register to this group?'
-        }
-      }
-    },
     index: {
       buttons: {
         createAccount: 'Create account',

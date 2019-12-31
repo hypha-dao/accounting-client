@@ -14,7 +14,7 @@ export default {
     q-list
       q-item(
         v-if="isAuthenticated"
-        to="/profiles/myProfile"
+        to="/home"
         clickable
         v-ripple
       )
@@ -23,7 +23,7 @@ export default {
         q-item-section {{ $t('menu.myProfile') }}
       q-item(
         v-if="isAuthenticated"
-        to="/profiles/chat"
+        to="/dashboard"
         clickable
         v-ripple
       )
