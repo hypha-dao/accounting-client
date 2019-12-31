@@ -19,15 +19,15 @@ export default {
           unelevated
           size="lg"
         )
-        q-btn.full-width(
-          to="/accounts/add"
-          color="primary"
-          :label="$t('pages.index.buttons.createAccount')"
-          icon="app:create-account"
-          rounded
-          outline
-          size="lg"
-        )
+        //- q-btn.full-width(
+        //-   to="/accounts/add"
+        //-   color="primary"
+        //-   :label="$t('pages.index.buttons.createAccount')"
+        //-   icon="app:create-account"
+        //-   rounded
+        //-   outline
+        //-   size="lg"
+        //- )
 </template>
 
 <style lang="sass" scoped>
