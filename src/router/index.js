@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import PPP from '@smontero/ppp-client-api'
+// import PPP from '@smontero/ppp-client-api'
 
 import routes from './routes'
 import Croppa from 'vue-croppa'
@@ -26,26 +26,30 @@ export default function ({ store }) {
   })
 
   Router.beforeEach(async (to, from, next) => {
-    // Verify registered users
+    // Verify the screens is for users guest
     if (to.matched.some(record => !record.meta.guest)) {
+      // Verify if the user is authenticated
       if (store.getters['accounts/isAuthenticated']) {
-        if (to.matched.some(record => record.meta.needBackendLogin)) {
-          if (!await PPP.authApi().hasValidSession()) {
-            next({ name: 'profileLogin', query: { returnUrl: to.path } })
-            return
-          } else {
-            await store.dispatch('profiles/getProfile')
-          }
-        }
+        // Verify if the screen need backendLogin
+        // if (to.matched.some(record => record.meta.needBackendLogin)) {
+        //   if (!await PPP.authApi().hasValidSession()) {
+        //     next({ name: 'profileLogin', query: { returnUrl: to.path } })
+        //     return
+        //   } else {
+        //     await store.dispatch('profiles/getProfile')
+        //   }
+        // }
+
         // Verify the communication method
-        if (to.matched.some(record => record.meta.needVerifyComm)) {
-          const isRegistered = store.getters['profiles/isRegistered']
-          if (!isRegistered) {
-            next({ name: 'userRegister' })
-          } else if (store.getters['profiles/needVerifyComm']) {
-            next({ name: 'verifyComm', query: { returnUrl: to.path } })
-          } else next()
-        } else next()
+        // if (to.matched.some(record => record.meta.needVerifyComm)) {
+        //   const isRegistered = store.getters['profiles/isRegistered']
+        //   if (!isRegistered) {
+        //     next({ name: 'userRegister' })
+        //   } else if (store.getters['profiles/needVerifyComm']) {
+        //     next({ name: 'verifyComm', query: { returnUrl: to.path } })
+        //   } else next()
+        // } else next()
+        next()
       } else {
         next({ path: `/login?returnUrl=${to.path}` })
       }
