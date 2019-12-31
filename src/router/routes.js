@@ -16,11 +16,11 @@ const routes = [
   { path: '/testnet/developers', component: () => import('pages/testnet/developers.vue'), meta: { layout: 'guest', title: 'pages.testnetDevelopers.title', guest: true } },
 
   // Claim
-  { path: '/claim/checkAccount', component: () => import('pages/accounts/claim/claim-check.vue'), meta: { layout: 'guest', title: 'pages.claim.claimCheck.title', guest: true } },
-  { path: '/claim/claimAccount', component: () => import('pages/accounts/claim/remove-me.vue'), meta: { title: 'pages.claim.removeMe.title' } },
+  // { path: '/claim/checkAccount', component: () => import('pages/accounts/claim/claim-check.vue'), meta: { layout: 'guest', title: 'pages.claim.claimCheck.title', guest: true } },
+  // { path: '/claim/claimAccount', component: () => import('pages/accounts/claim/remove-me.vue'), meta: { title: 'pages.claim.removeMe.title' } },
 
   // POC
-  { path: '/poc/smartsafe', component: () => import('pages/poc/smartsafe/safe-list.vue'), meta: { title: 'pages.poc.smartSafe.title' } },
+  // { path: '/poc/smartsafe', component: () => import('pages/poc/smartsafe/safe-list.vue'), meta: { title: 'pages.poc.smartSafe.title' } },
 
   // PPP
   // { path: '/profiles/myProfile/add', component: () => import('pages/profiles/add/sign-up.vue'), meta: { needBackendLogin: true }, name: 'userRegister' },
