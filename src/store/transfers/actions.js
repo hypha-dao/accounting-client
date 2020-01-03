@@ -21,6 +21,6 @@ export const sendTokens = async function ({ commit, rootState }, { to, quantity,
     notification.status = 'error'
     notification.error = e.message
   }
-  commit('notifications/addNotification', notification, { root: true })
+  // commit('notifications/addNotification', notification, { root: true })
   return notification.transaction
 }
