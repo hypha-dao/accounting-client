@@ -1,13 +1,13 @@
 <template lang="pug">
 div
-    h1
-        | Example Home
-    p
-        | Este es un parrafo
+    send-tokens
 </template>
 
 <script>
+import SendTokens from './send-tokens'
+
 export default {
-  name: 'home'
+  name: 'home',
+  components: { SendTokens }
 }
 </script>

@@ -82,6 +82,7 @@ export const autoLogin = async function ({ dispatch, commit }, returnUrl) {
 
 export const isAccountFree = async function (context, accountName) {
   try {
+    console.log('validando cuenta disponible')
     await this.$axios.get(`/v1/accounts/${accountName}`)
     return false
   } catch (e) {
