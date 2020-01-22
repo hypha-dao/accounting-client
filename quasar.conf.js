@@ -122,11 +122,7 @@ module.exports = function (ctx) {
         NETWORK_HOST: process.env.NETWORK_HOST,
         NETWORK_PORT: process.env.NETWORK_PORT,
         NETWORK_CHAIN_ID: process.env.NETWORK_CHAIN_ID,
-        PPP_ENV: process.env.PPP_ENV,
-        WEBSERVICES_URL: process.env.WEBSERVICES_URL,
-        WEBSERVICES_API_KEY: process.env.WEBSERVICES_API_KEY,
-        BLOCKCHAIN_EXPLORER: process.env.BLOCKCHAIN_EXPLORER,
-        GOOGLE_ANALYTICS: process.env.GOOGLE_ANALYTICS
+        BLOCKCHAIN_EXPLORER: process.env.BLOCKCHAIN_EXPLORER
       },
       scopeHoisting: true,
       vueRouterMode: 'history',
