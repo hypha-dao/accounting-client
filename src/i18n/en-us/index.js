@@ -13,11 +13,6 @@ export default {
     },
     defaultTitle: 'Title'
   },
-  components: {
-    notifications: {
-      linkTip: 'Display on block explorer'
-    }
-  },
   forms: {
     errors: {
       accountFormat: 'The account can contain lowercase characters only, numbers from 1 to 5 or a dot (.)',
@@ -43,29 +38,12 @@ export default {
     profiles: 'Profiles',
     contacts: 'Contacts',
     myProfile: 'My profile',
-    chats: 'Chats',
-    registerApp: 'Register App',
-    appList: 'Apps'
+    transfer: 'Transfer',
+    example: 'Example Dashboard'
   },
-  notifications: {
-    title: 'Transactions',
-    trails: {
-      addBallot: 'Create a ballot',
-      addTreasury: 'Create a group',
-      castVote: 'Cast a vote',
-      editTreasury: 'Edit a group',
-      mintTokens: 'Mint tokens',
-      registerVoter: 'Register as a voter'
-    },
-    poc: {
-      lockSafe: 'Lock safe',
-      unlockSafe: 'Unlock safe'
-    }
-  },
-  lists: {
-    empty: {
-      countries: 'No countries'
-    }
+  poc: {
+    lockSafe: 'Lock safe',
+    unlockSafe: 'Unlock safe'
   },
   pages: {
     index: {

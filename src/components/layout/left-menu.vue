@@ -20,7 +20,7 @@ export default {
       )
         q-item-section(avatar)
           q-icon(name="app:my-profile")
-        q-item-section {{ $t('menu.myProfile') }}
+        q-item-section {{ $t('menu.transfer') }}
       q-item(
         v-if="isAuthenticated"
         to="/dashboard"
@@ -29,7 +29,7 @@ export default {
       )
         q-item-section(avatar)
           q-icon(name="app:chats")
-        q-item-section {{ $t('menu.chats') }}
+        q-item-section {{ $t('menu.example') }}
 </template>
 
 <style lang="stylus">
