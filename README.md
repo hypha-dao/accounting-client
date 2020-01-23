@@ -1,4 +1,4 @@
-# Telos Net (telos-net)
+# Telos (telos)
 
 TODO desc
 
