@@ -1,4 +1,3 @@
-import PPP from '@smontero/ppp-client-api'
 
 const getAuthenticator = function (ual, wallet = null) {
   wallet = wallet || localStorage.getItem('autoLogin')
@@ -48,9 +47,6 @@ export const login = async function ({ commit, dispatch }, { idx, account, retur
 
 export const loginToBackend = async function ({ commit }) {
   try {
-    PPP.setActiveUser(this.$ualUser)
-    const authApi = PPP.authApi()
-    await authApi.signIn()
     await this.dispatch('profiles/getProfile', { root: true })
     return true
   } catch (e) {
@@ -61,7 +57,6 @@ export const loginToBackend = async function ({ commit }) {
 }
 
 export const logout = async function ({ commit }) {
-  await PPP.authApi().signOut()
   const { authenticator } = getAuthenticator(this.$ual)
   authenticator && authenticator.logout()
   commit('profiles/setProfile', undefined, { root: true })

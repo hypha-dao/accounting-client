@@ -1,6 +1,5 @@
 <script>
 import { mapActions, mapMutations } from 'vuex'
-import { DeepError } from '@smontero/ppp-client-api'
 import { validation } from '~/mixins/validation'
 
 export default {
@@ -31,8 +30,8 @@ export default {
           console.log(result)
         }
       } catch (e) {
-        const error = new DeepError(e)
-        this.setErrorMsg(error.message)
+        // const error = new DeepError(e)
+        this.setErrorMsg(e)
       }
       this.submitting = false
     },

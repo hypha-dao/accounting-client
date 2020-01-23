@@ -1567,27 +1567,6 @@
     query-string "^6.5.0"
     web3-provider-engine "^15.0.0"
 
-"@smontero/ppp-client-api@^0.0.32":
-  version "0.0.32"
-  resolved "https://registry.yarnpkg.com/@smontero/ppp-client-api/-/ppp-client-api-0.0.32.tgz#7317bd97d22d597a66d7c101cb68bc84c9f4762c"
-  integrity sha512-klRURXUt3c30K4JAOU85KGwcK0DttO639Ds4bui8Pw225X/odRQHTQpXwj8cxWHQRdsxKAKmz5lK6jV+8WqlMw==
-  dependencies:
-    "@babel/runtime" "^7.6.3"
-    "@smontero/ppp-common" "0.0.6"
-    aws-amplify "^1.1.40"
-    get-random-values "^1.2.0"
-    mime "^2.4.4"
-
-"@smontero/ppp-common@0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@smontero/ppp-common/-/ppp-common-0.0.6.tgz#e05462aea482ac6a4cbdf050bcfc70b017b33649"
-  integrity sha512-Ksl1XaytBCQcNdZc31+kxv2pJU3S4+0x5dAViS+E0+Ceix5XX8RFGBOYt08rv/IrxeYfS2UCXFDc4ShCNnVAJw==
-
-"@smontero/ppp-common@^0.0.14":
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/@smontero/ppp-common/-/ppp-common-0.0.14.tgz#b2616ad09c706f45323b84fbba905027ef45224d"
-  integrity sha512-R++T8cxcnBR7aL7q4S+e7WaqPm5P7RyycUiLdDd/tB9reFSXhM9hcHqqM2gxJ+aSVB/bR/2xE0mZS+y7OMLxFQ==
-
 "@smontero/ual-eosio-reference-authenticator@^0.1.7":
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/@smontero/ual-eosio-reference-authenticator/-/ual-eosio-reference-authenticator-0.1.7.tgz#9d4a0ccfbd7ba5259f9254cea29dc2929e43ad94"
