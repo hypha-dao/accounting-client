@@ -32,116 +32,24 @@ export default {
     }
   },
   menu: {
-    trails: 'Voting',
-    trailsBallots: 'Decide',
-    trailsTreasuries: 'Groups',
-    profiles: 'Profiles',
-    contacts: 'Contacts',
-    myProfile: 'My profile',
     transfer: 'Transfer',
     example: 'Example Dashboard'
-  },
-  poc: {
-    lockSafe: 'Lock safe',
-    unlockSafe: 'Unlock safe'
   },
   pages: {
     index: {
       buttons: {
         createAccount: 'Create account',
         login: 'Login with Telos'
-      },
-      router: {
-        chat: 'Chat',
-        signUp: 'Sign Up',
-        chatList: 'Chat List',
-        contactList: 'Contact List',
-        registerApp: 'Register App',
-        appList: 'App List'
-      }
-    },
-    signUp: {
-      form: {
-        presentation: 'Bio',
-        name: 'Name',
-        firstName: 'First Name',
-        lastName: 'Last Name',
-        preferMethodComm: 'Preferred method of communication',
-        sms: 'SMS Number',
-        email: 'Email',
-        currentSms: 'Current SMS Number',
-        currentEmail: 'Current Email',
-        timeZone: 'Time Zone',
-        tags: 'Tags',
-        btnSave: 'Save',
-        newCustomFieldName: 'Write the name of new custom field',
-        editCustomFieldName: 'Write the new field name',
-        addCustomField: 'Add custom field'
       }
     },
     general: {
       search: 'Search',
-      name: 'Name',
-      eosAccount: 'eosAccount',
-      domain: 'Domain',
-      defaultChatList: 'There are no chats yet',
-      defaultMessageList: 'There are no messages yet',
-      defaultContactList: 'There are no contacts yet',
-      defaultAppList: 'There are no apps yet',
-      noAccountsFound: 'No accounts found',
       confirmActions: 'Do you want confirm this action?'
-    },
-    registerApp: {
-      form: {
-        urlBase: 'URL',
-        urlImage: 'Image URL',
-        name: 'Name',
-        appId: 'AppId',
-        shortName: 'Short Name',
-        ownerAccount: 'Owner Account',
-        confirmDeleteApp: 'Do you want delete this app?'
-      }
     },
     login: {
       getApp: 'Download the app',
       title: 'Select your wallet',
       selectAccount: 'Please select an account'
-    },
-    testnetRotation: {
-      title: 'Add your testnet BP to the schedule'
-    },
-    testnetDevelopers: {
-      title: 'Get a testnet account or testnet TLOS'
-    },
-    claim: {
-      claimAccount: 'Claim account',
-      claimCheck: {
-        title: 'Check if your account has been claimed',
-        checkButton: 'Check account'
-      },
-      removeMe: {
-        title: 'Claim your account by removing it from the unclaimed account list'
-      }
-    },
-    poc: {
-      smartsafe: {
-        title: 'SmartSafe POC',
-        last_unlocker: 'Last unlocked by',
-        last_unlock_time: 'Last unlocked',
-        lock: 'Lock',
-        unlock: 'Unlock',
-        locked_by: 'Locked by',
-        lock_time: 'Locked at'
-      }
-    },
-    verifyProfile: {
-      verifySMS: 'Verify SMS',
-      codeSMS: 'Verification code',
-      verifyEMAIL: 'Verify EMAIL',
-      codeEMAIL: 'Verification code'
-    },
-    profileLogin: {
-      failed: 'Unable to login to the profile service'
     }
   }
 }
