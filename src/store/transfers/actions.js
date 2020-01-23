@@ -1,8 +1,4 @@
 export const sendTokens = async function ({ commit, rootState }, { to, quantity, memo }) {
-  const notification = {
-    icon: 'fas fa-person-booth',
-    content: `Send ${quantity} TLOS to ${to} with memo "${memo}"`
-  }
   try {
     const actions = [{
       account: 'eosio.token',
@@ -14,12 +10,8 @@ export const sendTokens = async function ({ commit, rootState }, { to, quantity,
         memo
       }
     }]
-    const transaction = await this.$api.signTransaction(actions)
-    notification.status = 'success'
-    notification.transaction = transaction
+    await this.$api.signTransaction(actions)
   } catch (e) {
-    notification.status = 'error'
-    notification.error = e.message
+    console.log(e)
   }
-  return notification.transaction
 }

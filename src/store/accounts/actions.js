@@ -161,27 +161,3 @@ export const isAccountClaimed = async function ({ commit }, accountName) {
 
   return 'claimed'
 }
-
-export const claimAccount = async function ({ commit }, accountName) {
-  const removeMeAction = [{
-    account: 'tlosrecovery',
-    name: 'removeme',
-    data: {
-      account_name: accountName
-    }
-  }]
-  const notification = {
-    icon: 'fas fa-shopping-bag',
-    title: 'claim.claimAccount',
-    content: `Claim account ${accountName}`
-  }
-  try {
-    const transaction = await this.$api.signTransaction(removeMeAction)
-    notification.status = 'success'
-    notification.transaction = transaction
-  } catch (e) {
-    notification.status = 'error'
-    notification.error = e.message
-  }
-  return notification.status === 'success'
-}

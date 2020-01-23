@@ -1,5 +1,5 @@
 <script>
-import { mapActions, mapGetters, mapMutations } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import LeftMenu from '~/components/layout/left-menu'
 import RightMenuAuthenticated from '~/components/layout/right-menu-authenticated'
 import RightMenuGuest from '~/components/layout/right-menu-guest'
@@ -18,21 +18,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('accounts', ['isAuthenticated']),
-    ...mapGetters('notifications', ['successCount', 'errorCount'])
+    ...mapGetters('accounts', ['isAuthenticated'])
   },
   methods: {
-    ...mapMutations('notifications', ['initNotifications', 'unmarkRead', 'unmarkNew']),
-    ...mapActions('accounts', ['autoLogin']),
-    toggleNotifications () {
-      if (this.right) {
-        this.unmarkRead()
-      }
-      this.right = !this.right
-    }
-  },
-  async mounted () {
-    this.initNotifications()
+    ...mapActions('accounts', ['autoLogin'])
   }
 }
 </script>
@@ -68,10 +57,6 @@ export default {
 .logo
   max-height: 30px
   max-width: 100px
-.notification-badge
-  font-size: 10px
-  padding: 2px 3px
-  right: -5px
 .badge-left
   left: -5px
   right: auto
