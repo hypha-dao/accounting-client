@@ -3,15 +3,13 @@ import { mapActions, mapGetters, mapMutations } from 'vuex'
 import LeftMenu from '~/components/layout/left-menu'
 import RightMenuAuthenticated from '~/components/layout/right-menu-authenticated'
 import RightMenuGuest from '~/components/layout/right-menu-guest'
-import RightMenuNotifications from '~/components/layout/right-menu-notifications'
 
 export default {
   name: 'layout-auth',
   components: {
     LeftMenu,
     RightMenuAuthenticated,
-    RightMenuGuest,
-    RightMenuNotifications
+    RightMenuGuest
   },
   data () {
     return {
@@ -53,36 +51,8 @@ export default {
         )
         q-toolbar-title.flex.items-center
           img.logo(src="statics/telos-logo-white.svg")
-        q-btn(
-          v-if="isAuthenticated"
-          dense
-          flat
-          round
-          icon="fas fa-broadcast-tower"
-          @click="toggleNotifications"
-          size="sm"
-        )
-          q-badge.notification-badge(
-            v-if="successCount"
-            color="green"
-            :label="successCount"
-            floating
-          )
-          q-badge.notification-badge.badge-left(
-            v-if="errorCount"
-            color="red"
-            :label="errorCount"
-            floating
-          )
         right-menu-authenticated(v-if="isAuthenticated")
         right-menu-guest(v-if="!isAuthenticated")
-    q-drawer(
-      v-model="right"
-      side="right"
-      overlay
-      bordered
-    )
-      right-menu-notifications
     q-drawer(
       show-if-above
       v-model="menu"
