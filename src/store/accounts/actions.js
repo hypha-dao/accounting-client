@@ -74,3 +74,12 @@ export const autoLogin = async function ({ dispatch, commit }, returnUrl) {
     commit('setAutoLogin', false)
   }
 }
+
+export const fetchAvailableAccounts = async function ({ commit }, idx) {
+  commit('resetAvailableAccounts')
+  const chainId = process.env.NETWORK_CHAIN_ID
+  const authenticator = this.$ual.authenticators[idx]
+  const map = await authenticator.getAccountNamesPerChain()
+  const accounts = map.has(chainId) ? map.get(chainId) : []
+  commit('setAvailableAccounts', accounts)
+}

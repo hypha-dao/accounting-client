@@ -28,10 +28,12 @@ export default {
         if (result) {
           this.transactionId = result.transactionId
           console.log(result)
-        }
+        } else this.transactionId = null
+        console.log('tID', this.transactionId)
       } catch (e) {
         // const error = new DeepError(e)
-        this.setErrorMsg(e)
+        this.transactionId = null
+        this.setErrorMsg(e.message)
       }
       this.submitting = false
     },
