@@ -18,7 +18,7 @@ export const login = async function ({ commit, dispatch }, { idx, account, retur
       if (requestAccount) {
         await dispatch('fetchAvailableAccounts', idx)
         commit('setRequestAccount', true)
-        return
+        return null
       }
     }
     const users = await authenticator.login(account)
@@ -35,11 +35,13 @@ export const login = async function ({ commit, dispatch }, { idx, account, retur
       console.log('defaultReturnUrl', defaultReturnUrl)
       // this.$router.push({ path: '/home' })
       this.$router.push({ path: returnUrl || defaultReturnUrl })
+      return this.$ualUser
     }
   } catch (e) {
     const error = (authenticator.getError() && authenticator.getError().message) || e.message || e.reason
     commit('general/setErrorMsg', error, { root: true })
     console.log('Login error: ', error)
+    return null
   } finally {
     commit('setLoadingWallet')
   }
@@ -58,7 +60,11 @@ export const loginToBackend = async function ({ commit }) {
 
 export const logout = async function ({ commit }) {
   const { authenticator } = getAuthenticator(this.$ual)
-  authenticator && authenticator.logout()
+  try {
+    authenticator && await authenticator.logout()
+  } catch (error) {
+    console.log('Authenticator logout error', error)
+  }
   commit('profiles/setProfile', undefined, { root: true })
   commit('setAccount')
   localStorage.removeItem('autoLogin')
@@ -68,11 +74,13 @@ export const logout = async function ({ commit }) {
 
 export const autoLogin = async function ({ dispatch, commit }, returnUrl) {
   const { authenticator, idx } = getAuthenticator(this.$ual)
+  let user = null
   if (authenticator) {
     commit('setAutoLogin', true)
-    await dispatch('login', { idx, returnUrl, account: localStorage.getItem('account') })
+    user = await dispatch('login', { idx, returnUrl, account: localStorage.getItem('account') })
     commit('setAutoLogin', false)
   }
+  return user
 }
 
 export const fetchAvailableAccounts = async function ({ commit }, idx) {
