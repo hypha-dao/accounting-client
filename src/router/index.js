@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// import PPP from '@smontero/ppp-client-api'
 
 import routes from './routes'
 import Croppa from 'vue-croppa'
@@ -30,16 +29,6 @@ export default function ({ store }) {
     if (to.matched.some(record => !record.meta.guest)) {
       // Verify if the user is authenticated
       if (store.getters['accounts/isAuthenticated']) {
-        // Verify if the screen need backendLogin
-        // if (to.matched.some(record => record.meta.needBackendLogin)) {
-        //   if (!await PPP.authApi().hasValidSession()) {
-        //     next({ name: 'profileLogin', query: { returnUrl: to.path } })
-        //     return
-        //   } else {
-        //     await store.dispatch('profiles/getProfile')
-        //   }
-        // }
-
         // Verify the communication method
         // if (to.matched.some(record => record.meta.needVerifyComm)) {
         //   const isRegistered = store.getters['profiles/isRegistered']

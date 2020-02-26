@@ -15,7 +15,6 @@ module.exports = function (ctx) {
       'i18n',
       { path: 'ual', server: false },
       { path: 'api', server: false },
-      'ppp',
       'mixins',
       'ga'
     ],
@@ -122,7 +121,10 @@ module.exports = function (ctx) {
         NETWORK_HOST: process.env.NETWORK_HOST,
         NETWORK_PORT: process.env.NETWORK_PORT,
         NETWORK_CHAIN_ID: process.env.NETWORK_CHAIN_ID,
-        BLOCKCHAIN_EXPLORER: process.env.BLOCKCHAIN_EXPLORER
+        WEBSERVICES_URL: process.env.WEBSERVICES_URL,
+        WEBSERVICES_API_KEY: process.env.WEBSERVICES_API_KEY,
+        BLOCKCHAIN_EXPLORER: process.env.BLOCKCHAIN_EXPLORER,
+        GOOGLE_ANALYTICS: process.env.GOOGLE_ANALYTICS
       },
       scopeHoisting: true,
       vueRouterMode: 'history',

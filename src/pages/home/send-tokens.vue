@@ -1,6 +1,5 @@
 <script>
 import { mapActions, mapMutations } from 'vuex'
-import { DeepError } from '@smontero/ppp-client-api'
 import { validation } from '~/mixins/validation'
 
 export default {
@@ -29,10 +28,12 @@ export default {
         if (result) {
           this.transactionId = result.transactionId
           console.log(result)
-        }
+        } else this.transactionId = null
+        console.log('tID', this.transactionId)
       } catch (e) {
-        const error = new DeepError(e)
-        this.setErrorMsg(error.message)
+        // const error = new DeepError(e)
+        this.transactionId = null
+        this.setErrorMsg(e.message)
       }
       this.submitting = false
     },
