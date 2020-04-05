@@ -44,7 +44,8 @@ export default {
     },
     general: {
       search: 'Search',
-      confirmActions: 'Do you want confirm this action?'
+      confirmActions: 'Do you want confirm this action?',
+      noAccountsFound: 'No accounts found'
     },
     login: {
       getApp: 'Download the app',
