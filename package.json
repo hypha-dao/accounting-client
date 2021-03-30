@@ -1,10 +1,10 @@
 {
-  "name": "telos-net",
+  "name": "Venify Varex",
   "version": "0.0.1",
-  "description": "Telos Network Portal",
-  "productName": "Telos",
+  "description": "Venify Varex",
+  "productName": "Venify Varex",
   "cordovaId": "org.cordova.quasar.app",
-  "author": "gregory-latinier <gregory.latinier@gmail.com>",
+  "author": "gregory-latinier <jmgayosso@m1ghty.com>",
   "private": true,
   "scripts": {
     "dev": "quasar dev -m spa",
