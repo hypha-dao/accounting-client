@@ -7,7 +7,7 @@ import { Scatter } from 'ual-scatter'
 import { Sqrl } from '@smontero/ual-sqrl'
 import { TokenPocket } from '@smontero/ual-token-pocket'
 import { Anchor } from 'ual-anchor'
-import { Metamask } from 'ual-metamask'
+// import { Metamask } from 'ual-metamask'
 
 export default async ({ Vue, store }) => {
   const mainChain = {
@@ -26,8 +26,8 @@ export default async ({ Vue, store }) => {
     new Lynx([mainChain]),
     new Scatter([mainChain], { appName: process.env.APP_NAME }),
     new TokenPocket([mainChain]),
-    new Anchor([mainChain], { appName: process.env.APP_NAME }),
-    new Metamask([mainChain], { appName: process.env.APP_NAME })
+    new Anchor([mainChain], { appName: process.env.APP_NAME })
+    // new Metamask([mainChain], { appName: process.env.APP_NAME })
   ]
 
   const ual = new UAL([mainChain], 'tet-ual', authenticators)
