@@ -2,7 +2,8 @@ const routes = [
   { path: '/', component: () => import('pages/index.vue'), meta: { layout: 'empty', guest: true } },
   { path: '/login', component: () => import('pages/login/login.vue'), meta: { layout: 'guest', title: 'pages.login.title', guest: true } },
   { path: '/home', component: () => import('pages/home/home.vue'), name: 'home' },
-  { path: '/dashboard', component: () => import('pages/home/dashboard.vue'), name: 'dashboard' }
+  { path: '/dashboard', component: () => import('pages/home/dashboard.vue'), name: 'dashboard' },
+  { path: '/transactions', component: () => import('pages/transactions/transactions.vue'), name: 'transactions' }
 ]
 
 // Always leave this as last one
