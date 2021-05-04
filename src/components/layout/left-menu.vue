@@ -14,22 +14,22 @@ export default {
     q-list
       q-item(
         v-if="isAuthenticated"
-        to="/home"
+        to="/transactions"
         clickable
         v-ripple
       )
         q-item-section(avatar)
           q-icon(name="app:my-profile")
-        q-item-section {{ $t('menu.transfer') }}
+        q-item-section {{ $t('menu.transactions') }}
       q-item(
         v-if="isAuthenticated"
-        to="/dashboard"
+        to="/chart-accounts"
         clickable
         v-ripple
       )
         q-item-section(avatar)
           q-icon(name="app:chats")
-        q-item-section {{ $t('menu.example') }}
+        q-item-section {{ $t('menu.chartOfAccounts') }}
 </template>
 
 <style lang="stylus">

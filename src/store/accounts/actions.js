@@ -27,7 +27,7 @@ export const login = async function ({ commit, dispatch }, { idx, account, retur
       this.$type = 'ual'
       const accountName = await users[0].getAccountName()
       commit('setAccount', accountName)
-      const defaultReturnUrl = localStorage.getItem('returning') ? '/home' : '/home'
+      const defaultReturnUrl = localStorage.getItem('returning') ? localStorage.getItem('returning') : '/transactions'
       localStorage.setItem('autoLogin', authenticator.constructor.name)
       localStorage.setItem('account', accountName)
       localStorage.setItem('returning', true)

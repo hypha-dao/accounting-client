@@ -33,7 +33,9 @@ export default {
   },
   menu: {
     transfer: 'Transfer',
-    example: 'Example Dashboard'
+    example: 'Example Dashboard',
+    transactions: 'Transactions',
+    chartOfAccounts: 'Chart of Accounts'
   },
   pages: {
     index: {
