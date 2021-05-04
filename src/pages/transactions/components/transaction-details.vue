@@ -1,9 +1,9 @@
 <template lang="pug">
-  q-card( flat ).full-height.q-px-md
+  q-card( flat ).full-height
     q-card-section
-      div.text-h6
+      .text-h6
         | Details
-      div.row.q-mt-md
+      .row.q-mt-md
         .col-6
           .q-py-sm Transaction: {{ transaction.transaction }}
           .q-py-sm Memo: Amo X
@@ -16,7 +16,7 @@
             .q-py-sm.flex.row Balanced:
               span.letter-icon(v-if="transaction.balanced" class="letter-icon balanced") B
               span.letter-icon(v-if="!transaction.balanced" class="letter-icon unbalanced") U
-      div.row.q-mt-lg
+      .row.q-mt-lg
         table.col-12.styled-table
           thead
             tr
@@ -27,7 +27,7 @@
               th.text-center.q-py-md Edit
               th.text-center.q-py-md Delete
           tbody
-            tr.text-center.justify-center( v-for="transaction in data" :key="transaction.id" :class="(selectedIndex == transaction.id) ? 'selected' : ''" @click="selectTransaction(transaction.id)")
+            tr.text-center.justify-center( v-for="transaction in data" :key="transaction.id")
               td.q-py-md {{ transaction.no }}
               td.q-py-md {{ transaction.account }}
               td.q-py-md {{ transaction.amount }}
@@ -76,10 +76,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  .full-height {
-    height: 100%;
-  }
-
   .bord {
     border: 1px solid black
   }
@@ -89,10 +85,6 @@ export default {
     color: white;
     font-weight: bold;
     width: 260px;
-  }
-
-  .full-height {
-    height: 100%;
   }
 
   .styled-table {

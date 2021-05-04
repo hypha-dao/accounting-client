@@ -1,5 +1,13 @@
 import { Api, JsonRpc } from 'eosjs'
 
+import {
+  ConcurrencyApi,
+  CursorApi,
+  DocumentApi,
+  EdgeApi,
+  ExRateApi
+} from '~/service'
+
 const signTransaction = async function (actions) {
   actions.forEach(action => {
     if (!action.authorization || !action.authorization.length) {
@@ -45,8 +53,35 @@ export default ({ store }) => {
   const rpc = new JsonRpc(`${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}:${process.env.NETWORK_PORT}`)
   store['$defaultApi'] = new Api({ rpc, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() })
 
-  store['$api'] = {
+  const api = {
     signTransaction: signTransaction.bind(store),
     getTableRows: getTableRows.bind(store)
   }
+
+  const concurrencyApi = new ConcurrencyApi({
+    eosApi: api
+  })
+
+  const cursorApi = new CursorApi({
+    eosApi: api
+  })
+
+  const documentApi = new DocumentApi({
+    eosApi: api
+  })
+
+  const edgeApi = new EdgeApi({
+    eosApi: api
+  })
+
+  const exRateApi = new ExRateApi({
+    eosApi: api
+  })
+
+  store['$api'] = api
+  store['$concurrencyApi'] = concurrencyApi
+  store['$cursorApi'] = cursorApi
+  store['$documentApi'] = documentApi
+  store['$edgeApi'] = edgeApi
+  store['$exRateApi'] = exRateApi
 }

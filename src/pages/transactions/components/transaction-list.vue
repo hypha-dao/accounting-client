@@ -1,36 +1,18 @@
 <template lang="pug">
-  q-card( flat ).full-height.q-px-md
+  q-card( flat ).full-height
     q-card-section
-      div.text-h6
+      .text-h6
         | Transactions
-      div.row.justify-between.q-gutter-md.q-mt-md
-        div.col-5.rounded-field
-          q-select(outlined :options="options" label='Filter by account')
+      .row.justify-between.q-gutter-md.q-my-lg
+        .col-5.rounded-field
+          q-select(value="Opt 1" outlined :options="options" label='Filter by account')
             template(v-slot:after)
               q-icon(name="close" style="background-color='blue'").cursor-pointer
-        div.col-5
+        .col-5
           q-input(outlined :option='options' label='Search')
-
-      div.row.q-mt-lg
-        table.col-12.styled-table
-          thead
-            tr
-              th.text-center.q-py-md Date
-              th.text-center.q-py-md Amo
-              th.text-center.q-py-md Transaction
-              th.text-center.q-py-md Approved
-              th.text-center.q-py-md Balanced
-          tbody
-            tr.text-center.justify-center( v-for="transaction in data" :key="transaction.id" :class="(selectedIndex == transaction.id) ? 'selected' : ''" @click="selectTransaction(transaction.id)")
-              td.q-py-md {{ transaction.date }}
-              td.q-py-md {{ transaction.amo }}
-              td.q-py-md {{ transaction.transaction }}
-              td.q-py-md
-                q-icon(class="icon-sized " :class="transaction.approved ? 'success' : 'failure' "  :name="transaction.approved ? 'check_circle' :  'remove_circle'" )
-              td.q-py-md.flex.align-center.justify-center
-                  span.letter-icon(v-if="transaction.balanced" class="letter-icon balanced") B
-                  span.letter-icon(v-if="!transaction.balanced" class="letter-icon unbalanced") U
-      div.q-mt-xl.flex.column
+      //- Data table
+      q-table.q-mt-xl(:columns="columns" :data="data" row-key="id" )
+      .q-mt-xl.flex.column
         .row.self-center.q-my-md
           q-btn.primary-color.q-px-xl
             q-icon(class="icon-sized" name="note_add" size="35px")
@@ -105,6 +87,13 @@ export default {
       ],
       columns: [
         {
+          name: 'id',
+          align: 'center',
+          label: 'ID',
+          field: 'id',
+          sortable: true
+        },
+        {
           name: 'date',
           align: 'center',
           label: 'Date',
@@ -147,6 +136,7 @@ export default {
   },
   methods: {
     selectTransaction (index) {
+      console.log('updated')
       this.selectedIndex = index
       this.$emit('update', this.data[index])
     }
@@ -161,10 +151,6 @@ export default {
   color: white;
   font-weight: bold;
   width: 260px;
-}
-
-.full-height {
-  height: 100%;
 }
 
 .styled-table {

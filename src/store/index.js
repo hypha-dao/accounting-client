@@ -2,8 +2,12 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import accounts from './accounts'
-import transfers from './transfers'
 import general from './general'
+import concurrency from './concurrency'
+import cursor from './cursor'
+import document from './document'
+import edge from './edge'
+import exRate from './exRate'
 
 Vue.use(Vuex)
 
@@ -16,8 +20,12 @@ export default function (/* { ssrContext } */) {
   const Store = new Vuex.Store({
     modules: {
       accounts,
-      transfers,
-      general
+      general,
+      concurrency,
+      cursor,
+      document,
+      edge,
+      exRate
     },
 
     // enable strict mode (adds overhead!)
