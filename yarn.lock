@@ -1273,6 +1273,11 @@
     "@ethersproject/properties" "^5.1.0"
     "@ethersproject/strings" "^5.1.0"
 
+"@fortawesome/fontawesome-free@^5.11.2", "@fortawesome/fontawesome-free@^5.7.2":
+  version "5.15.3"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-free/-/fontawesome-free-5.15.3.tgz#c36ffa64a2a239bf948541a97b6ae8d729e09a9a"
+  integrity sha512-rFnSUN/QOtnOAgqFRooTA3H57JLDm0QEG/jPdk+tLQNL/eWd+Aok8g3qCI+Q1xuDPWpGW/i9JySpJVsq8Q0s9w==
+
 "@greymass/eosio@^0.2.5":
   version "0.2.7"
   resolved "https://registry.yarnpkg.com/@greymass/eosio/-/eosio-0.2.7.tgz#a7d58f5fabaf13343b1f62dc8ad50c6fa896c72d"
@@ -5150,6 +5155,11 @@ download@^7.1.0:
     make-dir "^1.2.0"
     p-event "^2.1.0"
     pify "^3.0.0"
+
+downloadjs@^1.4.7:
+  version "1.4.7"
+  resolved "https://registry.yarnpkg.com/downloadjs/-/downloadjs-1.4.7.tgz#f69f96f940e0d0553dac291139865a3cd0101e3c"
+  integrity sha1-9p+W+UDg0FU9rCkROYZaPNAQHjw=
 
 drbg.js@^1.0.1:
   version "1.0.1"
@@ -13680,6 +13690,11 @@ vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=
 
+vee-validate@^2.1.7:
+  version "2.2.15"
+  resolved "https://registry.yarnpkg.com/vee-validate/-/vee-validate-2.2.15.tgz#dc6c925d21e57288d3308fe5a39a0941036c575a"
+  integrity sha512-4TOsI8XwVkKVLkg8Nhmy+jyoJrR6XcTRDyxBarzcCvYzU61zamipS1WsB6FlDze8eJQpgglS4NXAS6o4NDPs1g==
+
 vendors@^1.0.0:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/vendors/-/vendors-1.0.3.tgz#a6467781abd366217c050f8202e7e50cc9eef8c0"
@@ -13703,6 +13718,35 @@ void-elements@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
   integrity sha1-wGavtYK7HLQSjWDqkjkulNXp2+w=
+
+vue-ads-form-builder@^0.1.15:
+  version "0.1.15"
+  resolved "https://registry.yarnpkg.com/vue-ads-form-builder/-/vue-ads-form-builder-0.1.15.tgz#71a1fd53893914f199fd0313c68a5449557a10c5"
+  integrity sha512-7J3itnT+MHqODyO39JkGetREA1YlnNVHYj6KGlT9uGMnNr1H7NmTStasoZ1bpHU7AJ5Uyyp7tuWZl105H7DEPw==
+  dependencies:
+    "@fortawesome/fontawesome-free" "^5.7.2"
+    vee-validate "^2.1.7"
+    vue "^2.6.6"
+    vue-perfect-scrollbar "^0.1.0"
+
+vue-ads-pagination@^2.1.7:
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/vue-ads-pagination/-/vue-ads-pagination-2.1.7.tgz#be1fb988966a7eed3e592c7b9295f112cc0f260f"
+  integrity sha512-uvWHvHjG3KhdiVeLm4v5DP4K3+MlczizSLCuILNHnWghvt6q6og3L7k8fGuyXFyqMOBftEdV90WU6wRcNCqwtA==
+  dependencies:
+    "@fortawesome/fontawesome-free" "^5.11.2"
+    vue "^2.6.10"
+
+vue-ads-table-tree@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/vue-ads-table-tree/-/vue-ads-table-tree-2.4.2.tgz#eef6f35d2cf9631ccbd3b705abcefd8a5de79079"
+  integrity sha512-PBWA1fFw/AdislGkb+zSsvdPQaLrabxymrJq44wsuKIcQUeIWA6bGS/0239XbpsWkuIt6Gtj6yIoSypj5A3qAw==
+  dependencies:
+    "@fortawesome/fontawesome-free" "^5.11.2"
+    vue "^2.6.10"
+    vue-ads-form-builder "^0.1.15"
+    vue-ads-pagination "^2.1.7"
+    vue-json-excel "^0.2.98"
 
 vue-analytics@^5.20.1:
   version "5.20.1"
@@ -13739,6 +13783,13 @@ vue-i18n@^8.0.0:
   resolved "https://registry.yarnpkg.com/vue-i18n/-/vue-i18n-8.15.0.tgz#9b11ef8e7a124f67cdf788c8c90a81f3606240ed"
   integrity sha512-juJ/avAP39bOMycC+qQDLJ8U9z9LtLF/9PsRoJLBSfsYZo9bqYntyyX5QPicwlb1emJKjgxhZ3YofHiQcXBu0Q==
 
+vue-json-excel@^0.2.98:
+  version "0.2.99"
+  resolved "https://registry.yarnpkg.com/vue-json-excel/-/vue-json-excel-0.2.99.tgz#ee785949ed05b0f8b58375ca381cf92cd7aec7f5"
+  integrity sha512-Zu1uV/KUGjG8oGchF1kK/53eaTEXoKPC4pZknuF3n+/7fctxuuOuQ5bda9GRE0PukRCbyJtL1v3Y256GmnyOaQ==
+  dependencies:
+    downloadjs "^1.4.7"
+
 vue-loader@15.9.2:
   version "15.9.2"
   resolved "https://registry.yarnpkg.com/vue-loader/-/vue-loader-15.9.2.tgz#ae01f5f4c9c6a04bff4483912e72ef91a402c1ae"
@@ -13749,6 +13800,11 @@ vue-loader@15.9.2:
     loader-utils "^1.1.0"
     vue-hot-reload-api "^2.3.0"
     vue-style-loader "^4.1.0"
+
+vue-perfect-scrollbar@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/vue-perfect-scrollbar/-/vue-perfect-scrollbar-0.1.0.tgz#be12c23d1753a013fa81ceb9872cb5fc0b1b4960"
+  integrity sha512-l/ZEidPDFplXeDtxs+gO3D8efhwqyIEcUtfvfRujCQemcn39ghpSNoizWWZYI6Ro0iz3yP+w7LqNxEBjE+T1qQ==
 
 vue-router@3.2.0:
   version "3.2.0"
@@ -13794,6 +13850,11 @@ vue@2.6.11:
   version "2.6.11"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.11.tgz#76594d877d4b12234406e84e35275c6d514125c5"
   integrity sha512-VfPwgcGABbGAue9+sfrD4PuwFar7gPb1yl1UK1MwXoQPAw0BKSqWfoYCT/ThFrdEVWoI51dBuyCoiNU9bZDZxQ==
+
+vue@^2.6.10, vue@^2.6.6:
+  version "2.6.12"
+  resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.12.tgz#f5ebd4fa6bd2869403e29a896aed4904456c9123"
+  integrity sha512-uhmLFETqPPNyuLLbsKz6ioJ4q7AZHzD8ZVFNATNyICSZouqP2Sz0rotWQC8UNBF6VGSCs5abnKJoStA6JbCbfg==
 
 vuex@3.4.0:
   version "3.4.0"
