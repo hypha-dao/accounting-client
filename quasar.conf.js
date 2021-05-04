@@ -14,6 +14,7 @@ module.exports = function (ctx) {
       'axios',
       'i18n',
       { path: 'ual', server: false },
+      { path: 'dgraph', server: false },
       { path: 'api', server: false },
       'mixins',
       'ga'
@@ -125,7 +126,8 @@ module.exports = function (ctx) {
         WEBSERVICES_URL: process.env.WEBSERVICES_URL,
         WEBSERVICES_API_KEY: process.env.WEBSERVICES_API_KEY,
         BLOCKCHAIN_EXPLORER: process.env.BLOCKCHAIN_EXPLORER,
-        GOOGLE_ANALYTICS: process.env.GOOGLE_ANALYTICS
+        GOOGLE_ANALYTICS: process.env.GOOGLE_ANALYTICS,
+        DGRAPH_URL: process.env.DGRAPH_URL
       },
       scopeHoisting: true,
       vueRouterMode: 'history',

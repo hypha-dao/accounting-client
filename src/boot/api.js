@@ -44,7 +44,8 @@ const getTableRows = async function (options) {
 export default ({ store }) => {
   const rpc = new JsonRpc(`${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}:${process.env.NETWORK_PORT}`)
   store['$defaultApi'] = new Api({ rpc, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() })
-
+  const dgraph = store.$dgraph
+  console.log('dgraph client', dgraph)
   store['$api'] = {
     signTransaction: signTransaction.bind(store),
     getTableRows: getTableRows.bind(store)
