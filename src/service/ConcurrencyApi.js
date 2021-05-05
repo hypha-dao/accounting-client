@@ -6,6 +6,7 @@ import {
 class ConcurrencyApi extends BaseEosApi {
   constructor ({
     eosApi,
+    dgraph,
     notifier
   }) {
     super(
@@ -18,6 +19,7 @@ class ConcurrencyApi extends BaseEosApi {
         defaultSortField: 'key'
       }
     )
+    this.dgraph = dgraph
   }
 
   /** *

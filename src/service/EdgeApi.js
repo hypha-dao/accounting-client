@@ -6,6 +6,7 @@ import {
 class EdgeApi extends BaseEosApi {
   constructor ({
     eosApi,
+    dgraph,
     notifier
   }) {
     super(
@@ -18,6 +19,7 @@ class EdgeApi extends BaseEosApi {
         defaultSortField: 'key'
       }
     )
+    this.dgraph = dgraph
   }
 
   /** *

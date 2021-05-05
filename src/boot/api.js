@@ -60,11 +60,13 @@ export default ({ store }) => {
   }
 
   const concurrencyApi = new ConcurrencyApi({
-    eosApi: api
+    eosApi: api,
+    dgraph
   })
 
   const cursorApi = new CursorApi({
-    eosApi: api
+    eosApi: api,
+    dgraph
   })
 
   const documentApi = new DocumentApi({
@@ -73,11 +75,13 @@ export default ({ store }) => {
   })
 
   const edgeApi = new EdgeApi({
-    eosApi: api
+    eosApi: api,
+    dgraph
   })
 
   const exRateApi = new ExRateApi({
-    eosApi: api
+    eosApi: api,
+    dgraph
   })
 
   store['$api'] = api
