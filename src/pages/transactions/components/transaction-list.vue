@@ -1,43 +1,44 @@
 <template lang="pug">
-  q-card( flat ).full-height.q-px-md
+  q-card( flat ).full-h
     q-card-section
-      div.text-h6
+      .text-h6
         | Transactions
-      div.row.justify-between.q-gutter-md.q-mt-md
-        div.col-5.rounded-field
-          q-select(outlined :options="options" label='Filter by account')
-            template(v-slot:after)
-              q-icon(name="close" style="background-color='blue'").cursor-pointer
-        div.col-5
+      .row.justify-between.q-gutter-md.q-my-lg
+        .col-5.rounded-field
+          q-select(value="Opt 1" outlined :options="options" label='Filter by account')
+            //- template(v-slot:after)
+            //-   q-icon(name="close" style="background-color='blue'").cursor-pointer
+        .col-5
           q-input(outlined :option='options' label='Search')
-
-      div.row.q-mt-lg
-        table.col-12.styled-table
-          thead
-            tr
-              th.text-center.q-py-md Date
-              th.text-center.q-py-md Amo
-              th.text-center.q-py-md Transaction
-              th.text-center.q-py-md Approved
-              th.text-center.q-py-md Balanced
-          tbody
-            tr.text-center.justify-center( v-for="transaction in data" :key="transaction.id" :class="(selectedIndex == transaction.id) ? 'selected' : ''" @click="selectTransaction(transaction.id)")
-              td.q-py-md {{ transaction.date }}
-              td.q-py-md {{ transaction.amo }}
-              td.q-py-md {{ transaction.transaction }}
-              td.q-py-md
-                q-icon(class="icon-sized " :class="transaction.approved ? 'success' : 'failure' "  :name="transaction.approved ? 'check_circle' :  'remove_circle'" )
-              td.q-py-md.flex.align-center.justify-center
-                  span.letter-icon(v-if="transaction.balanced" class="letter-icon balanced") B
-                  span.letter-icon(v-if="!transaction.balanced" class="letter-icon unbalanced") U
-      div.q-mt-xl.flex.column
+            //- template(v-slot:after)
+            //- q-icon(name="close").cursor-pointer
+      //- Data table
+      q-table.q-mt-xl(
+        :columns="columns"
+        :data="data"
+        se
+        :selected.sync="selected"
+      )
+        template(v-slot:body="props")
+          q-tr(:props="props" @click="selectTransaction(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row
+            q-td(key="id" :props="props") {{ props.row.id }}
+            q-td(key="date" :props="props") {{ props.row.date }}
+            q-td(key="amo" :props="props") {{ props.row.amo }}
+            q-td(key="transaction" :props="props") {{ props.row.transaction }}
+            q-td(key="approved" :props="props")
+              q-icon.icon-sized(:color="(props.row.approved) ? 'positive' : 'negative'" :name="(props.row.approved) ? 'check_circle' : 'remove_circle'")
+            q-td(key="balanced" :props="props")
+              span(v-show="props.row.balanced").letter-icon.bg-positive B
+              span(v-show="!props.row.balanced").letter-icon.bg-negative U
+      //- End of table
+      .q-mt-xl.flex.column
         .row.self-center.q-my-md
-          q-btn.primary-color.q-px-xl
-            q-icon(class="icon-sized" name="note_add" size="35px")
+          q-btn.q-px-xl.btn-md(color="primary")
+            q-icon(class="icon-sized" name="note_add")
             span New
         .row.self-center.q-my-md
-          q-btn.primary-color.q-px-xl( @click="data.splice(selectedIndex, 1)" )
-            q-icon(class="icon-sized" name="delete" size="35px")
+          q-btn.q-px-xl.btn-md(color="primary" @click="data.splice(selectedIndex, 1)" )
+            q-icon(class="icon-sized" name="delete")
             span Delete
 </template>
 
@@ -46,6 +47,7 @@ export default {
   name: 'transaction-list',
   data () {
     return {
+      selected: [],
       selectedIndex: 0,
       options: [
         'Opt 1',
@@ -105,39 +107,52 @@ export default {
       ],
       columns: [
         {
+          name: 'id',
+          align: 'center',
+          label: 'ID',
+          field: 'id',
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        },
+        {
           name: 'date',
           align: 'center',
           label: 'Date',
           field: 'date',
-          sortable: true
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
         },
         {
           name: 'amo',
           align: 'center',
           label: 'Amo',
           field: 'amo',
-          sortable: true
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
         },
         {
           name: 'transaction',
           align: 'center',
           label: 'Transaction',
           field: 'transaction',
-          sortable: true
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
         },
         {
           name: 'approved',
           align: 'center',
           label: 'Approved',
           field: 'approved',
-          sortable: true
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
         },
         {
           name: 'balanced',
           align: 'center',
           label: 'Balanced',
           field: 'balanced',
-          sortable: true
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
         }
       ]
     }
@@ -147,6 +162,7 @@ export default {
   },
   methods: {
     selectTransaction (index) {
+      console.log('updated')
       this.selectedIndex = index
       this.$emit('update', this.data[index])
     }
@@ -156,65 +172,26 @@ export default {
 
 <style scoped lang="scss">
 
-.primary-color {
-  background-color: $primary;
-  color: white;
-  font-weight: bold;
-  width: 260px;
+.btn-md {
+  size: 35px;
+  width: 210px;
 }
 
-.full-height {
-  height: 100%;
-}
-
-.styled-table {
-    border-collapse: collapse;
-}
-
-.styled-table tbody{
-    cursor: pointer;
-}
-
-.styled-table thead tr {
-    background-color: $secondary;
-    color: white;
-}
-
-.styled-table tbody tr:nth-of-type(even) {
-    background-color: $accent;
-}
-
-.styled-table tbody tr:last-of-type {
-    border-bottom: 2px solid $primary;
-}
-
-.selected {
+.bg-dark-accent {
   background-color: $accentDark !important;
 }
 
+.styled-row:nth-of-type(even) {
+    background-color: $accent;
+}
+
 .icon-sized {
-  font-size: 2rem;
-}
-
-.success {
-  color: $positive;
-}
-
-.failure {
-  color: $negative;
-}
-
-.balanced {
-  background-color: $positive;
-}
-
-.unbalanced {
-  background-color: $negative;
+  font-size: 1.5rem;
 }
 
 .letter-icon {
-  width: 28px;
-  height: 28px;
+  width: 20px;
+  height: 20px;
   font-weight: bold;
   border-radius: 50%;
   text-align: center;

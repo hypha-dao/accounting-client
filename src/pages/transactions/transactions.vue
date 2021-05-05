@@ -1,14 +1,16 @@
 <template lang="pug">
-  div.row.q-pa-md.q-gutter-md.main-cont
-    div.col
-      TransactionsList(@update="getSelectedTransaction")
-    div.col
-      TransactionsDetails(:transaction="selectedTransaction")
+  #main-container
+    .row.q-pa-md.q-gutter-md
+      .col
+        TransactionsList(@update="getSelectedTransaction")
+      .col
+        TransactionsDetails(:transaction="selectedTransaction")
 </template>
 
 <script>
 import TransactionsList from './components/transaction-list'
 import TransactionsDetails from './components/transaction-details'
+// import { mapActions } from 'vuex'
 
 export default {
   name: 'home',
@@ -26,14 +28,25 @@ export default {
       this.selectedTransaction = newValue
     }
   }
+/*   methods: {
+    ...mapActions('exRate', ['getExRates']),
+    getSelectedTransaction (newValue) {
+      this.selectedTransaction = newValue
+    },
+    async getData () {
+      try {
+        let response = await this.getExRates()
+        console.log(response)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  },
+  created () {
+    this.getData()
+  } */
 }
 </script>
 
 <style scoped lang="scss">
-/* This value should be calculated with 100vh - height of header */
- .main-cont {
-   /* height: 96.5vh; */
-   height: calc(100vh - 35px);
-   background-color: $grey;
- }
 </style>
