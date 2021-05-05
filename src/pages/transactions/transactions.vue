@@ -1,5 +1,5 @@
 <template lang="pug">
-  #container
+  #main-container
     .row.q-pa-md.q-gutter-md
       .col
         TransactionsList(@update="getSelectedTransaction")

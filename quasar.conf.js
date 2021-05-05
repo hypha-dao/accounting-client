@@ -99,7 +99,9 @@ module.exports = function (ctx) {
         'QToolbar',
         'QToolbarTitle',
         'QTooltip',
-        'QTable'
+        'QTable',
+        'QTd',
+        'QTr'
       ],
 
       directives: [

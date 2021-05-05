@@ -1,5 +1,5 @@
 <template lang="pug">
-  q-card( flat ).full-height
+  q-card( flat ).full-h
     q-card-section
       .text-h6
         | Details
@@ -11,40 +11,30 @@
         .col-6.self-end
           .row.justify-between
             .q-py-sm Aproved:
-              q-icon(class="icon-sized " :class="transaction.approved ? 'success' : 'failure' "  :name="transaction.approved ? 'check_circle' :  'remove_circle'" )
+              q-icon(class="icon-sized " :class="transaction.approved ? 'text-positive' : 'text-negative' "  :name="transaction.approved ? 'check_circle' :  'remove_circle'" )
             //- THis should be aligned with th other items
             .q-py-sm.flex.row Balanced:
-              span.letter-icon(v-if="transaction.balanced" class="letter-icon balanced") B
-              span.letter-icon(v-if="!transaction.balanced" class="letter-icon unbalanced") U
-      .row.q-mt-lg
-        table.col-12.styled-table
-          thead
-            tr
-              th.text-center.q-py-md No.
-              th.text-center.q-py-md Account
-              th.text-center.q-py-md Amount
-              th.text-center.q-py-md Percent
-              th.text-center.q-py-md Edit
-              th.text-center.q-py-md Delete
-          tbody
-            tr.text-center.justify-center( v-for="transaction in data" :key="transaction.id")
-              td.q-py-md {{ transaction.no }}
-              td.q-py-md {{ transaction.account }}
-              td.q-py-md {{ transaction.amount }}
-              td.q-py-md {{ transaction.percent }}
-              td.q-py-md
-                q-icon(name="edit")
-              td.q-py-md.flex.align-center.justify-center
-                q-icon(name="delete")
-            tr.add-element( @click="data.push({no: 22, account:'123LA', amount:'22 TLOS', percent:'20%'})" )
-              td.q-py-md.q-px-xl(colspan="6")
-                span Add component...
+              span.letter-icon(v-if="transaction.balanced" class="letter-icon bg-positive") B
+              span.letter-icon(v-if="!transaction.balanced" class="letter-icon bg-negative") U
+      q-table.q-mt-sm(
+        :columns="columns"
+        :data="data"
+        )
+        template(v-slot:body="props")
+          q-tr(:props="props").styled-row
+            q-td(key="no" :props="props") {{ props.row.no }}
+            q-td(key="account" :props="props") {{ props.row.account }}
+            q-td(key="amount" :props="props") {{ props.row.amount }}
+            q-td(key="percent" :props="props") {{ props.row.percent }}
+        template(v-slot:bottom-row)
+          q-tr.bg-grey-4.text-grey-8(@click="data.push({no:22, account:'My account', amount:'30 TLOS', percent:'10%'})")
+            q-td(colspan="4") Add component...
       hr.q-mt-xl.text-primary
-      textarea(style="width:100%", rows="6" placeholder=" Notes:").q-mt-md
+      textarea(style="width:100%" placeholder=" Notes:").q-mt-md
       .q-mt-xl.flex.column
         .row.self-center.q-my-md
-          q-btn.primary-color.q-px-xl
-            q-icon(class="icon-sized" name="note_add" size="35px")
+          q-btn.bg-primary.text-white.q-px-xl.btn-lg
+            q-icon(class="icon-sized" name="note_add")
             span Aprove transaction
 </template>
 
@@ -69,6 +59,40 @@ export default {
           amount: '-3 ET',
           percent: '52%'
         }
+      ],
+      columns: [
+        {
+          name: 'no',
+          align: 'center',
+          label: 'No.',
+          field: 'no',
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        },
+        {
+          name: 'account',
+          align: 'center',
+          label: 'Account',
+          field: 'account',
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        },
+        {
+          name: 'amount',
+          align: 'center',
+          label: 'Account',
+          field: 'amount',
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        },
+        {
+          name: 'percent',
+          align: 'center',
+          label: 'Percent',
+          field: 'percent',
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        }
       ]
     }
   }
@@ -80,44 +104,16 @@ export default {
     border: 1px solid black
   }
 
-  .primary-color {
-    background-color: $primary;
-    color: white;
-    font-weight: bold;
-    width: 260px;
+  .btn-lg {
+    width: 320px !important;
   }
 
-  .styled-table {
-      border-collapse: collapse;
-  }
-
-  .styled-table thead tr {
-      background-color: $secondary;
-      color: white;
-  }
-
-  .styled-table tbody tr:nth-of-type(even) {
-      background-color: $accent;
+  .styled-row:nth-of-type(even) {
+    background-color: $accent;
   }
 
   .icon-sized {
     font-size: 2rem;
-  }
-
-  .success {
-    color: $positive;
-  }
-
-  .failure {
-    color: $negative;
-  }
-
-  .balanced {
-    background-color: $positive;
-  }
-
-  .unbalanced {
-    background-color: $negative;
   }
 
   .letter-icon {
@@ -130,10 +126,5 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-  }
-
-  .add-element {
-    background-color: $grey;
-    color: grey;
   }
 </style>

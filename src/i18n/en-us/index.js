@@ -53,6 +53,19 @@ export default {
       getApp: 'Download the app',
       title: 'Select your wallet',
       selectAccount: 'Please select an account'
+    },
+    accounts: {
+      details: 'Details',
+      account: 'Account',
+      memo: 'Memo',
+      date: 'Date',
+      approved: 'Approved',
+      balanced: 'Balanced',
+      transaction: 'Transaction',
+      amount: 'Amount',
+      percent: 'Percent',
+      filterCategory: 'Filter Category',
+      newAccount: 'New Account'
     }
   }
 }
