@@ -3,19 +3,16 @@
     q-card-section
       .text-h6
         | Details
-      .row.q-mt-md
-        .col-6
-          .q-py-sm Transaction: {{ transaction.transaction }}
-          .q-py-sm Memo: Amo X
-          .q-py-sm Date: {{ transaction.date }}
-        .col-6.self-end
-          .row.justify-between
-            .q-py-sm Aproved:
-              q-icon(class="icon-sized " :class="transaction.approved ? 'text-positive' : 'text-negative' "  :name="transaction.approved ? 'check_circle' :  'remove_circle'" )
-            //- THis should be aligned with th other items
-            .q-py-sm.flex.row Balanced:
-              span.letter-icon(v-if="transaction.balanced" class="letter-icon bg-positive") B
-              span.letter-icon(v-if="!transaction.balanced" class="letter-icon bg-negative") U
+      .details.q-mt-md.q-px-sm.q-gutter-sm
+        .text-caption {{ $t('pages.accounts.account') }}: {{ transaction.transaction }}
+        .text-caption {{ $t('pages.accounts.memo') }}: Memo!!
+        .row.justify-between
+            .text-caption {{ $t('pages.accounts.date') }}: {{ transaction.date }}
+            .text-caption.text-right {{ $t('pages.accounts.approved') }}: Icon
+              //- q-icon(class="icon-sized " :class="transaction.approved ? 'text-positive' : 'text-negative' "  :name="transaction.approved ? 'check_circle' :  'remove_circle'" )
+            .text-caption.text-right {{ $t('pages.accounts.balanced') }}: Icon
+        //-       span.letter-icon(v-if="transaction.balanced" class="letter-icon bg-positive") B
+        //-       span.letter-icon(v-if="!transaction.balanced" class="letter-icon bg-negative") U
       q-table.q-mt-sm(
         :columns="columns"
         :data="data"

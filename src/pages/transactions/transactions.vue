@@ -10,7 +10,6 @@
 <script>
 import TransactionsList from './components/transaction-list'
 import TransactionsDetails from './components/transaction-details'
-// import { mapActions } from 'vuex'
 
 export default {
   name: 'home',
@@ -27,24 +26,16 @@ export default {
     getSelectedTransaction (newValue) {
       this.selectedTransaction = newValue
     }
-  }
-/*   methods: {
-    ...mapActions('exRate', ['getExRates']),
-    getSelectedTransaction (newValue) {
-      this.selectedTransaction = newValue
-    },
-    async getData () {
-      try {
-        let response = await this.getExRates()
-        console.log(response)
-      } catch (error) {
-        console.log(error)
-      }
-    }
   },
-  created () {
-    this.getData()
-  } */
+  async created () {
+    // console.log(this.$store)
+    try {
+      let { data } = await this.$store.$graphQLApi.getNodes()
+      console.log(data)
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
 }
 </script>
 
