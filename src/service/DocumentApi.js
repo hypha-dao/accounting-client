@@ -6,6 +6,7 @@ import {
 class DocumentApi extends BaseEosApi {
   constructor ({
     eosApi,
+    dgraph,
     notifier
   }) {
     super(
@@ -18,6 +19,8 @@ class DocumentApi extends BaseEosApi {
         defaultSortField: 'key'
       }
     )
+    this.dgraph = dgraph
+    this.baseNodeHash = process.env.DGRAPH_BASE_NODE_HASH
   }
 
   /** *
@@ -34,6 +37,28 @@ class DocumentApi extends BaseEosApi {
       limit
     })
     return documents
+  }
+
+  async getTransactions () {
+    const query = `
+    {
+      chartOfAccounts(func: has(hash))
+      @filter(eq(hash, ${this.baseNodeHash}))
+      {
+        transaction {
+          uid
+          created_date
+          creator
+          content_groups {
+            contents {
+              expand(_all_)
+            }
+          }
+        }
+      }
+    }
+    `
+    return this.dgraph.newTxn().query(query)
   }
 
 /*   async createSetting ({ accountName, key, value }) {

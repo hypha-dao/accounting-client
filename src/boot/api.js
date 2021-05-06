@@ -5,8 +5,7 @@ import {
   CursorApi,
   DocumentApi,
   EdgeApi,
-  ExRateApi,
-  GraphQLApi
+  ExRateApi
 } from '~/service'
 
 const signTransaction = async function (actions) {
@@ -53,24 +52,7 @@ const getTableRows = async function (options) {
 export default ({ store }) => {
   const rpc = new JsonRpc(`${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}:${process.env.NETWORK_PORT}`)
   store['$defaultApi'] = new Api({ rpc, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() })
-
-  // const dgraph = store.$dgraph
-  // console.log('dgraph client', dgraph)
-
-  /* DGRAPH TEST */
-  // const query = `query all($a: string) {
-  //   all(func: eq(name, $a))
-  //   {
-  //     name
-  //   }
-  // }`;
-
-  // const vars = { $a: "Alice" };
-  // const res = await dgraphClient.newTxn().queryWithVars(query, vars);
-
-  // const ppl = res.data
-  // Print results.
-  // console.log(`results: ${ppl}`)
+  const dgraph = store.$dgraph
 
   const api = {
     signTransaction: signTransaction.bind(store),
@@ -78,26 +60,29 @@ export default ({ store }) => {
   }
 
   const concurrencyApi = new ConcurrencyApi({
-    eosApi: api
+    eosApi: api,
+    dgraph
   })
 
   const cursorApi = new CursorApi({
-    eosApi: api
+    eosApi: api,
+    dgraph
   })
 
   const documentApi = new DocumentApi({
-    eosApi: api
+    eosApi: api,
+    dgraph
   })
 
   const edgeApi = new EdgeApi({
-    eosApi: api
+    eosApi: api,
+    dgraph
   })
 
   const exRateApi = new ExRateApi({
-    eosApi: api
+    eosApi: api,
+    dgraph
   })
-
-  const graphQLApi = new GraphQLApi({ store })
 
   store['$api'] = api
   store['$concurrencyApi'] = concurrencyApi
@@ -105,5 +90,4 @@ export default ({ store }) => {
   store['$documentApi'] = documentApi
   store['$edgeApi'] = edgeApi
   store['$exRateApi'] = exRateApi
-  store['$graphQLApi'] = graphQLApi
 }

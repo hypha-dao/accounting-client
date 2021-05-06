@@ -6,6 +6,7 @@ import {
 class EdgeApi extends BaseEosApi {
   constructor ({
     eosApi,
+    dgraph,
     notifier
   }) {
     super(
@@ -18,6 +19,8 @@ class EdgeApi extends BaseEosApi {
         defaultSortField: 'key'
       }
     )
+    this.dgraph = dgraph
+    this.baseNodeHash = process.env.DGRAPH_BASE_NODE_HASH
   }
 
   /** *
@@ -34,6 +37,36 @@ class EdgeApi extends BaseEosApi {
       limit
     })
     return edges
+  }
+
+  /**
+   * @returns Array<Object> of ledgers that contains the accounts in each ledger
+   * and its sub accounts.
+   */
+  async getChartOfAccount () {
+    const query = `
+    {
+      chartOfAccounts(func: has(hash))
+      @filter(eq(hash, ${this.baseNodeHash}))
+      {
+        ledger {
+          uid
+          hash
+          created_date
+          creator
+          account {
+            uid
+            creator
+            account {
+              uid
+              creator
+            }
+          }
+        }
+      }
+    }
+    `
+    return this.dgraph.newTxn().query(query)
   }
 
 /*   async createSetting ({ accountName, key, value }) {

@@ -6,6 +6,7 @@ import {
 class ExRateApi extends BaseEosApi {
   constructor ({
     eosApi,
+    dgraph,
     notifier
   }) {
     super(
@@ -18,6 +19,7 @@ class ExRateApi extends BaseEosApi {
         defaultSortField: 'key'
       }
     )
+    this.dgraph = dgraph
   }
 
   /** *

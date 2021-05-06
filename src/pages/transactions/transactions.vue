@@ -26,15 +26,6 @@ export default {
     getSelectedTransaction (newValue) {
       this.selectedTransaction = newValue
     }
-  },
-  async created () {
-    // console.log(this.$store)
-    try {
-      let { data } = await this.$store.$graphQLApi.getNodes()
-      console.log(data)
-    } catch (error) {
-      console.log('error', error)
-    }
   }
 }
 </script>
