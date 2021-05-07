@@ -13,3 +13,16 @@ export const getDocuments = async function ({ commit }) {
     commit('general/setIsLoading', false, { root: true })
   }
 }
+
+export const getTransactions = async function ({ commit }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const transactions = await this.$documentApi.getTransactions()
+    return transactions
+  } catch (e) {
+    console.error('An error ocurred while trying to get transactions', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}

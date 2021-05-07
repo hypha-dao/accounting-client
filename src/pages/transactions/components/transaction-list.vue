@@ -6,12 +6,8 @@
       .row.justify-between.q-gutter-md.q-my-lg
         .col-5.rounded-field
           q-select(value="Opt 1" outlined :options="options" label='Filter by account')
-            //- template(v-slot:after)
-            //-   q-icon(name="close" style="background-color='blue'").cursor-pointer
         .col-5
           q-input(outlined :option='options' label='Search')
-            //- template(v-slot:after)
-            //- q-icon(name="close").cursor-pointer
       //- Data table
       q-table.q-mt-xl(
         :columns="columns"
@@ -23,7 +19,7 @@
           q-tr(:props="props" @click="selectTransaction(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row
             q-td(key="id" :props="props") {{ props.row.id }}
             q-td(key="date" :props="props") {{ props.row.date }}
-            q-td(key="amo" :props="props") {{ props.row.amo }}
+            q-td(key="amount" :props="props") {{ props.row.amount }}
             q-td(key="transaction" :props="props") {{ props.row.transaction }}
             q-td(key="approved" :props="props")
               q-icon.icon-sized(:color="(props.row.approved) ? 'positive' : 'negative'" :name="(props.row.approved) ? 'check_circle' : 'remove_circle'")
@@ -31,18 +27,20 @@
               span(v-show="props.row.balanced").letter-icon.bg-positive B
               span(v-show="!props.row.balanced").letter-icon.bg-negative U
       //- End of table
-      .q-mt-xl.flex.column
-        .row.self-center.q-my-md
-          q-btn.q-px-xl.btn-md(color="primary")
-            q-icon(class="icon-sized" name="note_add")
-            span New
-        .row.self-center.q-my-md
-          q-btn.q-px-xl.btn-md(color="primary" @click="data.splice(selectedIndex, 1)" )
-            q-icon(class="icon-sized" name="delete")
-            span Delete
+      //- .q-mt-xl.flex.column
+      //-   .row.self-center.q-my-md
+      //-     q-btn.q-px-xl.btn-md(color="primary")
+      //-       q-icon(class="icon-sized" name="note_add")
+      //-       span New
+      //-   .row.self-center.q-my-md
+      //-     q-btn.q-px-xl.btn-md(color="primary" @click="data.splice(selectedIndex, 1)" )
+      //-       q-icon(class="icon-sized" name="delete")
+      //-       span Delete
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   name: 'transaction-list',
   data () {
@@ -55,56 +53,7 @@ export default {
         'Opt 3',
         'Opt 4'
       ],
-      data: [
-        {
-          id: 0,
-          date: '2020 Mar. 5',
-          amo: '2 ET',
-          transaction: 'Push Campaing',
-          approved: false,
-          balanced: false
-        },
-        {
-          id: 1,
-          date: '2020 Mar. 5',
-          amo: '$35',
-          transaction: 'Push project 2',
-          approved: true,
-          balanced: true
-        },
-        {
-          id: 2,
-          date: '2020 Mar. 6',
-          amo: '$35',
-          transaction: 'Push 3',
-          approved: true,
-          balanced: true
-        },
-        {
-          id: 3,
-          date: '2020 Mar. 7',
-          amo: '$35',
-          transaction: 'Push 31',
-          approved: true,
-          balanced: true
-        },
-        {
-          id: 4,
-          date: '2020 Mar. 8',
-          amo: '$35',
-          transaction: 'Push 4',
-          approved: true,
-          balanced: true
-        },
-        {
-          id: 5,
-          date: '2020 Mar. 8',
-          amo: '$35',
-          transaction: 'Push 4',
-          approved: false,
-          balanced: false
-        }
-      ],
+      data: [],
       columns: [
         {
           name: 'id',
@@ -123,10 +72,10 @@ export default {
           headerClasses: 'bg-secondary text-white'
         },
         {
-          name: 'amo',
+          name: 'amount',
           align: 'center',
-          label: 'Amo',
-          field: 'amo',
+          label: 'Amount',
+          field: 'amount',
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         },
@@ -157,14 +106,25 @@ export default {
       ]
     }
   },
-  created () {
+  async created () {
+    await this.getTrans()
     this.selectTransaction(this.selectedIndex)
   },
   methods: {
+    ...mapActions('document', ['getTransactions']),
     selectTransaction (index) {
       console.log('updated')
       this.selectedIndex = index
       this.$emit('update', this.data[index])
+    },
+    async getTrans () {
+      try {
+        let trns = await this.getTransactions()
+        this.data = trns
+        console.log(trns)
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 }

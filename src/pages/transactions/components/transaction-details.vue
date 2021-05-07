@@ -6,7 +6,7 @@
       .details.q-mt-md.q-px-sm.q-gutter-sm
         .text-caption {{ $t('pages.accounts.account') }}: {{ transaction.transaction }}
         .text-caption {{ $t('pages.accounts.memo') }}: Memo!!
-        .row.justify-between
+        .row.justify-between.q-mb-md
             .text-caption {{ $t('pages.accounts.date') }}: {{ transaction.date }}
             .text-caption.text-right {{ $t('pages.accounts.approved') }}: Icon
               //- q-icon(class="icon-sized " :class="transaction.approved ? 'text-positive' : 'text-negative' "  :name="transaction.approved ? 'check_circle' :  'remove_circle'" )
@@ -15,7 +15,7 @@
         //-       span.letter-icon(v-if="!transaction.balanced" class="letter-icon bg-negative") U
       q-table.q-mt-sm(
         :columns="columns"
-        :data="data"
+        :data="transaction.components"
         )
         template(v-slot:body="props")
           q-tr(:props="props").styled-row
@@ -43,20 +43,7 @@ export default {
   },
   data () {
     return {
-      data: [
-        {
-          no: 1,
-          account: 'Expenses > Marketing',
-          amount: '2 ET',
-          percent: '50%'
-        },
-        {
-          no: 2,
-          account: 'Expenses > XYZ',
-          amount: '-3 ET',
-          percent: '52%'
-        }
-      ],
+      data: [],
       columns: [
         {
           name: 'no',
@@ -77,7 +64,7 @@ export default {
         {
           name: 'amount',
           align: 'center',
-          label: 'Account',
+          label: 'Amount',
           field: 'amount',
           sortable: true,
           headerClasses: 'bg-secondary text-white'
