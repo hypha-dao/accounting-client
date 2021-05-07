@@ -60,6 +60,10 @@ class EdgeApi extends BaseEosApi {
             account {
               uid
               creator
+              account {
+                uid
+                creator
+              }
             }
           }
         }
@@ -67,6 +71,32 @@ class EdgeApi extends BaseEosApi {
     }
     `
     return this.dgraph.newTxn().query(query)
+  }
+
+  async getAccountById (id) {
+    const query = `
+    query chartOfAccount($uid:string)
+    @filter(eq(hash, ${this.baseNodeHash}))
+    {
+      account(func: uid($uid)) {
+        uid
+        ownedby {
+          expand(_all_)
+        }
+        account {
+          uid
+          hash
+          account {
+            uid
+            hash
+          }
+        }
+      }
+    }
+    `
+    const vars = { $uid: id }
+
+    return this.dgraph.newTxn().queryWithVars(query, vars)
   }
 
 /*   async createSetting ({ accountName, key, value }) {
