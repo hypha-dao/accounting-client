@@ -5,9 +5,9 @@
         | Transactions
       .row.justify-between.q-gutter-md.q-my-lg
         .col-5.rounded-field
-          q-select(value="Opt 1" outlined :options="options" label='Filter by account')
+          q-select(v-model="filter" outlined :options="options" label='Filter by account')
         .col-5
-          q-input(outlined :option='options' label='Search')
+          q-input(outlined label='Search')
       //- Data table
       q-table.q-mt-xl(
         :columns="columns"
@@ -16,9 +16,8 @@
         :selected.sync="selected"
       )
         template(v-slot:body="props")
-          q-tr(:props="props" @click="selectTransaction(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row
-            q-td(key="id" :props="props") {{ props.row.id }}
-            q-td(key="date" :props="props") {{ props.row.date }}
+          q-tr(:props="props" @click="selectTransaction(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row.cursor-pointer
+            q-td(key="date" :props="props") {{ formattedDate(props.row.date) }}
             q-td(key="amount" :props="props") {{ props.row.amount }}
             q-td(key="transaction" :props="props") {{ props.row.transaction }}
             q-td(key="approved" :props="props")
@@ -46,23 +45,16 @@ export default {
   data () {
     return {
       selected: [],
+      filter: '',
       selectedIndex: 0,
       options: [
-        'Opt 1',
-        'Opt 2',
-        'Opt 3',
-        'Opt 4'
+        'All transactions',
+        'Balanced transactions',
+        'Unbalanced transactions',
+        'Approved transactions'
       ],
       data: [],
       columns: [
-        {
-          name: 'id',
-          align: 'center',
-          label: 'ID',
-          field: 'id',
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        },
         {
           name: 'date',
           align: 'center',
@@ -110,8 +102,11 @@ export default {
     await this.getTrans()
     this.selectTransaction(this.selectedIndex)
   },
+  computed: {
+
+  },
   methods: {
-    ...mapActions('document', ['getTransactions']),
+    ...mapActions('document', ['getTransactions', 'getUnbalancedTransactions']),
     selectTransaction (index) {
       console.log('updated')
       this.selectedIndex = index
@@ -121,10 +116,22 @@ export default {
       try {
         let trns = await this.getTransactions()
         this.data = trns
-        console.log(trns)
+        console.log(this.data[0].date)
+        let ate = new Date(this.data[0].date)
+        console.log(ate)
+
+        // console.log('rs:' + trns)
+        // let trx = await this.getUnbalancedTransactions()
+        // console.log('trxs:' + JSON.stringify(trx))
       } catch (error) {
         console.log(error)
       }
+    },
+    formattedDate (date) {
+      var options = { year: 'numeric', month: 'long', day: 'numeric' }
+      let newDate = new Date(date)
+
+      return newDate.toLocaleString('en-US', options)
     }
   }
 }

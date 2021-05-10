@@ -7,7 +7,7 @@
         .text-caption {{ $t('pages.accounts.account') }}: {{ transaction.transaction }}
         .text-caption {{ $t('pages.accounts.memo') }}: Memo!!
         .row.justify-between.q-mb-md
-            .text-caption {{ $t('pages.accounts.date') }}: {{ transaction.date }}
+            .text-caption {{ $t('pages.accounts.date') }}: {{ formattedDate(transaction.date) }}
             .text-caption.text-right {{ $t('pages.accounts.approved') }}: Icon
               //- q-icon(class="icon-sized " :class="transaction.approved ? 'text-positive' : 'text-negative' "  :name="transaction.approved ? 'check_circle' :  'remove_circle'" )
             .text-caption.text-right {{ $t('pages.accounts.balanced') }}: Icon
@@ -19,12 +19,11 @@
         )
         template(v-slot:body="props")
           q-tr(:props="props").styled-row
-            q-td(key="no" :props="props") {{ props.row.no }}
             q-td(key="account" :props="props") {{ props.row.account }}
             q-td(key="amount" :props="props") {{ props.row.amount }}
             q-td(key="percent" :props="props") {{ props.row.percent }}
         template(v-slot:bottom-row)
-          q-tr.bg-grey-4.text-grey-8(@click="data.push({no:22, account:'My account', amount:'30 TLOS', percent:'10%'})")
+          q-tr.bg-grey-4.text-grey-8.cursor-pointer(@click="data.push({account:'My account', amount:'30 TLOS', percent:'10%'})")
             q-td(colspan="4") Add component...
       hr.q-mt-xl.text-primary
       textarea(style="width:100%" placeholder=" Notes:").q-mt-md
@@ -45,14 +44,6 @@ export default {
     return {
       data: [],
       columns: [
-        {
-          name: 'no',
-          align: 'center',
-          label: 'No.',
-          field: 'no',
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        },
         {
           name: 'account',
           align: 'center',
@@ -78,6 +69,14 @@ export default {
           headerClasses: 'bg-secondary text-white'
         }
       ]
+    }
+  },
+  methods: {
+    formattedDate (date) {
+      var options = { year: 'numeric', month: 'long', day: 'numeric' }
+      let newDate = new Date(date)
+
+      return newDate.toLocaleString('en-US', options)
     }
   }
 }

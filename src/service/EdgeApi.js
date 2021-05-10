@@ -57,14 +57,6 @@ class EdgeApi extends BaseEosApi {
           account {
             uid
             creator
-            account {
-              uid
-              creator
-              account {
-                uid
-                creator
-              }
-            }
           }
         }
       }
@@ -75,7 +67,7 @@ class EdgeApi extends BaseEosApi {
 
   async getAccountById (id) {
     const query = `
-    query chartOfAccount($uid:string)
+    query account($uid:string)
     @filter(eq(hash, ${this.baseNodeHash}))
     {
       account(func: uid($uid)) {
