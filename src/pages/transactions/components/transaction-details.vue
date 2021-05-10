@@ -83,8 +83,10 @@ export default {
       return newDate.toLocaleString('en-US', options)
     },
     async getTransactionComponents () {
-      let response = await this.getTransactionById({ uid: this.transaction.uid })
-      this.data = response
+      if (this.transaction.uid) {
+        let response = await this.getTransactionById({ uid: this.transaction.uid })
+        this.data = response
+      }
     }
   },
   watch: {

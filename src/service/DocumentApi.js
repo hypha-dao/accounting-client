@@ -68,7 +68,8 @@ class DocumentApi extends BaseEosApi {
       account: com.content_groups[0].contents[4].value,
       amount: com.content_groups[0].contents[1].value,
       date: com.content_groups[0].contents[3].value,
-      memo: com.content_groups[0].contents[4].value
+      memo: com.content_groups[0].contents[4].value,
+      percent: '10%'
     }))
 
     return mappedComponents
@@ -141,7 +142,8 @@ class DocumentApi extends BaseEosApi {
     `
     let { data } = await this.dgraph.newTxn().query(query)
 
-    let mappedTransactions = data.unbalancedTxn[0].unrvwdbucket[0].unrvwdtrx.map(tnx => ({
+    let mappedTransactions = data.unbalancedTxn[0].unrvwdbucket[0].unrvwdtrx.map((tnx, i) => ({
+      id: i,
       uid: tnx.uid,
       hash: tnx.hash,
       usdValue: tnx.content_groups[0].contents[0].value,
