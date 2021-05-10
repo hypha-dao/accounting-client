@@ -51,6 +51,7 @@
 
 // CHANGE THIS LINE TO REFER FROM OTHER SOURCE
 import VueAdsTableTree from 'vue-ads-table-tree'
+// import VueAdsTableTree from '../../../vendor/vue-ads-table-tree-develop/src/index'
 // import VueAdsTableTree from '~/vue-ads-table-tree-developing/src'
 
 // import VueAdsPagination, { VueAdsPageButton } from 'vue-ads-pagination'
