@@ -67,7 +67,6 @@ class EdgeApi extends BaseEosApi {
 
   async getAccountById ({ uid }) {
     const query = `
-    query account($uid:string)
     @filter(eq(hash, ${this.baseNodeHash}))
     {
       account(func: uid($uid)) {
