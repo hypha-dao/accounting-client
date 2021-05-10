@@ -50,15 +50,15 @@ class DocumentApi extends BaseEosApi {
             orderasc:content_group_sequence,
             first:1)
             {
-              contents {
+              contents(orderasc:label)  {
                 label
                 value
                 type
               }
             }
           }
-          content_groups(first:1) {
-            contents {
+          content_groups(offset:1) {
+            contents(orderasc:label) {
               label
               value
               type
@@ -78,14 +78,14 @@ class DocumentApi extends BaseEosApi {
     let mappedTransactions = data.transactions.map((trans, i) => ({
       id: i,
       date: trans.transaction[0].content_groups[0].contents[1].value,
-      amount: '100 BTC', // It should be the sum of each component amount
-      transaction: trans.transaction[0].content_groups[0].contents[0].value,
+      amount: '1 BTC', // It should be the sum of each component amount
+      transaction: trans.transaction[0].content_groups[0].contents[3].value,
       approved: true,
       balanced: false,
       components: trans.transaction[0].component.map((com, i) => ({
         no: i,
-        account: com.content_groups[0].contents[com.content_groups[0].contents.findIndex(el => (el.label === 'memo'))].value,
-        amount: com.content_groups[0].contents[com.content_groups[0].contents.findIndex(el => (el.label === 'amount'))].value,
+        account: com.content_groups[0].contents[4].value,
+        amount: com.content_groups[0].contents[1].value,
         percent: '10%'
       }))
     }))
@@ -94,6 +94,48 @@ class DocumentApi extends BaseEosApi {
     // return data
   }
 
+  async getUnbalancedTransactions () {
+    const query = `
+    {
+      unbalancedTxn(func: has(hash))
+      @filter(eq(hash, ${this.baseNodeHash}))
+      {
+        uid
+        hash
+        unrvwdbucket {
+          uid
+          hash
+          unrvwdtrx {
+            uid
+            hash
+            content_groups {
+              contents(orderdesc:label) {
+                label
+                value
+              }
+            }
+          }
+        }
+      }
+    }
+    `
+    let { data } = await this.dgraph.newTxn().query(query)
+
+    let mappedTransactions = data.unbalancedTxn[0].unrvwdbucket[0].unrvwdtrx.map(tnx => ({
+      uid: tnx.uid,
+      hash: tnx.hash,
+      usdValue: tnx.content_groups[0].contents[0].value,
+      to: tnx.content_groups[0].contents[3].value,
+      timestamp: tnx.content_groups[0].contents[4].value,
+      source: tnx.content_groups[0].contents[5].value,
+      quantity: tnx.content_groups[0].contents[6].value,
+      memo: tnx.content_groups[0].contents[7].value,
+      from: tnx.content_groups[0].contents[8].value,
+      currency: tnx.content_groups[0].contents[10].value
+    }))
+
+    return mappedTransactions
+  }
 /*   async createSetting ({ accountName, key, value }) {
     const actions = [{
       account: Contracts.BENNYFI,

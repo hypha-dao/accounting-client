@@ -26,3 +26,15 @@ export const getTransactions = async function ({ commit }) {
     commit('general/setIsLoading', false, { root: true })
   }
 }
+export const getUnbalancedTransactions = async function ({ commit }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const transactions = await this.$documentApi.getUnbalancedTransactions()
+    return transactions
+  } catch (e) {
+    console.error('An error ocurred while trying to get unbalanced transactions', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
