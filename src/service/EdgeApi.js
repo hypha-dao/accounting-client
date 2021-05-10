@@ -65,7 +65,7 @@ class EdgeApi extends BaseEosApi {
     return this.dgraph.newTxn().query(query)
   }
 
-  async getAccountById (id) {
+  async getAccountById ({ uid }) {
     const query = `
     query account($uid:string)
     @filter(eq(hash, ${this.baseNodeHash}))
@@ -86,7 +86,7 @@ class EdgeApi extends BaseEosApi {
       }
     }
     `
-    const vars = { $uid: id }
+    const vars = { $uid: uid }
 
     return this.dgraph.newTxn().queryWithVars(query, vars)
   }
