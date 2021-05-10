@@ -39,24 +39,49 @@ class DocumentApi extends BaseEosApi {
     return documents
   }
 
+  async getTransactionById ({ uid }) {
+    const query = `
+    query transactions($uid:string)
+    {
+      transaction(func: uid($uid)) {
+        component {
+          content_groups(
+          orderasc:content_group_sequence,
+          first:1)
+          {
+            contents(orderasc:label)  {
+              label
+              value
+              type
+            }
+          }
+        }
+      }
+    }
+    `
+
+    const vars = { $uid: uid }
+
+    let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
+
+    let mappedComponents = data.transaction[0].component.map(com => ({
+      account: com.content_groups[0].contents[4].value,
+      amount: com.content_groups[0].contents[1].value,
+      date: com.content_groups[0].contents[3].value,
+      memo: com.content_groups[0].contents[4].value
+    }))
+
+    return mappedComponents
+    // return data
+  }
+
   async getTransactions () {
     const query = `
     {
       transactions(func: has(hash))
       {
         transaction {
-          component {
-            content_groups(
-            orderasc:content_group_sequence,
-            first:1)
-            {
-              contents(orderasc:label)  {
-                label
-                value
-                type
-              }
-            }
-          }
+          uid
           content_groups(offset:1) {
             contents(orderasc:label) {
               label
@@ -77,17 +102,12 @@ class DocumentApi extends BaseEosApi {
      */
     let mappedTransactions = data.transactions.map((trans, i) => ({
       id: i,
+      uid: trans.transaction[0].uid,
       date: trans.transaction[0].content_groups[0].contents[1].value,
       amount: '1 BTC', // It should be the sum of each component amount
       transaction: trans.transaction[0].content_groups[0].contents[3].value,
       approved: true,
-      balanced: false,
-      components: trans.transaction[0].component.map((com, i) => ({
-        no: i,
-        account: com.content_groups[0].contents[4].value,
-        amount: com.content_groups[0].contents[1].value,
-        percent: '10%'
-      }))
+      balanced: false
     }))
 
     return mappedTransactions

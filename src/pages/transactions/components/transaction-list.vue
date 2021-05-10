@@ -108,7 +108,6 @@ export default {
   methods: {
     ...mapActions('document', ['getTransactions', 'getUnbalancedTransactions']),
     selectTransaction (index) {
-      console.log('updated')
       this.selectedIndex = index
       this.$emit('update', this.data[index])
     },
@@ -116,13 +115,6 @@ export default {
       try {
         let trns = await this.getTransactions()
         this.data = trns
-        console.log(this.data[0].date)
-        let ate = new Date(this.data[0].date)
-        console.log(ate)
-
-        // console.log('rs:' + trns)
-        // let trx = await this.getUnbalancedTransactions()
-        // console.log('trxs:' + JSON.stringify(trx))
       } catch (error) {
         console.log(error)
       }
@@ -130,7 +122,6 @@ export default {
     formattedDate (date) {
       var options = { year: 'numeric', month: 'long', day: 'numeric' }
       let newDate = new Date(date)
-
       return newDate.toLocaleString('en-US', options)
     }
   }

@@ -15,7 +15,7 @@
         //-       span.letter-icon(v-if="!transaction.balanced" class="letter-icon bg-negative") U
       q-table.q-mt-sm(
         :columns="columns"
-        :data="transaction.components"
+        :data="data"
         )
         template(v-slot:body="props")
           q-tr(:props="props").styled-row
@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   name: 'transaction-list',
   props: {
@@ -72,11 +74,22 @@ export default {
     }
   },
   methods: {
+    // ...mapActions('edge', ['getChartOfAccounts']),
+    ...mapActions('document', ['getTransactionById']),
     formattedDate (date) {
       var options = { year: 'numeric', month: 'long', day: 'numeric' }
       let newDate = new Date(date)
 
       return newDate.toLocaleString('en-US', options)
+    },
+    async getTransactionComponents () {
+      let response = await this.getTransactionById({ uid: this.transaction.uid })
+      this.data = response
+    }
+  },
+  watch: {
+    transaction: function () { // watch it
+      this.getTransactionComponents()
     }
   }
 }
