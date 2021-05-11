@@ -4,7 +4,7 @@ q-card.full-width
     .text-h6 Create transaction
     q-space
     q-btn(icon="close", flat, round, v-close-popup)
-  q-form.q-px-lg.q-py-md
+  q-form.q-px-lg.q-py-md(@submit.prevent="createTransaction()")
     q-input.q-my-md(
       outlined,
       :rules="[rules.required]",
@@ -24,7 +24,7 @@ q-card.full-width
       :rules="[rules.required]",
       v-model="transaction.amount",
       label="Amount",
-      type="number"
+      type="text"
     )
     q-input.q-my-md(
       outlined,
@@ -43,7 +43,7 @@ q-card.full-width
     //- q-input(outlined :rules="[rules.required]" v-model="memo" label="Treasury" type="text").q-my-md
     .row.q-gutter-md
       q-btn.col(
-        :label="$t('Cancel')",
+        :label="'Cancel'",
         text-color="negative",
         color="white",
         type="submit",
@@ -52,7 +52,7 @@ q-card.full-width
         v-close-popup
       )
       q-btn.col(
-        :label="$t('Create')",
+        :label="'Create'",
         text-color="white",
         color="primary",
         type="submit",
@@ -62,6 +62,7 @@ q-card.full-width
 
 <script>
 import { validation } from '~/mixins/validation'
+// import { mapActions } from 'vuex'
 
 export default {
   name: 'create-transaction',
@@ -74,8 +75,22 @@ export default {
         currency: '',
         from: '',
         to: ''
-      },
-      completeTransaction: [
+      }
+    }
+  },
+  methods: {
+    // ...mapActions('document', ['sendTransaction']),
+    createTransaction () {
+      let dateNow = new Date()
+      dateNow = dateNow.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
+      })
+
+      let fullTransact = [
         [
           {
             label: 'content_group_label',
@@ -107,7 +122,7 @@ export default {
           },
           {
             label: 'timestamp',
-            value: ['string', Date.now()]
+            value: ['string', dateNow]
           },
           {
             label: 'usd_value',
@@ -134,6 +149,9 @@ export default {
           }
         ]
       ]
+
+      console.log('fulltransaction', fullTransact)
+      // this.sendTransaction({ contentGroups: fullTransact })
     }
   }
 }

@@ -24,9 +24,9 @@
             q-td(key="transaction" :props="props") {{ props.row.transaction }}
             q-td(key="approved" :props="props")
               q-icon.icon-sized(:color="(props.row.approved) ? 'positive' : 'negative'" :name="(props.row.approved) ? 'check_circle' : 'remove_circle'")
-            q-td(key="balanced" :props="props")
-              span(v-show="props.row.balanced").letter-icon.bg-positive B
-              span(v-show="!props.row.balanced").letter-icon.bg-negative U
+            q-td(key="balanced" :props="props").flex.justify-center
+              span(v-show="props.row.balanced").letter-icon.bg-positive.self-center B
+              span(v-show="!props.row.balanced").letter-icon.bg-negative.self-center U
       //- End of table
       //- Data table
       q-table.q-mt-xl(
