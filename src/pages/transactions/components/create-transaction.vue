@@ -5,35 +5,43 @@ q-card.full-width
     q-space
     q-btn(icon="close", flat, round, v-close-popup)
   q-form.q-px-lg.q-py-md(@submit.prevent="createTransaction()")
-    q-input.q-my-md(
+    q-select.q-my-lg(
+      @input="getAvailableSources()"
+      v-model="transaction.currency"
+      :options="currencyTypes"
+      label="Currency"
+      outlined
+      :rules="[rules.required]",
+    )
+    q-select.q-my-lg(
+      v-model="transaction.source"
+      :options="availableSources"
+      label="Source"
+      outlined
+      :rules="[rules.required]",
+    )
+    q-input.q-my-sm(
       outlined,
       :rules="[rules.required]",
       v-model="transaction.memo",
       label="Memo",
       type="text"
     )
-    q-input.q-my-md(
+    q-input.q-my-sm(
       outlined,
       :rules="[rules.required]",
-      v-model="transaction.currency",
-      label="Currency",
+      v-model="transaction.quantity",
+      label="Quantity",
       type="text"
     )
-    q-input.q-my-md(
-      outlined,
-      :rules="[rules.required]",
-      v-model="transaction.amount",
-      label="Amount",
-      type="text"
-    )
-    q-input.q-my-md(
+    q-input.q-my-sm(
       outlined,
       :rules="[rules.required]",
       v-model="transaction.from",
       label="From",
       type="text"
     )
-    q-input.q-my-md(
+    q-input.q-my-sm(
       outlined,
       :rules="[rules.required]",
       v-model="transaction.to",
@@ -62,7 +70,9 @@ q-card.full-width
 
 <script>
 import { validation } from '~/mixins/validation'
-// import { mapActions } from 'vuex'
+import { mapActions } from 'vuex'
+import { Chains } from '~/const/chains'
+import { Sources } from '~/const/sources'
 
 export default {
   name: 'create-transaction',
@@ -70,17 +80,28 @@ export default {
   data () {
     return {
       transaction: {
-        memo: '',
-        amount: '',
-        currency: '',
-        from: '',
-        to: ''
-      }
+        memo: 'New transaction',
+        quantity: '0.5',
+        currency: 'BTC',
+        from: 'Bitcoin',
+        to: 'Etherum',
+        source: ''
+      },
+      currencyTypes: [
+        'EOS',
+        'ETHERUM',
+        'TELOS',
+        'BTC'
+      ],
+      availableSources: []
     }
   },
+  created () {
+    this.getAvailableSources()
+  },
   methods: {
-    // ...mapActions('document', ['sendTransaction']),
-    createTransaction () {
+    ...mapActions('document', ['sendTransaction']),
+    async createTransaction () {
       let dateNow = new Date()
       dateNow = dateNow.toLocaleDateString('en-US', {
         year: 'numeric',
@@ -98,7 +119,7 @@ export default {
           },
           {
             label: 'transaction_id',
-            value: ['string', '2']
+            value: ['string', '']
           },
           {
             label: 'from',
@@ -106,7 +127,7 @@ export default {
           },
           {
             label: 'treasury_id',
-            value: ['string', 'btc-treasury-1']
+            value: ['string', this.transaction.source]
           },
           {
             label: 'to',
@@ -134,26 +155,38 @@ export default {
           },
           {
             label: 'chainId',
-            value: ['string', 'bip122:000000000019d6689c085ae165831e93']
+            value: ['string', Chains[this.transaction.currency]]
           },
           {
             label: 'source',
-            value: ['string', 'btc-treasury-2']
+            value: ['string', this.transaction.source]
           },
           {
             label: 'cursor',
             value: [
               'string',
-              '87a835a0d11c91ab6abdd75bf7df1e67deada952b448193e1d4ad76c6e585bbb;9'
+              ''
             ]
           }
         ]
       ]
-
-      console.log('fulltransaction', fullTransact)
-      // this.sendTransaction({ contentGroups: fullTransact })
+      try {
+        await this.sendTransaction({ contentGroups: fullTransact })
+        this.$emit('created')
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    getAvailableSources () {
+      this.transaction.source = ''
+      this.availableSources = Sources[this.transaction.currency]
     }
   }
+  // computed: {
+  //   availableSources: function () {
+  //     return Sources[this.transaction.currency]
+  //   }
+  // }
 }
 </script>
 

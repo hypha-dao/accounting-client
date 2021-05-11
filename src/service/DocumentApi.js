@@ -1,7 +1,7 @@
 import BaseEosApi from './BaseEosApi'
 import {
   Contracts
-} from '~/const/Contracts'
+} from '~/const/contracts'
 
 class DocumentApi extends BaseEosApi {
   constructor ({
@@ -40,9 +40,10 @@ class DocumentApi extends BaseEosApi {
   }
 
   async sendTransaction ({ accountName, contentGroups }) {
+    console.log('api', accountName, contentGroups)
     const actions = [{
       account: Contracts.HYPHA,
-      name: 'transact',
+      name: 'newunrvwdtrx',
       data: {
         issuer: accountName,
         trx_info: contentGroups
@@ -170,30 +171,6 @@ class DocumentApi extends BaseEosApi {
 
     return mappedTransactions
   }
-/*   async createSetting ({ accountName, key, value }) {
-    const actions = [{
-      account: Contracts.BENNYFI,
-      name: 'setsetting',
-      data: {
-        setter: accountName,
-        key: key,
-        value: value
-      }
-    }]
-    return this.eosApi.signTransaction(actions)
-  }
-
-  async eraseSetting ({ accountName, key }) {
-    const actions = [{
-      account: Contracts.BENNYFI,
-      name: 'eraseSetting',
-      data: {
-        setter: accountName,
-        key: key
-      }
-    }]
-    return this.eosApi.signTransaction(actions)
-  } */
 }
 
 export default DocumentApi

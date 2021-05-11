@@ -40,27 +40,34 @@
             q-td(key="memo" :props="props") {{ props.row.memo }}
             q-td(key="from" :props="props") {{ props.row.from }}
             q-td(key="to" :props="props") {{ props.row.to }}
-            q-td(key="amount" :props="props") {{ props.row.amount }}
+            q-td(key="quantity" :props="props") {{ props.row.quantity }}
             q-td(key="currency" :props="props") {{ props.row.currency }}
       //- End of table
       .q-mt-xl.flex.column
         .row.self-center.q-my-md
-          q-btn.q-px-xl.btn-md(color="primary" @click="createTxn()")
+          q-btn.q-px-xl.btn-md(color="primary" @click="create = !create")
             q-icon(class="icon-sized" name="note_add")
             span New
         .row.self-center.q-my-md
           q-btn.q-px-xl.btn-md(color="primary" @click="balancedTransactions.splice(selectedIndex, 1)" )
             q-icon(class="icon-sized" name="delete")
             span Delete
+      q-dialog(v-model="create")
+        CreateTransaction(@created="pushCreatedTransaction")
 </template>
 
 <script>
 import { mapActions } from 'vuex'
+import CreateTransaction from './create-transaction'
 
 export default {
   name: 'transaction-list',
+  components: {
+    CreateTransaction
+  },
   data () {
     return {
+      create: false,
       selected: [],
       filter: 'Balanced transactions',
       selectedIndex: 0,
@@ -69,6 +76,7 @@ export default {
         'Unbalanced transactions'
       ],
       balancedTransactions: [{
+        id: 0,
         date: '2022/04/16',
         amount: '200.0',
         transaction: 'New trans',
@@ -76,11 +84,13 @@ export default {
         balanced: true
       }],
       unbalancedTransactions: [{
-        from: 'our-account',
-        to: 'foreing-account',
-        amount: '0.02',
-        currency: 'BTC',
-        memo: 'Getting BTC'
+        id: 0,
+        memo: 'txn',
+        date: '16/03/2021',
+        from: 'jasdasd',
+        to: 'asdasd',
+        quantity: '20.0',
+        currency: 'BTC'
       }],
       columnsBalanced: [
         {
@@ -150,10 +160,10 @@ export default {
           headerClasses: 'bg-secondary text-white'
         },
         {
-          name: 'amount',
+          name: 'quantity',
           align: 'center',
-          label: 'Amount',
-          field: 'amount',
+          label: 'Quantity',
+          field: 'quantity',
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         },
@@ -170,30 +180,28 @@ export default {
   },
   async created () {
     // await this.getBalancedTxns()
-    // await this.getUnbalancedTxns()
+    await this.getUnbalancedTxns()
     this.selectTransaction(this.selectedIndex)
   },
   methods: {
     ...mapActions('document', ['getTransactions', 'getUnbalancedTransactions']),
     selectTransaction (index) {
-      console.log('updated')
+      console.log('updated', index)
       this.selectedIndex = index
       this.$emit('update', this.balancedTransactions[index])
     },
     async getBalancedTxns () {
       try {
-        let trns = await this.getTransactions()
-        console.log('trns', trns)
-        this.balancedTransactions = trns
+        let txns = await this.getTransactions()
+        this.balancedTransactions = txns
       } catch (error) {
         console.log(error)
       }
     },
     async getUnbalancedTxns () {
       try {
-        let trns = await this.getUnbalancedTransactions()
-        console.log('untrns', trns)
-        this.unbalancedTransactions = trns
+        let unTxns = await this.getUnbalancedTransactions()
+        this.unbalancedTransactions = unTxns
       } catch (error) {
         console.log(error)
       }
@@ -204,8 +212,8 @@ export default {
 
       return newDate.toLocaleString('en-US', options)
     },
-    createTxn () {
-      this.$emit('create')
+    pushCreatedTransaction () {
+      this.getUnbalancedTxns()
     }
   }
 }

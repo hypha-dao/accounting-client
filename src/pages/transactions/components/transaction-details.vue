@@ -23,7 +23,7 @@
             q-td(key="amount" :props="props") {{ props.row.amount }}
             q-td(key="percent" :props="props") {{ props.row.percent }}
         template(v-slot:bottom-row)
-          q-tr.bg-grey-4.text-grey-8.cursor-pointer(@click="data.push({account:'My account', amount:'30 TLOS', percent:'10%'})")
+          q-tr.bg-grey-4.text-grey-8.cursor-pointer(@click="newComponent = !newComponent")
             q-td(colspan="4") Add component...
       hr.q-mt-xl.text-primary
       textarea(style="width:100%" placeholder=" Notes:").q-mt-md
@@ -32,18 +32,26 @@
           q-btn.bg-primary.text-white.q-px-xl.btn-lg
             q-icon(class="icon-sized" name="note_add")
             span Aprove transaction
+      q-dialog(v-model="newComponent")
+        AddComponent(@add="pushComponent")
+
 </template>
 
 <script>
 import { mapActions } from 'vuex'
+import AddComponent from './add-component'
 
 export default {
   name: 'transaction-list',
   props: {
     transaction: Object
   },
+  components: {
+    AddComponent
+  },
   data () {
     return {
+      newComponent: false,
       data: [],
       columns: [
         {
@@ -87,10 +95,15 @@ export default {
         let response = await this.getTransactionById({ uid: this.transaction.uid })
         this.data = response
       }
+    },
+    pushComponent (component) {
+      this.newComponent = false
+      component.amount = `${component.amount} ${component.currency}`
+      this.data.push(component)
     }
   },
   watch: {
-    transaction: function () { // watch it
+    transaction: function () {
       this.getTransactionComponents()
     }
   }

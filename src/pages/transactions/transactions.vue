@@ -5,8 +5,6 @@
         TransactionsList(@update="getSelectedTransaction" @create="create = !create")
       .col
         TransactionsDetails(:transaction="selectedTransaction")
-      q-dialog(v-model="create")
-        CreateTransaction
     //- q-btn(color="primary" text-color="white" label="Create transaction" @click="create = !create")
 </template>
 
@@ -24,13 +22,13 @@ export default {
   },
   data () {
     return {
-      selectedTransaction: {},
-      create: false
+      selectedTransaction: {}
     }
   },
   methods: {
-    getSelectedTransaction (newValue) {
-      this.selectedTransaction = newValue
+    getSelectedTransaction (selectedTxn) {
+      console.log('selectedTxn', selectedTxn)
+      this.selectedTransaction = selectedTxn
     }
   }
 }

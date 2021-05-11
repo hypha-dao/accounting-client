@@ -22,6 +22,7 @@ class BaseEosApi {
   }
 
   async getAccount () {
+    console.log('account', this.eosApi)
     return this.eosApi.getAccount()
   }
 
@@ -30,7 +31,6 @@ class BaseEosApi {
    * @param {Array} actions
    */
   async transactFull (actions) {
-    console.log(actions)
     actions = await this._formatActions(actions)
     try {
       const transaction = await this.eosApi.signTransaction(actions)
@@ -54,6 +54,7 @@ class BaseEosApi {
   }
 
   async transact ({ name, data }) {
+    console.log('base', name, data)
     return this.transactFull([{ name, data }])
   }
 
