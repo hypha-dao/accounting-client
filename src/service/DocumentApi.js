@@ -155,18 +155,19 @@ class DocumentApi extends BaseEosApi {
     `
     let { data } = await this.dgraph.newTxn().query(query)
 
+    console.log(data)
+
     let mappedTransactions = data.unbalancedTxn[0].unrvwdbucket[0].unrvwdtrx.map((tnx, i) => ({
       id: i,
       uid: tnx.uid,
       hash: tnx.hash,
       usdValue: tnx.content_groups[0].contents[0].value,
       to: tnx.content_groups[0].contents[3].value,
-      timestamp: tnx.content_groups[0].contents[4].value,
+      date: tnx.content_groups[0].contents[4].value,
       source: tnx.content_groups[0].contents[5].value,
-      quantity: tnx.content_groups[0].contents[6].value,
+      amount: tnx.content_groups[0].contents[6].value + ' ' + tnx.content_groups[0].contents[10].value,
       memo: tnx.content_groups[0].contents[7].value,
-      from: tnx.content_groups[0].contents[8].value,
-      currency: tnx.content_groups[0].contents[10].value
+      from: tnx.content_groups[0].contents[8].value
     }))
 
     return mappedTransactions

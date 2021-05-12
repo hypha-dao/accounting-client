@@ -27,7 +27,6 @@ export default {
   },
   methods: {
     getSelectedTransaction (selectedTxn) {
-      console.log('selectedTxn', selectedTxn)
       this.selectedTransaction = selectedTxn
     }
   }

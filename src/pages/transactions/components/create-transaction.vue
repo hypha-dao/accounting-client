@@ -48,7 +48,6 @@ q-card.full-width
       label="To",
       type="text"
     )
-    //- q-input(outlined :rules="[rules.required]" v-model="memo" label="Treasury" type="text").q-my-md
     .row.q-gutter-md
       q-btn.col(
         :label="'Cancel'",
@@ -182,13 +181,5 @@ export default {
       this.availableSources = Sources[this.transaction.currency]
     }
   }
-  // computed: {
-  //   availableSources: function () {
-  //     return Sources[this.transaction.currency]
-  //   }
-  // }
 }
 </script>
-
-<style>
-</style>

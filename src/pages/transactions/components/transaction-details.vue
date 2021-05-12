@@ -4,8 +4,8 @@
       .text-h6
         | Details
       .details.q-mt-md.q-px-sm.q-gutter-sm
-        .text-caption {{ $t('pages.accounts.account') }}: {{ transaction.transaction }}
-        .text-caption {{ $t('pages.accounts.memo') }}: Memo!!
+        .text-caption {{ $t('pages.accounts.account') }}: Transaction account
+        .text-caption {{ $t('pages.accounts.memo') }}: {{ transaction.memo }}
         .row.justify-between.q-mb-md
             .text-caption {{ $t('pages.accounts.date') }}: {{ formattedDate(transaction.date) }}
             .text-caption.text-right {{ $t('pages.accounts.approved') }}: Icon
@@ -15,13 +15,13 @@
         //-       span.letter-icon(v-if="!transaction.balanced" class="letter-icon bg-negative") U
       q-table.q-mt-sm(
         :columns="columns"
-        :data="data"
+        :data="txnComponents"
         )
         template(v-slot:body="props")
           q-tr(:props="props").styled-row
-            q-td(key="account" :props="props") {{ props.row.account }}
+            q-td(key="account" :props="props") {{ props.row.account || 'Account def' }}
             q-td(key="amount" :props="props") {{ props.row.amount }}
-            q-td(key="percent" :props="props") {{ props.row.percent }}
+            q-td(key="percent" :props="props") {{ componentPercentage }}
         template(v-slot:bottom-row)
           q-tr.bg-grey-4.text-grey-8.cursor-pointer(@click="newComponent = !newComponent")
             q-td(colspan="4") Add component...
@@ -52,7 +52,7 @@ export default {
   data () {
     return {
       newComponent: false,
-      data: [],
+      txnComponents: [],
       columns: [
         {
           name: 'account',
@@ -82,7 +82,6 @@ export default {
     }
   },
   methods: {
-    // ...mapActions('edge', ['getChartOfAccounts']),
     ...mapActions('document', ['getTransactionById']),
     formattedDate (date) {
       var options = { year: 'numeric', month: 'long', day: 'numeric' }
@@ -91,20 +90,26 @@ export default {
       return newDate.toLocaleString('en-US', options)
     },
     async getTransactionComponents () {
-      if (this.transaction.uid) {
+      if (this.transaction.balanced) {
         let response = await this.getTransactionById({ uid: this.transaction.uid })
-        this.data = response
+        this.txnComponents = response
       }
     },
     pushComponent (component) {
       this.newComponent = false
       component.amount = `${component.amount} ${component.currency}`
-      this.data.push(component)
+      this.txnComponents.push(component)
     }
   },
   watch: {
     transaction: function () {
-      this.getTransactionComponents()
+      this.txnComponents = []
+      // this.getTransactionComponents()
+    }
+  },
+  computed: {
+    componentPercentage: function () {
+      return (this.txnComponents.length > 0) ? (100 / (this.txnComponents.length)) + '%' : '0%'
     }
   }
 }

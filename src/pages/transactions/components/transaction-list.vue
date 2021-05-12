@@ -18,7 +18,7 @@
         v-if="filter === 'Balanced transactions'"
       )
         template(v-slot:body="props")
-          q-tr(:props="props" @click="selectTransaction(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row.cursor-pointer
+          q-tr(:props="props" @click="selectBalancedTxn(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row.cursor-pointer
             q-td(key="date" :props="props") {{ formattedDate(props.row.date) }}
             q-td(key="amount" :props="props") {{ props.row.amount }}
             q-td(key="transaction" :props="props") {{ props.row.transaction }}
@@ -36,12 +36,13 @@
         v-if="filter === 'Unbalanced transactions'"
       )
         template(v-slot:body="props")
-          q-tr(:props="props" @click="selectTransaction(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row.cursor-pointer
+          q-tr(:props="props" @click="selectUnbalancedTxn(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row.cursor-pointer
+            q-td(key="date" :props="props") {{ formattedDate(props.row.date) }}
             q-td(key="memo" :props="props") {{ props.row.memo }}
             q-td(key="from" :props="props") {{ props.row.from }}
             q-td(key="to" :props="props") {{ props.row.to }}
-            q-td(key="quantity" :props="props") {{ props.row.quantity }}
-            q-td(key="currency" :props="props") {{ props.row.currency }}
+            q-td(key="amount" :props="props") {{ props.row.amount }}
+            //- q-td(key="currency" :props="props") {{ props.row.currency }}
       //- End of table
       .q-mt-xl.flex.column
         .row.self-center.q-my-md
@@ -53,7 +54,7 @@
             q-icon(class="icon-sized" name="delete")
             span Delete
       q-dialog(v-model="create")
-        CreateTransaction(@created="pushCreatedTransaction")
+        CreateTransaction(@created="getUnbalancedTransactions()")
 </template>
 
 <script>
@@ -83,15 +84,7 @@ export default {
         approved: true,
         balanced: true
       }],
-      unbalancedTransactions: [{
-        id: 0,
-        memo: 'txn',
-        date: '16/03/2021',
-        from: 'jasdasd',
-        to: 'asdasd',
-        quantity: '20.0',
-        currency: 'BTC'
-      }],
+      unbalancedTransactions: [],
       columnsBalanced: [
         {
           name: 'date',
@@ -136,6 +129,14 @@ export default {
       ],
       columnsUnbalanced: [
         {
+          name: 'date',
+          align: 'center',
+          label: 'Date',
+          field: 'date',
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        },
+        {
           name: 'memo',
           align: 'center',
           label: 'Memo',
@@ -160,18 +161,10 @@ export default {
           headerClasses: 'bg-secondary text-white'
         },
         {
-          name: 'quantity',
+          name: 'amount',
           align: 'center',
-          label: 'Quantity',
-          field: 'quantity',
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        },
-        {
-          name: 'currency',
-          align: 'center',
-          label: 'Currency',
-          field: 'currency',
+          label: 'Amount',
+          field: 'amount',
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         }
@@ -181,14 +174,21 @@ export default {
   async created () {
     // await this.getBalancedTxns()
     await this.getUnbalancedTxns()
-    this.selectTransaction(this.selectedIndex)
+    // this.selectBalancedTxn(this.selectedIndex)
   },
   methods: {
     ...mapActions('document', ['getTransactions', 'getUnbalancedTransactions']),
-    selectTransaction (index) {
-      console.log('updated', index)
+    selectBalancedTxn (index) {
+      if (this.balancedTransactions.length > 0) {
+        this.selectedIndex = index
+        this.$emit('update', this.balancedTransactions[index])
+      }
+    },
+    selectUnbalancedTxn (index) {
       this.selectedIndex = index
-      this.$emit('update', this.balancedTransactions[index])
+      let selectedTxn = this.unbalancedTransactions[index]
+      selectedTxn.balanced = false
+      this.$emit('update', selectedTxn)
     },
     async getBalancedTxns () {
       try {
@@ -211,9 +211,6 @@ export default {
       let newDate = new Date(date)
 
       return newDate.toLocaleString('en-US', options)
-    },
-    pushCreatedTransaction () {
-      this.getUnbalancedTxns()
     }
   }
 }
