@@ -21,7 +21,7 @@
           q-tr(:props="props" @click="selectBalancedTxn(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row.cursor-pointer
             q-td(key="date" :props="props") {{ formattedDate(props.row.date) }}
             q-td(key="amount" :props="props") {{ props.row.amount }}
-            q-td(key="transaction" :props="props") {{ props.row.transaction }}
+            q-td(key="memo" :props="props") {{ props.row.memo }}
             q-td(key="approved" :props="props")
               q-icon.icon-sized(:color="(props.row.approved) ? 'positive' : 'negative'" :name="(props.row.approved) ? 'check_circle' : 'remove_circle'")
             q-td(key="balanced" :props="props").flex.justify-center
@@ -79,8 +79,8 @@ export default {
       balancedTransactions: [{
         id: 0,
         date: '2022/04/16',
-        amount: '200.0',
-        transaction: 'New trans',
+        amount: '200.0 BTC',
+        memo: 'New trans',
         approved: true,
         balanced: true
       }],
@@ -103,10 +103,10 @@ export default {
           headerClasses: 'bg-secondary text-white'
         },
         {
-          name: 'transaction',
+          name: 'memo',
           align: 'center',
-          label: 'Transaction',
-          field: 'transaction',
+          label: 'Memo',
+          field: 'memo',
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         },

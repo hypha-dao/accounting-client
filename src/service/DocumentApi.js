@@ -119,7 +119,7 @@ class DocumentApi extends BaseEosApi {
       uid: trans.transaction[0].uid,
       date: trans.transaction[0].content_groups[0].contents[1].value,
       amount: '1 BTC', // It should be the sum of each component amount
-      transaction: trans.transaction[0].content_groups[0].contents[3].value,
+      memo: trans.transaction[0].content_groups[0].contents[3].value,
       approved: true,
       balanced: false
     }))

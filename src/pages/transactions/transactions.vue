@@ -5,7 +5,6 @@
         TransactionsList(@update="getSelectedTransaction" @create="create = !create")
       .col
         TransactionsDetails(:transaction="selectedTransaction")
-    //- q-btn(color="primary" text-color="white" label="Create transaction" @click="create = !create")
 </template>
 
 <script>

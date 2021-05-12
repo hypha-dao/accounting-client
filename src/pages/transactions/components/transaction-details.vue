@@ -4,8 +4,8 @@
       .text-h6
         | Details
       .details.q-mt-md.q-px-sm.q-gutter-sm
-        .text-caption {{ $t('pages.accounts.account') }}: Transaction account
-        .text-caption {{ $t('pages.accounts.memo') }}: {{ transaction.memo }}
+        .text-caption {{ $t('pages.accounts.amount') }}: {{ transaction.amount }}
+        //- .text-caption {{ $t('pages.accounts.memo') }}: {{ transaction.memo }}
         .row.justify-between.q-mb-md
             .text-caption {{ $t('pages.accounts.date') }}: {{ formattedDate(transaction.date) }}
             .text-caption.text-right {{ $t('pages.accounts.approved') }}: Icon
@@ -19,11 +19,15 @@
         )
         template(v-slot:body="props")
           q-tr(:props="props").styled-row
-            q-td(key="account" :props="props") {{ props.row.account || 'Account def' }}
+            q-td(key="account" :props="props") {{ props.row.account }}
             q-td(key="amount" :props="props") {{ props.row.amount }}
-            q-td(key="percent" :props="props") {{ componentPercentage }}
+            q-td(key="percent" :props="props") {{ componentPercent(props.row.amount) }}
+            q-td(key="actions" :props="props")
+              .row.justify-between
+                q-icon(name="edit" :size="'sm'" color="primary" @click="editComponent(props.row)").cursor-pointer
+                q-icon(name="delete" :size="'sm'" color="negative" @click="removeComponent(props.row.id)" ).cursor-pointer
         template(v-slot:bottom-row)
-          q-tr.bg-grey-4.text-grey-8.cursor-pointer(@click="newComponent = !newComponent")
+          q-tr.bg-grey-4.text-grey-8.cursor-pointer(@click="componentForm = !componentForm")
             q-td(colspan="4") Add component...
       hr.q-mt-xl.text-primary
       textarea(style="width:100%" placeholder=" Notes:").q-mt-md
@@ -32,14 +36,14 @@
           q-btn.bg-primary.text-white.q-px-xl.btn-lg
             q-icon(class="icon-sized" name="note_add")
             span Aprove transaction
-      q-dialog(v-model="newComponent")
-        AddComponent(@add="pushComponent")
+      q-dialog(v-model="componentForm")
+        ComponentForm(@add="pushComponent" @save="updateComponent" :txnComponent="txnComponent")
 
 </template>
 
 <script>
 import { mapActions } from 'vuex'
-import AddComponent from './add-component'
+import ComponentForm from './component-form'
 
 export default {
   name: 'transaction-list',
@@ -47,11 +51,11 @@ export default {
     transaction: Object
   },
   components: {
-    AddComponent
+    ComponentForm
   },
   data () {
     return {
-      newComponent: false,
+      componentForm: false,
       txnComponents: [],
       columns: [
         {
@@ -77,8 +81,16 @@ export default {
           field: 'percent',
           sortable: true,
           headerClasses: 'bg-secondary text-white'
+        },
+        {
+          name: 'actions',
+          align: 'center',
+          label: 'Actions',
+          field: 'actions',
+          headerClasses: 'bg-secondary text-white'
         }
-      ]
+      ],
+      txnComponent: {}
     }
   },
   methods: {
@@ -96,20 +108,38 @@ export default {
       }
     },
     pushComponent (component) {
-      this.newComponent = false
+      this.componentForm = false
       component.amount = `${component.amount} ${component.currency}`
+      component.id = this.txnComponents.length
       this.txnComponents.push(component)
+    },
+    componentPercent (compAmount) {
+      // Removing currency
+      let compAmountWOCurrency = compAmount.split(' ')[0]
+      let totalAmount = (this.transaction.amount).split(' ')[0]
+      // Calculating
+      let percent = (100 / totalAmount) * Math.abs(compAmountWOCurrency)
+
+      return percent + '%'
+    },
+    editComponent (props) {
+      console.log(props)
+      this.txnComponent = props
+      this.componentForm = true
+    },
+    updateComponent (newVal) {
+      console.log('updating', newVal)
+      this.componentForm = false
+      this.txnComponents[newVal.id] = newVal
+    },
+    removeComponent (id) {
+      this.txnComponents.splice(id, 1)
     }
   },
   watch: {
     transaction: function () {
       this.txnComponents = []
       // this.getTransactionComponents()
-    }
-  },
-  computed: {
-    componentPercentage: function () {
-      return (this.txnComponents.length > 0) ? (100 / (this.txnComponents.length)) + '%' : '0%'
     }
   }
 }

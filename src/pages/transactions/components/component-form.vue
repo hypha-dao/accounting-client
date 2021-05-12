@@ -1,7 +1,8 @@
 <template lang="pug">
 q-card.full-width
   q-card-section.row.items-center.q-pb-none
-    .text-h6 Add component
+    .text-h6(v-if="!edit") Add component
+    .text-h6(v-if="edit") Edit component
     q-space
     q-btn(icon="close", flat, round, v-close-popup)
   q-form.q-px-lg.q-py-md(@submit.prevent="addComponent()")
@@ -38,7 +39,7 @@ q-card.full-width
         v-close-popup
       )
       q-btn.col(
-        :label="'Create'",
+        :label="edit ? 'Save': 'Create'",
         text-color="white",
         color="primary",
         type="submit",
@@ -50,20 +51,45 @@ q-card.full-width
 import { validation } from '~/mixins/validation'
 
 export default {
-  name: 'create-transaction',
+  name: 'component-form',
   mixins: [validation],
+  props: {
+    txnComponent: Object
+  },
   data () {
     return {
       component: {
+        id: '',
         account: '',
         currency: '',
         amount: ''
-      }
+      },
+      cleanComp: {
+        account: '',
+        currency: '',
+        amount: ''
+      },
+      edit: false
+    }
+  },
+  created () {
+    this.component = this.cleanComp
+    if (this.txnComponent.id !== undefined) {
+      console.log('editing')
+      this.edit = true
+      this.component = this.txnComponent
+      let composedAmount = (this.txnComponent.amount).split(' ')
+      this.component.amount = composedAmount[0]
+      this.component.currency = composedAmount[1]
     }
   },
   methods: {
     addComponent () {
-      this.$emit('add', this.component)
+      if (this.edit) {
+        this.$emit('save', this.component)
+      } else {
+        this.$emit('add', this.component)
+      }
     }
   }
 }
