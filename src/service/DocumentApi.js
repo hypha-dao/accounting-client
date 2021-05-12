@@ -109,7 +109,7 @@ class DocumentApi extends BaseEosApi {
       {
         transaction {
           uid
-          content_groups(offset:1) {
+          content_groups(first:1) {
             contents(orderasc:label) {
               label
               value
@@ -131,10 +131,10 @@ class DocumentApi extends BaseEosApi {
       id: i,
       uid: trans.transaction[0].uid,
       date: trans.transaction[0].content_groups[0].contents[1].value,
-      amount: '1 BTC', // It should be the sum of each component amount
+      amount: '1000.0 USD', // It should be the sum of each component amount
       memo: trans.transaction[0].content_groups[0].contents[3].value,
       approved: true,
-      balanced: false
+      balanced: true
     }))
 
     return mappedTransactions

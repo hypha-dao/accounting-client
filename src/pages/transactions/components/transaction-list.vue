@@ -76,14 +76,7 @@ export default {
         'Balanced transactions',
         'Unbalanced transactions'
       ],
-      balancedTransactions: [{
-        id: 0,
-        date: '2022/04/16',
-        amount: '200.0 BTC',
-        memo: 'New trans',
-        approved: true,
-        balanced: true
-      }],
+      balancedTransactions: [],
       unbalancedTransactions: [],
       columnsBalanced: [
         {
@@ -172,9 +165,9 @@ export default {
     }
   },
   async created () {
-    // await this.getBalancedTxns()
+    await this.getBalancedTxns()
     await this.getUnbalancedTxns()
-    // this.selectBalancedTxn(this.selectedIndex)
+    this.selectBalancedTxn(this.selectedIndex)
   },
   methods: {
     ...mapActions('document', ['getTransactions', 'getUnbalancedTransactions']),
