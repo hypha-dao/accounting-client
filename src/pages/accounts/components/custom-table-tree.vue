@@ -64,7 +64,7 @@ import './custom-table-tree-style.css'
 // import VueAdsTableTree2 from 'vue-ads-table-tree'
 // const VueAdsPagination = window['vue-ads-pagination']
 // const VueAdsPageButton = window['vue-ads-pagination']
-import { mapState } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   name: 'custom-table-tree',
   components: {
@@ -73,7 +73,8 @@ export default {
     // VueAdsPageButton
   },
   mounted (v) {
-    this.loadRows()
+    this.loadAccounts()
+    // this.loadRows()
     console.log('accounts by project', this.accountList)
 
     this.$store.$EventBus.$on('accounts-updated', () => {
@@ -87,10 +88,15 @@ export default {
     this.$store.$EventBus.$off('accounts-updated')
   },
   computed: {
-    ...mapState('accounting', ['accountList'])
+    // ...mapState('accounting', ['accountList'])
     // ...mapGetters('accounting', ['accountListFormatted'])
   },
   methods: {
+    ...mapActions('edge', ['getEdges']),
+    async loadAccounts () {
+      console.log('loadAccounts')
+      this.accounts = await this.getEdges()
+    },
     findChildrenOpened (parent) {
       parent.forEach(children => {
         if (children._showChildren === true) {
@@ -200,7 +206,8 @@ export default {
           property: 'action'
         }
       ],
-      rows: []
+      rows: [],
+      accounts: undefined
     }
   }
 }

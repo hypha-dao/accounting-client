@@ -49,14 +49,21 @@ class EdgeApi extends BaseEosApi {
       chartOfAccounts(func: has(hash))
       @filter(eq(hash, ${this.baseNodeHash}))
       {
+        hash
         ledger {
           uid
           hash
           created_date
           creator
           account {
+            hash
             uid
             creator
+            content_groups {
+              contents {
+                expand(_all_)
+              }
+            }
           }
         }
       }
