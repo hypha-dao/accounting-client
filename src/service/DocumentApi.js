@@ -52,6 +52,19 @@ class DocumentApi extends BaseEosApi {
     return this.eosApi.signTransaction(actions)
   }
 
+  async saveTransaction ({ accountName, contentGroups }) {
+    console.log('api', accountName, contentGroups)
+    const actions = [{
+      account: Contracts.HYPHA,
+      name: 'transact',
+      data: {
+        issuer: accountName,
+        trx_info: contentGroups
+      }
+    }]
+    return this.eosApi.signTransaction(actions)
+  }
+
   async getTransactionById ({ uid }) {
     const query = `
     query transactions($uid:string)
