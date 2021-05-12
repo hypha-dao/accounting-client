@@ -1,7 +1,7 @@
 import BaseEosApi from './BaseEosApi'
 import {
   Contracts
-} from '~/const/Contracts'
+} from '~/const/contracts'
 
 class CursorApi extends BaseEosApi {
   constructor ({

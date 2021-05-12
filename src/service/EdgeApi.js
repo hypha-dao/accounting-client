@@ -1,7 +1,7 @@
 import BaseEosApi from './BaseEosApi'
 import {
   Contracts
-} from '~/const/Contracts'
+} from '~/const/contracts'
 
 class EdgeApi extends BaseEosApi {
   constructor ({
@@ -72,9 +72,8 @@ class EdgeApi extends BaseEosApi {
     return this.dgraph.newTxn().query(query)
   }
 
-  async getAccountById (id) {
+  async getAccountById ({ uid }) {
     const query = `
-    query account($uid:string)
     @filter(eq(hash, ${this.baseNodeHash}))
     {
       account(func: uid($uid)) {
@@ -93,7 +92,7 @@ class EdgeApi extends BaseEosApi {
       }
     }
     `
-    const vars = { $uid: id }
+    const vars = { $uid: uid }
 
     return this.dgraph.newTxn().queryWithVars(query, vars)
   }

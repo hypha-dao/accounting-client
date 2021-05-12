@@ -1,7 +1,7 @@
 import BaseEosApi from './BaseEosApi'
 import {
   Contracts
-} from '~/const/Contracts'
+} from '~/const/contracts'
 
 class DocumentApi extends BaseEosApi {
   constructor ({
@@ -39,24 +39,63 @@ class DocumentApi extends BaseEosApi {
     return documents
   }
 
+  async sendTransaction ({ accountName, contentGroups }) {
+    console.log('api', accountName, contentGroups)
+    const actions = [{
+      account: Contracts.HYPHA,
+      name: 'newunrvwdtrx',
+      data: {
+        issuer: accountName,
+        trx_info: contentGroups
+      }
+    }]
+    return this.eosApi.signTransaction(actions)
+  }
+
+  async getTransactionById ({ uid }) {
+    const query = `
+    query transactions($uid:string)
+    {
+      transaction(func: uid($uid)) {
+        component {
+          content_groups(
+          orderasc:content_group_sequence,
+          first:1)
+          {
+            contents(orderasc:label)  {
+              label
+              value
+              type
+            }
+          }
+        }
+      }
+    }
+    `
+
+    const vars = { $uid: uid }
+
+    let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
+
+    let mappedComponents = data.transaction[0].component.map(com => ({
+      account: com.content_groups[0].contents[4].value,
+      amount: com.content_groups[0].contents[1].value,
+      date: com.content_groups[0].contents[3].value,
+      memo: com.content_groups[0].contents[4].value,
+      percent: '10%'
+    }))
+
+    return mappedComponents
+    // return data
+  }
+
   async getTransactions () {
     const query = `
     {
       transactions(func: has(hash))
       {
         transaction {
-          component {
-            content_groups(
-            orderasc:content_group_sequence,
-            first:1)
-            {
-              contents(orderasc:label)  {
-                label
-                value
-                type
-              }
-            }
-          }
+          uid
           content_groups(offset:1) {
             contents(orderasc:label) {
               label
@@ -77,17 +116,12 @@ class DocumentApi extends BaseEosApi {
      */
     let mappedTransactions = data.transactions.map((trans, i) => ({
       id: i,
+      uid: trans.transaction[0].uid,
       date: trans.transaction[0].content_groups[0].contents[1].value,
       amount: '1 BTC', // It should be the sum of each component amount
-      transaction: trans.transaction[0].content_groups[0].contents[3].value,
+      memo: trans.transaction[0].content_groups[0].contents[3].value,
       approved: true,
-      balanced: false,
-      components: trans.transaction[0].component.map((com, i) => ({
-        no: i,
-        account: com.content_groups[0].contents[4].value,
-        amount: com.content_groups[0].contents[1].value,
-        percent: '10%'
-      }))
+      balanced: false
     }))
 
     return mappedTransactions
@@ -121,45 +155,23 @@ class DocumentApi extends BaseEosApi {
     `
     let { data } = await this.dgraph.newTxn().query(query)
 
-    let mappedTransactions = data.unbalancedTxn[0].unrvwdbucket[0].unrvwdtrx.map(tnx => ({
+    console.log(data)
+
+    let mappedTransactions = data.unbalancedTxn[0].unrvwdbucket[0].unrvwdtrx.map((tnx, i) => ({
+      id: i,
       uid: tnx.uid,
       hash: tnx.hash,
       usdValue: tnx.content_groups[0].contents[0].value,
       to: tnx.content_groups[0].contents[3].value,
-      timestamp: tnx.content_groups[0].contents[4].value,
+      date: tnx.content_groups[0].contents[4].value,
       source: tnx.content_groups[0].contents[5].value,
-      quantity: tnx.content_groups[0].contents[6].value,
+      amount: tnx.content_groups[0].contents[6].value + ' ' + tnx.content_groups[0].contents[10].value,
       memo: tnx.content_groups[0].contents[7].value,
-      from: tnx.content_groups[0].contents[8].value,
-      currency: tnx.content_groups[0].contents[10].value
+      from: tnx.content_groups[0].contents[8].value
     }))
 
     return mappedTransactions
   }
-/*   async createSetting ({ accountName, key, value }) {
-    const actions = [{
-      account: Contracts.BENNYFI,
-      name: 'setsetting',
-      data: {
-        setter: accountName,
-        key: key,
-        value: value
-      }
-    }]
-    return this.eosApi.signTransaction(actions)
-  }
-
-  async eraseSetting ({ accountName, key }) {
-    const actions = [{
-      account: Contracts.BENNYFI,
-      name: 'eraseSetting',
-      data: {
-        setter: accountName,
-        key: key
-      }
-    }]
-    return this.eosApi.signTransaction(actions)
-  } */
 }
 
 export default DocumentApi
