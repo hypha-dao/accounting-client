@@ -57,8 +57,22 @@ export const sendTransaction = async function ({ commit }, { contentGroups }) {
   try {
     commit('general/setIsLoading', true, { root: true })
     const accountName = await this.getters['accounts/account']
-    console.log('store', accountName, contentGroups)
     const transaction = await this.$documentApi.sendTransaction({ contentGroups, accountName })
+    return transaction
+  } catch (e) {
+    console.error('An error ocurred while trying to get unbalanced transactions', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
+
+export const saveTransaction = async function ({ commit }, { contentGroups }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const accountName = await this.getters['accounts/account']
+    console.log('store', contentGroups)
+    const transaction = await this.$documentApi.saveTransaction({ contentGroups, accountName })
     return transaction
   } catch (e) {
     console.error('An error ocurred while trying to get unbalanced transactions', e)

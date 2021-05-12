@@ -33,6 +33,10 @@
       textarea(style="width:100%" placeholder=" Notes:").q-mt-md
       .q-mt-xl.flex.column
         .row.self-center.q-my-md
+          q-btn.bg-primary.text-white.q-px-xl.btn-lg(@click="storeTransaction()")
+            q-icon(class="icon-sized" name="save")
+            span Save
+        .row.self-center.q-my-md
           q-btn.bg-primary.text-white.q-px-xl.btn-lg
             q-icon(class="icon-sized" name="note_add")
             span Aprove transaction
@@ -94,7 +98,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('document', ['getTransactionById']),
+    ...mapActions('document', ['getTransactionById', 'saveTransaction']),
     formattedDate (date) {
       var options = { year: 'numeric', month: 'long', day: 'numeric' }
       let newDate = new Date(date)
@@ -134,12 +138,75 @@ export default {
     },
     removeComponent (id) {
       this.txnComponents.splice(id, 1)
+    },
+    storeTransaction () {
+      // this.transaction.components = this.txnComponents
+
+      let fullTransact = [
+        [
+          {
+            'label': 'content_group_label',
+            'value': ['string', 'header']
+          },
+          {
+            'label': 'trx_date',
+            'value': ['time_point', this.transaction.date]
+          },
+          {
+            'label': 'trx_ledger',
+            'value': ['checksum256', process.env.DGRAPH_BASE_NODE_HASH]
+          },
+          {
+            'label': 'trx_memo',
+            'value': ['string', this.transaction.memo]
+          }
+        ],
+        [
+          {
+            'label': 'content_group_label',
+            'value': ['string', 'component']
+          },
+          {
+            'label': 'memo',
+            'value': ['string', 'Test component']
+          },
+          {
+            'label': 'account',
+            'value': ['checksum256', '52a7982cbafb931f4f5a4dfb048a84df3dde392f69ead5fc158cc9922afcb418']
+          },
+          {
+            'label': 'amount',
+            'value': ['asset', '1000.00 USD']
+          }
+        ],
+        [
+          {
+            'label': 'content_group_label',
+            'value': ['string', 'component']
+          },
+          {
+            'label': 'memo',
+            'value': ['string', 'Test component']
+          },
+          {
+            'label': 'account',
+            'value': ['checksum256', '3790170d5449f477ae7dab24ab30f1ea324bbaebb6c5a3ef32b37e1195baed7e']
+          },
+          {
+            'label': 'amount',
+            'value': ['asset', '-1000.00 USD']
+          }
+        ]
+      ]
+
+      this.saveTransaction({ contentGroups: fullTransact })
+      console.log('full trnasaction', fullTransact)
     }
   },
   watch: {
     transaction: function () {
       this.txnComponents = []
-      // this.getTransactionComponents()
+      this.getTransactionComponents()
     }
   }
 }
