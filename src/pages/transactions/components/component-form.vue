@@ -6,13 +6,24 @@ q-card.full-width
     q-space
     q-btn(icon="close", flat, round, v-close-popup)
   q-form.q-px-lg.q-py-md(@submit.prevent="addComponent()")
+    q-scroll-area(style="height: 200px; position: relative" v-show="showTableTree")
+      custom-table-tree(@accountChanged="onAccountChanged")
     q-input.q-my-md(
       outlined,
       :rules="[rules.required]",
-      v-model="component.account",
+      v-model="component.account.accountName",
       label="Account",
       type="text"
+      v-show="!showTableTree"
+      readonly
     )
+      template(v-slot:append)
+        q-btn.select-account-btn(
+          label="Choose an account"
+          @click="showTableTree = true"
+          color="primary"
+          dense
+        )
     q-input.q-my-md(
       outlined,
       :rules="[rules.required]",
@@ -48,10 +59,12 @@ q-card.full-width
 </template>
 
 <script>
+import CustomTableTree from '~/pages/accounts/components/custom-table-tree'
 import { validation } from '~/mixins/validation'
 
 export default {
   name: 'component-form',
+  components: { CustomTableTree },
   mixins: [validation],
   props: {
     txnComponent: Object
@@ -71,7 +84,9 @@ export default {
         memo: '',
         amount: ''
       },
-      edit: false
+      edit: false,
+      showTableTree: false,
+      accountSelected: undefined
     }
   },
   created () {
@@ -85,6 +100,11 @@ export default {
     }
   },
   methods: {
+    onAccountChanged (accountSelected) {
+      this.accountSelected = accountSelected
+      this.component.account = accountSelected
+      this.showTableTree = false
+    },
     addComponent () {
       if (this.edit) {
         this.$emit('save', this.component)
@@ -96,5 +116,12 @@ export default {
 }
 </script>
 
-<style>
+<style lang="sass" scoped>
+.container-tree
+  position: relative !important
+  height: 200px !important
+.select-account-btn
+  position: sticky
+  bottom: 10px
+  left: 5px
 </style>
