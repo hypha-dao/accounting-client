@@ -19,7 +19,7 @@
         )
         template(v-slot:body="props")
           q-tr(:props="props").styled-row
-            q-td(key="account" :props="props") {{ props.row.account }}
+            q-td(key="memo" :props="props") {{ (props.row.memo != ' ') ? props.row.memo : '*No memo*' }}
             q-td(key="amount" :props="props") {{ props.row.amount }}
             q-td(key="percent" :props="props") {{ componentPercent(props.row.amount) }}
             q-td(key="actions" :props="props")
@@ -63,10 +63,10 @@ export default {
       txnComponents: [],
       columns: [
         {
-          name: 'account',
+          name: 'memo',
           align: 'center',
-          label: 'Account',
-          field: 'account',
+          label: 'Memo',
+          field: 'memo',
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         },
@@ -100,7 +100,8 @@ export default {
   methods: {
     ...mapActions('document', ['getTransactionById', 'saveTransaction']),
     formattedDate (date) {
-      var options = { year: 'numeric', month: 'long', day: 'numeric' }
+      console.log('previous', date)
+      var options = { year: 'numeric', month: 'numeric', day: 'numeric' }
       let newDate = new Date(date)
 
       return newDate.toLocaleString('en-US', options)
@@ -113,7 +114,7 @@ export default {
     },
     pushComponent (component) {
       this.componentForm = false
-      component.amount = `${component.amount} ${component.currency}`
+      component.amount = `${component.amount} ${(this.transaction.amount).split(' ')[1]}`
       component.id = this.txnComponents.length
       this.txnComponents.push(component)
     },
@@ -140,8 +141,6 @@ export default {
       this.txnComponents.splice(id, 1)
     },
     storeTransaction () {
-      // this.transaction.components = this.txnComponents
-
       let fullTransact = [
         [
           {
@@ -160,54 +159,49 @@ export default {
             'label': 'trx_memo',
             'value': ['string', this.transaction.memo]
           }
-        ],
-        [
-          {
-            'label': 'content_group_label',
-            'value': ['string', 'component']
-          },
-          {
-            'label': 'memo',
-            'value': ['string', 'Test component']
-          },
-          {
-            'label': 'account',
-            'value': ['checksum256', '52a7982cbafb931f4f5a4dfb048a84df3dde392f69ead5fc158cc9922afcb418']
-          },
-          {
-            'label': 'amount',
-            'value': ['asset', '1000.00 USD']
-          }
-        ],
-        [
-          {
-            'label': 'content_group_label',
-            'value': ['string', 'component']
-          },
-          {
-            'label': 'memo',
-            'value': ['string', 'Test component']
-          },
-          {
-            'label': 'account',
-            'value': ['checksum256', '3790170d5449f477ae7dab24ab30f1ea324bbaebb6c5a3ef32b37e1195baed7e']
-          },
-          {
-            'label': 'amount',
-            'value': ['asset', '-1000.00 USD']
-          }
         ]
       ]
 
+      // Creates an content group for each component. It nead memo, account hash and amount
+      this.txnComponents.forEach(comp => {
+        fullTransact.push(this.formattedComponent(comp))
+      })
+
       this.saveTransaction({ contentGroups: fullTransact })
       console.log('full trnasaction', fullTransact)
+    },
+    formattedComponent ({ memo, account, amount }) {
+      console.log('Account', account)
+      return [
+        {
+          'label': 'content_group_label',
+          'value': ['string', 'component']
+        },
+        {
+          'label': 'memo',
+          'value': ['string', memo]
+        },
+        {
+          'label': 'account', // Account hash
+          'value': ['checksum256', account]
+          // 'value': ['checksum256', '52a7982cbafb931f4f5a4dfb048a84df3dde392f69ead5fc158cc9922afcb418']
+        },
+        {
+          'label': 'amount',
+          'value': ['asset', amount]
+        }
+      ]
     }
   },
   watch: {
     transaction: function () {
       this.txnComponents = []
       this.getTransactionComponents()
+      console.log('watched', this.transaction)
     }
+  },
+  created () {
+    console.log('created', this.transaction)
   }
 }
 </script>

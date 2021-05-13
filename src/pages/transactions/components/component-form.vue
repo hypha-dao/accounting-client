@@ -16,8 +16,8 @@ q-card.full-width
     q-input.q-my-md(
       outlined,
       :rules="[rules.required]",
-      v-model="component.currency",
-      label="Currency",
+      v-model="component.memo",
+      label="Memo",
       type="text"
     )
     q-input.q-my-md(
@@ -61,12 +61,14 @@ export default {
       component: {
         id: '',
         account: '',
-        currency: '',
+        memo: '',
+        // currency: '',
         amount: ''
       },
       cleanComp: {
+        id: '',
         account: '',
-        currency: '',
+        memo: '',
         amount: ''
       },
       edit: false
@@ -75,12 +77,11 @@ export default {
   created () {
     this.component = this.cleanComp
     if (this.txnComponent.id !== undefined) {
-      console.log('editing')
       this.edit = true
       this.component = this.txnComponent
       let composedAmount = (this.txnComponent.amount).split(' ')
       this.component.amount = composedAmount[0]
-      this.component.currency = composedAmount[1]
+      // this.component.currency = composedAmount[1]
     }
   },
   methods: {

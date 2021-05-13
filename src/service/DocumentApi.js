@@ -109,7 +109,7 @@ class DocumentApi extends BaseEosApi {
       {
         transaction {
           uid
-          content_groups(first:1) {
+          content_groups(orderasc:content_group_sequence, first:1) {
             contents(orderasc:label) {
               label
               value
@@ -131,7 +131,7 @@ class DocumentApi extends BaseEosApi {
       id: i,
       uid: trans.transaction[0].uid,
       date: trans.transaction[0].content_groups[0].contents[1].value,
-      amount: '1000.0 USD', // It should be the sum of each component amount
+      amount: '1000.0 USD', // It should be the sum of each component amount ??
       memo: trans.transaction[0].content_groups[0].contents[3].value,
       approved: true,
       balanced: true
@@ -174,13 +174,15 @@ class DocumentApi extends BaseEosApi {
       id: i,
       uid: tnx.uid,
       hash: tnx.hash,
-      usdValue: tnx.content_groups[0].contents[0].value,
-      to: tnx.content_groups[0].contents[3].value,
-      date: tnx.content_groups[0].contents[4].value,
-      source: tnx.content_groups[0].contents[5].value,
+      balanced: false,
+      approved: false,
+      // usdValue: tnx.content_groups[0].contents[0].value,
+      to: tnx.content_groups[0].contents[3].value, // ??
+      date: (tnx.content_groups[0].contents[4].value).slice(0, -5), // we remove the '.000Z' part of string
+      // source: tnx.content_groups[0].contents[5].value,
       amount: tnx.content_groups[0].contents[6].value + ' ' + tnx.content_groups[0].contents[10].value,
       memo: tnx.content_groups[0].contents[7].value,
-      from: tnx.content_groups[0].contents[8].value
+      from: tnx.content_groups[0].contents[8].value // ??
     }))
 
     return mappedTransactions
