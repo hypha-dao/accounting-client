@@ -1,43 +1,51 @@
 <template lang='pug'>
 #container
   div
+    //- vue-ads-table-tree(
+    //-   :columns='columns',
+    //-   :rows='rows',
+    //-   :page='page',
+    //-   @filter-change='filterChanged',
+    //-   @page-change='pageChanged',
+    //-   :call-children="loadChildren"
+    //-   :call-rows="loadChildren"
+    //- )
     vue-ads-table-tree(
       :columns='columns',
-      :rows='rows',
+      :rows='accountsTree',
       :page='page',
-      @filter-change='filterChanged',
-      @page-change='pageChanged',
       :call-children="loadChildren"
       :call-rows="loadChildren"
+      @filter-change='filterChanged',
+      @page-change='pageChanged',
     )
       template(slot="top")
         div
-      template.container-btn(slot='accountName' slot-scope='props')
-        .main-column
-          .row(@dblclick="openRow(props.row)")
+      template.container-btn.cursor-pointer.flex(slot='accountName' slot-scope='props' @click="accountSelected = props.row")
+        .main-column(@click="accountSelected = props.row")
+          .row(:class="(props.row.isSelectable) ? 'selectableRow' : undefined")
             q-icon.q-mr-sm(name="account_balance", size="20px")
+            q-radio.q-mr-sm( v-if="props.row.isSelectable" dense v-model="accountSelected" :val="props.row")
             p {{ props.row.accountName }}
-      template.container-btn(slot='balance' slot-scope='props')
-        p.text-right {{ props.row.balance }}
-      template.container-btn(slot='action' slot-scope='props')
-        .row.justify-center
-          //- q-btn(round color="cyan-6" icon="info" size="xs" @click="doAction(props.row)")
-          q-btn(color="secondary", :label="$t('common.buttons.actions')", icon-right="expand_more")
-            q-menu(
-              transition-show="jump-down"
-              transition-hide="jump-up"
-            )
-              q-list(style="min-width: 100px")
-                q-item(v-if="props.row.balanceValue.amount === 0 || props.row.numChildren > 0" clickable, v-close-popup, @click="$emit('createAccount', props.row)")
-                  q-item-section {{$t('pages.accounting.createAccount')}}
-                q-item(clickable, v-close-popup, @click="$emit('editAccount', props.row)")
-                  q-item-section {{$t('pages.accounting.editAccount')}}
-                q-item(v-if="props.row.numChildren === 0" clickable, v-close-popup, @click="$emit('newTransaction', props.row)")
-                  q-item-section {{$t('pages.accounting.newTransaction')}}
-                q-item(v-if="" clickable, v-close-popup, @click="$emit('viewTransactions', props.row)")
-                  q-item-section {{$t('pages.accounting.viewTransactions')}}
-                q-item(v-if="props.row.numChildren === 0 && props.row.balanceValue.amount === 0 && props.row.parentId !== 0" clickable, v-close-popup, @click="$emit('deleteAccount', props.row)")
-                  q-item-section {{$t('notifications.actions.accounts.deleteaccnt.title')}}
+      //- template.container-btn(slot='action' slot-scope='props')
+      //-   .row.justify-center
+      //-     //- q-btn(round color="cyan-6" icon="info" size="xs" @click="doAction(props.row)")
+      //-     q-btn(color="secondary", :label="$t('common.buttons.actions')", icon-right="expand_more")
+            //- q-menu(
+            //-   transition-show="jump-down"
+            //-   transition-hide="jump-up"
+            //- )
+            //-   q-list(style="min-width: 100px")
+            //-     q-item(v-if="props.row.balanceValue.amount === 0 || props.row.numChildren > 0" clickable, v-close-popup, @click="$emit('createAccount', props.row)")
+            //-       q-item-section {{$t('pages.accounting.createAccount')}}
+            //-     q-item(clickable, v-close-popup, @click="$emit('editAccount', props.row)")
+            //-       q-item-section {{$t('pages.accounting.editAccount')}}
+            //-     q-item(v-if="props.row.numChildren === 0" clickable, v-close-popup, @click="$emit('newTransaction', props.row)")
+            //-       q-item-section {{$t('pages.accounting.newTransaction')}}
+            //-     q-item(v-if="" clickable, v-close-popup, @click="$emit('viewTransactions', props.row)")
+            //-       q-item-section {{$t('pages.accounting.viewTransactions')}}
+            //-     q-item(v-if="props.row.numChildren === 0 && props.row.balanceValue.amount === 0 && props.row.parentId !== 0" clickable, v-close-popup, @click="$emit('deleteAccount', props.row)")
+            //-       q-item-section {{$t('notifications.actions.accounts.deleteaccnt.title')}}
           //- a(:href='`https://www.google.com/search?q=${props.row.firstName}+${props.row.lastName}`' target='_blank')
           //-   | {{ props.row.firstName }}
       //- template(slot="_1", slot-scope='props')
@@ -51,6 +59,7 @@
 
 // CHANGE THIS LINE TO REFER FROM OTHER SOURCE
 import VueAdsTableTree from 'vue-ads-table-tree'
+// import VueAdsTableTree from '../../../vendor/vue-ads-table-tree-develop/src/index'
 // import VueAdsTableTree from '~/vue-ads-table-tree-developing/src'
 
 // import VueAdsPagination, { VueAdsPageButton } from 'vue-ads-pagination'
@@ -63,7 +72,7 @@ import './custom-table-tree-style.css'
 // import VueAdsTableTree2 from 'vue-ads-table-tree'
 // const VueAdsPagination = window['vue-ads-pagination']
 // const VueAdsPageButton = window['vue-ads-pagination']
-import { mapState } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   name: 'custom-table-tree',
   components: {
@@ -72,24 +81,56 @@ export default {
     // VueAdsPageButton
   },
   mounted (v) {
-    this.loadRows()
+    this.loadAccounts()
+    // this.loadRows()
     console.log('accounts by project', this.accountList)
 
-    this.$store.$EventBus.$on('accounts-updated', () => {
-      console.log('Event bus listened')
-      this.childrenOpened = []
-      this.findChildrenOpened(this.rows)
-      this.loadRows()
-    })
+    // this.$store.$EventBus.$on('accounts-updated', () => {
+    //   console.log('Event bus listened')
+    //   this.childrenOpened = []
+    //   this.findChildrenOpened(this.rows)
+    //   this.loadRows()
+    // })
   },
   beforeDestroy () {
-    this.$store.$EventBus.$off('accounts-updated')
+    // this.$store.$EventBus.$off('accounts-updated')
   },
   computed: {
-    ...mapState('accounting', ['accountList'])
+    // ...mapState('accounting', ['accountList'])
     // ...mapGetters('accounting', ['accountListFormatted'])
+    rows2 () {
+      if (!this.accounts || !this.accounts.accounts) return undefined
+      return this.accounts.accounts.map(account => {
+        const content = account.content_groups[0].contents
+        return {
+          accountName: content.find(v => v.label === 'account_name').value,
+          parentAccount: content.find(v => v.label === 'parent_account').value,
+          hash: account.hash,
+          uid: account.uid,
+          _hasChildren: true,
+          _children: []
+        }
+      })
+    }
   },
   methods: {
+    ...mapActions('edge', ['getChartOfAccounts', 'getAccountById']),
+    async loadAccounts () {
+      console.log('loadAccounts')
+      this.accounts = await this.getChartOfAccounts()
+      if (!this.accounts || !this.accounts.accounts) return undefined
+      this.accountsTree = this.accounts.accounts.map(account => {
+        const content = account.content_groups[0].contents
+        return {
+          accountName: content.find(v => v.label === 'account_name').value,
+          parentAccount: content.find(v => v.label === 'parent_account').value,
+          hash: account.hash,
+          uid: account.uid,
+          _id: account.uid,
+          _hasChildren: true
+        }
+      })
+    },
     findChildrenOpened (parent) {
       parent.forEach(children => {
         if (children._showChildren === true) {
@@ -98,67 +139,31 @@ export default {
         }
       })
     },
-    loadRows () {
-      const accountsFormatted = []
-      // For each root account
-      this.accountList.forEach(account => {
-        // Format all accounts
-        const newAccount = this.setUpAccount(account)
-        // If is a root
-        if ((account.numChildren > 0 && !account.parent) || (account.numChildren === 0 && !account.parent)) {
-          console.log('Account Added')
-          accountsFormatted.push(newAccount)
-        }
-      })
-
-      this.rows = accountsFormatted
-      console.log('Rows:', this.rows)
-    },
     sleep (ms) {
       return new Promise(resolve => setTimeout(resolve, ms))
     },
-    loadChildren (e) {
-      // console.log('loadChildren', e)
-      const newChildren = []
-      const _children = this.accountList.filter(el => el.parentId === e._id)
-      _children.forEach(children => {
-        newChildren.push(this.setUpAccount(children))
-      })
-      return newChildren
-    },
-    setUpAccount (account) {
-      // console.log('setUpAccount', account)
-      const newAccount = {
-        _id: account.accountId,
-        projectId: account.projectId,
-        accountName: account.accountName,
-        accountSubtype: account.accountSubtype,
-        increaseBalance: account.increaseBalance,
-        decreaseBalance: account.decreaseBalance,
-        accountSymbol: account.accountSymbol,
-        numChildren: account.numChildren,
-        balance: account.balance.formatToMoney(),
-        balanceValue: account.balance,
-        parentId: account.parentId,
-        description: account.description,
-        accountCategory: account.accountCategory,
-        budget: account.budget
-      }
-
-      if (account.numChildren > 0) {
-        newAccount['_hasChildren'] = true
-        const statusChildrenSaved = this.childrenOpened.find(accountOpened => accountOpened._id === account.accountId)
-
-        if (statusChildrenSaved && statusChildrenSaved._children) {
-          // newAccount['_children'] = statusChildrenSaved._children
-          const newChildren = this.loadChildren(newAccount)
-          // console.log('loadChildrenSaved', newChildren)
-          newAccount['_children'] = newChildren
-          newAccount['_showChildren'] = true
+    async setUpAccountChildren (children) {
+      // console.log('original children', children)
+      const accounts = children.data.account[0].account
+      // console.log('children acc', accounts)
+      return accounts.map(account => {
+        const content = account.content_groups[0].contents
+        return {
+          accountName: content.find(v => v.label === 'account_name').value,
+          parentAccount: content.find(v => v.label === 'parent_account').value,
+          hash: account.hash,
+          uid: account.uid,
+          _hasChildren: !!account.account,
+          _id: account.uid,
+          isSelectable: !account.account
         }
-      }
-
-      return newAccount
+      })
+    },
+    async loadChildren (e) {
+      const children = await this.getAccountById({ uid: e.uid })
+      const childrenFormatted = await this.setUpAccountChildren(children)
+      console.log('loadChildren', childrenFormatted)
+      return childrenFormatted
     },
     filterChanged (filter) {
       this.filter = filter
@@ -167,6 +172,7 @@ export default {
       this.page = page
     },
     openRow (row) {
+      console.log('row selected')
       this.$emit('rowSelected', row)
     }
   },
@@ -180,26 +186,20 @@ export default {
           property: 'accountName',
           title: 'Account Name',
           direction: null,
+          filterable: false
+        },
+        {
+          property: 'uid',
+          title: 'Id',
+          direction: null,
           filterable: true,
           collapseIcon: false
-        },
-        {
-          property: 'description',
-          title: 'Description',
-          direction: null,
-          filterable: false
-        },
-        {
-          property: 'balance',
-          title: 'Balance',
-          direction: null,
-          filterable: false
-        },
-        {
-          property: 'action'
         }
       ],
-      rows: []
+      rows: [],
+      accounts: undefined,
+      accountsTree: undefined,
+      accountSelected: undefined
     }
   }
 }
@@ -217,4 +217,6 @@ export default {
   display: inline-block
 .custom-row:hover
   background-color: red
+.selectableRow
+  cursor: pointer
 </style>

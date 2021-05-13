@@ -44,25 +44,56 @@ class EdgeApi extends BaseEosApi {
    * and its sub accounts.
    */
   async getChartOfAccount () {
+    // const query = `
+    // {
+    //   chartOfAccounts(func: has(hash))
+    //   @filter(eq(hash, ${this.baseNodeHash}))
+    //   {
+    //     hash
+    //     ledger {
+    //       uid
+    //       hash
+    //       created_date
+    //       creator
+    //       account {
+    //         hash
+    //         uid
+    //         creator
+    //         content_groups {
+    //           contents {
+    //             expand(_all_)
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+    // `
     const query = `
     {
-      chartOfAccounts(func: has(hash))
-      @filter(eq(hash, ${this.baseNodeHash}))
-      {
+      chartOfAccounts(func: type(Document)) @filter(eq(hash, ${this.baseNodeHash})) {
+        hash
         ledger {
-          uid
           hash
-          created_date
-          creator
           account {
+            hash
             uid
-            creator
+            content_groups (orderasc: content_group_sequence, first: 1) {
+              contents {
+                expand(_all_)
+              }
+            }
           }
         }
       }
     }
     `
-    return this.dgraph.newTxn().query(query)
+    const queryResult = await this.dgraph.newTxn().query(query)
+    // console.log('queryResult', queryResult)
+    const data = {}
+    data.accounts = queryResult.data.chartOfAccounts[0].ledger[0].account
+    data.ledger_hash = queryResult.data.chartOfAccounts[0].ledger[0].hash
+    return data
   }
 
   async getAccountById ({ uid }) {
@@ -71,17 +102,18 @@ class EdgeApi extends BaseEosApi {
     {
       account(func: uid($uid)) {
         uid
-        ownedby {
-          expand(_all_)
-        }
-        account {
-          uid
-          hash
           account {
             uid
             hash
+            account {
+              hash
+            }
+            content_groups (orderasc: content_group_sequence, first: 1) {
+              contents {
+                expand(_all_)
+              }
+            }
           }
-        }
       }
     }
     `
