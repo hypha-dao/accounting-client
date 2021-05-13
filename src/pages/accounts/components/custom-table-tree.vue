@@ -21,8 +21,8 @@
     )
       template(slot="top")
         div
-      template.container-btn.cursor-pointer.flex(slot='accountName' slot-scope='props' @click="accountSelected = props.row")
-        .main-column(@click="accountSelected = props.row")
+      template.container-btn.cursor-pointer.flex(slot='accountName' slot-scope='props' @click="selectAccount(props.row)")
+        .main-column(@click="selectAccount(props.row)")
           .row(:class="(props.row.isSelectable) ? 'selectableRow' : undefined")
             q-icon.q-mr-sm(name="account_balance", size="20px")
             q-radio.q-mr-sm( v-if="props.row.isSelectable" dense v-model="accountSelected" :val="props.row")
@@ -95,6 +95,11 @@ export default {
   beforeDestroy () {
     // this.$store.$EventBus.$off('accounts-updated')
   },
+  watch: {
+    accountSelected (v) {
+      this.$emit('accountChanged', v)
+    }
+  },
   computed: {
     // ...mapState('accounting', ['accountList'])
     // ...mapGetters('accounting', ['accountListFormatted'])
@@ -115,6 +120,11 @@ export default {
   },
   methods: {
     ...mapActions('edge', ['getChartOfAccounts', 'getAccountById']),
+    selectAccount (account) {
+      if (account.account) {
+        this.accountSelected = account
+      }
+    },
     async loadAccounts () {
       console.log('loadAccounts')
       this.accounts = await this.getChartOfAccounts()
