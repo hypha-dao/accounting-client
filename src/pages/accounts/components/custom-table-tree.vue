@@ -12,7 +12,7 @@
     //- )
     vue-ads-table-tree(
       :columns='columns',
-      :rows='rows2',
+      :rows='accountsTree',
       :page='page',
       :call-children="loadChildren"
       :call-rows="loadChildren"
@@ -21,10 +21,11 @@
     )
       template(slot="top")
         div
-      template.container-btn(slot='accountName' slot-scope='props')
-        .main-column
-          .row(@dblclick="openRow(props.row)")
+      template.container-btn.cursor-pointer.flex(slot='accountName' slot-scope='props' @click="accountSelected = props.row")
+        .main-column(@click="accountSelected = props.row")
+          .row(:class="(props.row.isSelectable) ? 'selectableRow' : undefined")
             q-icon.q-mr-sm(name="account_balance", size="20px")
+            q-radio.q-mr-sm( v-if="props.row.isSelectable" dense v-model="accountSelected" :val="props.row")
             p {{ props.row.accountName }}
       //- template.container-btn(slot='action' slot-scope='props')
       //-   .row.justify-center
@@ -106,7 +107,8 @@ export default {
           parentAccount: content.find(v => v.label === 'parent_account').value,
           hash: account.hash,
           uid: account.uid,
-          _hasChildren: true
+          _hasChildren: true,
+          _children: []
         }
       })
     }
@@ -116,6 +118,18 @@ export default {
     async loadAccounts () {
       console.log('loadAccounts')
       this.accounts = await this.getChartOfAccounts()
+      if (!this.accounts || !this.accounts.accounts) return undefined
+      this.accountsTree = this.accounts.accounts.map(account => {
+        const content = account.content_groups[0].contents
+        return {
+          accountName: content.find(v => v.label === 'account_name').value,
+          parentAccount: content.find(v => v.label === 'parent_account').value,
+          hash: account.hash,
+          uid: account.uid,
+          _id: account.uid,
+          _hasChildren: true
+        }
+      })
     },
     findChildrenOpened (parent) {
       parent.forEach(children => {
@@ -125,68 +139,31 @@ export default {
         }
       })
     },
-    loadRows () {
-      const accountsFormatted = []
-      // For each root account
-      this.accountList.forEach(account => {
-        // Format all accounts
-        const newAccount = this.setUpAccount(account)
-        // If is a root
-        if ((account.numChildren > 0 && !account.parent) || (account.numChildren === 0 && !account.parent)) {
-          console.log('Account Added')
-          accountsFormatted.push(newAccount)
-        }
-      })
-
-      this.rows = accountsFormatted
-      console.log('Rows:', this.rows)
-    },
     sleep (ms) {
       return new Promise(resolve => setTimeout(resolve, ms))
     },
+    async setUpAccountChildren (children) {
+      // console.log('original children', children)
+      const accounts = children.data.account[0].account
+      // console.log('children acc', accounts)
+      return accounts.map(account => {
+        const content = account.content_groups[0].contents
+        return {
+          accountName: content.find(v => v.label === 'account_name').value,
+          parentAccount: content.find(v => v.label === 'parent_account').value,
+          hash: account.hash,
+          uid: account.uid,
+          _hasChildren: !!account.account,
+          _id: account.uid,
+          isSelectable: !account.account
+        }
+      })
+    },
     async loadChildren (e) {
       const children = await this.getAccountById({ uid: e.uid })
-      console.log('loadChildren', e, children)
-      const newChildren = []
-      // const _children = this.accountList.filter(el => el.parentId === e._id)
-      // _children.forEach(children => {
-      //   newChildren.push(this.setUpAccount(children))
-      // })
-      return newChildren
-    },
-    setUpAccount (account) {
-      // console.log('setUpAccount', account)
-      const newAccount = {
-        _id: account.accountId,
-        projectId: account.projectId,
-        accountName: account.accountName,
-        accountSubtype: account.accountSubtype,
-        increaseBalance: account.increaseBalance,
-        decreaseBalance: account.decreaseBalance,
-        accountSymbol: account.accountSymbol,
-        numChildren: account.numChildren,
-        balance: account.balance.formatToMoney(),
-        balanceValue: account.balance,
-        parentId: account.parentId,
-        description: account.description,
-        accountCategory: account.accountCategory,
-        budget: account.budget
-      }
-
-      if (account.numChildren > 0) {
-        newAccount['_hasChildren'] = true
-        const statusChildrenSaved = this.childrenOpened.find(accountOpened => accountOpened._id === account.accountId)
-
-        if (statusChildrenSaved && statusChildrenSaved._children) {
-          // newAccount['_children'] = statusChildrenSaved._children
-          const newChildren = this.loadChildren(newAccount)
-          // console.log('loadChildrenSaved', newChildren)
-          newAccount['_children'] = newChildren
-          newAccount['_showChildren'] = true
-        }
-      }
-
-      return newAccount
+      const childrenFormatted = await this.setUpAccountChildren(children)
+      console.log('loadChildren', childrenFormatted)
+      return childrenFormatted
     },
     filterChanged (filter) {
       this.filter = filter
@@ -195,6 +172,7 @@ export default {
       this.page = page
     },
     openRow (row) {
+      console.log('row selected')
       this.$emit('rowSelected', row)
     }
   },
@@ -219,7 +197,9 @@ export default {
         }
       ],
       rows: [],
-      accounts: undefined
+      accounts: undefined,
+      accountsTree: undefined,
+      accountSelected: undefined
     }
   }
 }
@@ -237,4 +217,6 @@ export default {
   display: inline-block
 .custom-row:hover
   background-color: red
+.selectableRow
+  cursor: pointer
 </style>

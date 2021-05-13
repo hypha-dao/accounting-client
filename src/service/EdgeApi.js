@@ -102,17 +102,18 @@ class EdgeApi extends BaseEosApi {
     {
       account(func: uid($uid)) {
         uid
-        ownedby {
-          expand(_all_)
-        }
-        account {
-          uid
-          hash
           account {
             uid
             hash
+            account {
+              hash
+            }
+            content_groups (orderasc: content_group_sequence, first: 1) {
+              contents {
+                expand(_all_)
+              }
+            }
           }
-        }
       }
     }
     `
