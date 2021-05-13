@@ -102,13 +102,7 @@ export default {
     ...mapActions('document', ['sendTransaction']),
     async createTransaction () {
       let dateNow = new Date()
-      dateNow = dateNow.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric'
-      })
+      dateNow = dateNow.toISOString()
 
       let fullTransact = [
         [
@@ -170,8 +164,9 @@ export default {
         ]
       ]
       try {
-        await this.sendTransaction({ contentGroups: fullTransact })
-        this.$emit('created')
+        console.log('created transaction', fullTransact)
+        // await this.sendTransaction({ contentGroups: fullTransact })
+        // this.$emit('created')
       } catch (error) {
         console.log(error)
       }

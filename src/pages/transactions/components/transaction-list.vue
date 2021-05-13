@@ -38,10 +38,10 @@
         template(v-slot:body="props")
           q-tr(:props="props" @click="selectUnbalancedTxn(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row.cursor-pointer
             q-td(key="date" :props="props") {{ formattedDate(props.row.date) }}
+            q-td(key="amount" :props="props") {{ props.row.amount }}
             q-td(key="memo" :props="props") {{ props.row.memo }}
             q-td(key="from" :props="props") {{ props.row.from }}
             q-td(key="to" :props="props") {{ props.row.to }}
-            q-td(key="amount" :props="props") {{ props.row.amount }}
             //- q-td(key="currency" :props="props") {{ props.row.currency }}
       //- End of table
       .q-mt-xl.flex.column
@@ -130,6 +130,14 @@ export default {
           headerClasses: 'bg-secondary text-white'
         },
         {
+          name: 'amount',
+          align: 'center',
+          label: 'Amount',
+          field: 'amount',
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        },
+        {
           name: 'memo',
           align: 'center',
           label: 'Memo',
@@ -150,14 +158,6 @@ export default {
           align: 'center',
           label: 'To',
           field: 'to',
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        },
-        {
-          name: 'amount',
-          align: 'center',
-          label: 'Amount',
-          field: 'amount',
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         }
