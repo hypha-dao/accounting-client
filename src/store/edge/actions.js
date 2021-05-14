@@ -45,3 +45,19 @@ export const getAccountById = async function ({ commit }, { uid }) {
     commit('general/setIsLoading', false, { root: true })
   }
 }
+
+export const getAccountPathByHash = async function ({ commit }, { hash }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    // const accountName = this.getters['accounts/account']
+    const response = await this.$edgeApi.getAccountPathByHash({ hash })
+    // await commit('setEdges', response)
+    return response
+  } catch (e) {
+    console.error('An error ocurred while trying to get my entries', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+    throw new Error(e)
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}

@@ -42,7 +42,6 @@
             q-td(key="memo" :props="props") {{ props.row.memo }}
             q-td(key="from" :props="props") {{ props.row.from }}
             q-td(key="to" :props="props") {{ props.row.to }}
-            //- q-td(key="currency" :props="props") {{ props.row.currency }}
       //- End of table
       .q-mt-xl.flex.column
         .row.self-center.q-my-md
@@ -202,7 +201,6 @@ export default {
     formattedDate (date) {
       var options = { year: 'numeric', month: 'long', day: 'numeric' }
       let newDate = new Date(date)
-
       return newDate.toLocaleString('en-US', options)
     }
   }

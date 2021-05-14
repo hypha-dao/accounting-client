@@ -122,6 +122,36 @@ class EdgeApi extends BaseEosApi {
     return this.dgraph.newTxn().queryWithVars(query, vars)
   }
 
+  async getAccountPathByHash ({ hash }) {
+    const query = `
+    query account($hash:string)
+    {
+      account(func: eq(hash, $hash)) {
+        uid
+        content_groups(orderasc:content_group_sequence, first:1) {
+          contents(orderasc:label) {
+            label
+            value
+          }
+        }
+      }
+    }
+    `
+    const vars = { $hash: hash }
+
+    let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
+
+    let accountName = data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account') ? data.account[0].content_groups[0].contents.find(el => el.label === 'account_name').value : undefined
+    let parentAccount = data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account') ? data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account').value : undefined
+
+    let mappedAccount = {
+      accountName,
+      parentAccount
+    }
+
+    return mappedAccount
+  }
+
 /*   async createSetting ({ accountName, key, value }) {
     const actions = [{
       account: Contracts.BENNYFI,

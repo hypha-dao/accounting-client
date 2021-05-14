@@ -164,9 +164,8 @@ export default {
         ]
       ]
       try {
-        console.log('created transaction', fullTransact)
-        // await this.sendTransaction({ contentGroups: fullTransact })
-        // this.$emit('created')
+        await this.sendTransaction({ contentGroups: fullTransact })
+        this.$emit('created')
       } catch (error) {
         console.log(error)
       }

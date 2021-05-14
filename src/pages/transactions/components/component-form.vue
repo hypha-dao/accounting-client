@@ -26,7 +26,6 @@ q-card.full-width
         )
     q-input.q-my-md(
       outlined,
-      :rules="[rules.required]",
       v-model="component.memo",
       label="Memo",
       type="text"
@@ -38,7 +37,6 @@ q-card.full-width
       label="Amount",
       type="text"
     )
-    //- q-input(outlined :rules="[rules.required]" v-model="memo" label="Treasury" type="text").q-my-md
     .row.q-gutter-md
       q-btn.col(
         :label="'Cancel'",
@@ -75,7 +73,6 @@ export default {
         id: '',
         account: '',
         memo: '',
-        // currency: '',
         amount: ''
       },
       cleanComp: {
@@ -96,7 +93,6 @@ export default {
       this.component = this.txnComponent
       let composedAmount = (this.txnComponent.amount).split(' ')
       this.component.amount = composedAmount[0]
-      // this.component.currency = composedAmount[1]
     }
   },
   methods: {

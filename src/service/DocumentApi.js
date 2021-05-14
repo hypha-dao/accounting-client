@@ -90,12 +90,14 @@ class DocumentApi extends BaseEosApi {
 
     let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
 
-    let mappedComponents = data.transaction[0].component.map(com => ({
-      account: com.content_groups[0].contents[4].value,
+    let mappedComponents = data.transaction[0].component.map((com, idx) => ({
+      id: idx,
+      account: com.content_groups[0].contents[0].value,
       amount: com.content_groups[0].contents[1].value,
       date: com.content_groups[0].contents[3].value,
       memo: com.content_groups[0].contents[4].value,
-      percent: '10%'
+      percent: '10%',
+      accountName: ' '
     }))
 
     return mappedComponents

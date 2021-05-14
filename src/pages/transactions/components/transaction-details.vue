@@ -18,8 +18,9 @@
         :data="txnComponents"
         )
         template(v-slot:body="props")
-          q-tr(:props="props").styled-row
+          q-tr(:props="props" @click="getAccountPath(props.row.id)").styled-row
             q-td(key="memo" :props="props") {{ (props.row.memo != ' ') ? props.row.memo : '*No memo*' }}
+            q-td(key="accountName" :props="props") {{ props.row.accountName }}
             q-td(key="amount" :props="props") {{ props.row.amount }}
             q-td(key="percent" :props="props") {{ componentPercent(props.row.amount) }}
             q-td(key="actions" :props="props")
@@ -28,7 +29,7 @@
                 q-icon(name="delete" :size="'sm'" color="negative" @click="removeComponent(props.row.id)" ).cursor-pointer
         template(v-slot:bottom-row)
           q-tr.bg-grey-4.text-grey-8.cursor-pointer(@click="componentForm = !componentForm")
-            q-td(colspan="4") Add component...
+            q-td(colspan="100%") Add component...
       hr.q-mt-xl.text-primary
       textarea(style="width:100%" placeholder=" Notes:").q-mt-md
       .q-mt-xl.flex.column
@@ -71,6 +72,14 @@ export default {
           headerClasses: 'bg-secondary text-white'
         },
         {
+          name: 'accountName',
+          align: 'center',
+          label: 'Account',
+          field: 'accountName',
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        },
+        {
           name: 'amount',
           align: 'center',
           label: 'Amount',
@@ -99,11 +108,10 @@ export default {
   },
   methods: {
     ...mapActions('document', ['getTransactionById', 'saveTransaction']),
+    ...mapActions('edge', ['getAccountPathByHash']),
     formattedDate (date) {
-      console.log('previous', date)
       var options = { year: 'numeric', month: 'numeric', day: 'numeric' }
       let newDate = new Date(date)
-
       return newDate.toLocaleString('en-US', options)
     },
     async getTransactionComponents () {
@@ -119,10 +127,8 @@ export default {
       this.txnComponents.push(component)
     },
     componentPercent (compAmount) {
-      // Removing currency
       let compAmountWOCurrency = compAmount.split(' ')[0]
       let totalAmount = (this.transaction.amount).split(' ')[0]
-      // Calculating
       let percent = (100 / totalAmount) * Math.abs(compAmountWOCurrency)
 
       return percent + '%'
@@ -133,7 +139,6 @@ export default {
       this.componentForm = true
     },
     updateComponent (newVal) {
-      console.log('updating', newVal)
       this.componentForm = false
       this.txnComponents[newVal.id] = newVal
     },
@@ -168,7 +173,6 @@ export default {
       })
 
       this.saveTransaction({ contentGroups: fullTransact })
-      console.log('full trnasaction', fullTransact)
     },
     formattedComponent ({ memo, account, amount }) {
       console.log('Account', account)
@@ -191,17 +195,42 @@ export default {
           'value': ['asset', amount]
         }
       ]
+    },
+    // At the begining
+    async getAccountPath (idx) {
+      try {
+        // We get the account of the component
+        let account = await this.getAccountPathByHash({ hash: this.txnComponents[idx].account })
+        this.txnComponents[idx].accountName = account.accountName
+        console.log(this.txnComponents[idx])
+
+        /* HARD CODED */
+        if (account.parentAccount) {
+          let account2 = await this.getAccountPathByHash({ hash: account.parentAccount })
+          if (account2.accountName) {
+            this.txnComponents[idx].accountName = account2.accountName + ' > ' + this.txnComponents[idx].accountName
+          }
+          if (account2.parentAccount) {
+            let account3 = await this.getAccountPathByHash({ hash: account2.parentAccount })
+            if (account3.accountName) {
+              this.txnComponents[idx].accountName = account3.accountName + ' > ' + this.txnComponents[idx].accountName
+            }
+          }
+        }
+      } catch (error) {
+        console.error(error)
+      }
     }
   },
   watch: {
-    transaction: function () {
+    transaction: async function () {
       this.txnComponents = []
-      this.getTransactionComponents()
-      console.log('watched', this.transaction)
+      await this.getTransactionComponents()
+
+      this.txnComponents.forEach((val, idx) => {
+        this.getAccountPath(idx)
+      })
     }
-  },
-  created () {
-    console.log('created', this.transaction)
   }
 }
 </script>
