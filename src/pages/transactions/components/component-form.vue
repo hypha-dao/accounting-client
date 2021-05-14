@@ -106,6 +106,7 @@ export default {
     addComponent () {
       if (this.edit) {
         this.$emit('save', this.component)
+        this.txnComponent = null
       } else {
         this.$emit('add', this.component)
       }

@@ -178,6 +178,8 @@ export default {
         fullTransact.push(this.formattedComponent(comp))
       })
 
+      console.log('fullTransact', fullTransact)
+
       this.saveTransaction({ contentGroups: fullTransact })
     },
     formattedComponent ({ memo, account, amount }) {
@@ -192,7 +194,7 @@ export default {
         },
         {
           'label': 'account',
-          'value': ['checksum256', account.hash]
+          'value': ['checksum256', account]
         },
         {
           'label': 'amount',
@@ -202,7 +204,6 @@ export default {
     },
     // At the begining
     async getAccountPath (idx) {
-      console.log('INDEX', idx, this.txnComponents[idx].account)
       try {
         // We get the account of the component
         let account = await this.getAccountPathByHash({ hash: this.txnComponents[idx].account })
