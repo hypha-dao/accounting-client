@@ -141,6 +141,15 @@ class EdgeApi extends BaseEosApi {
 
     let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
 
+    // // If it has a name
+    // if (data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account')) {
+
+    // }
+
+    // if (data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account')) {
+    //   console.log('has parent account')
+    // }
+
     let accountName = data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account') ? data.account[0].content_groups[0].contents.find(el => el.label === 'account_name').value : undefined
     let parentAccount = data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account') ? data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account').value : undefined
 

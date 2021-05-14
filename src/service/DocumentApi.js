@@ -96,12 +96,11 @@ class DocumentApi extends BaseEosApi {
       amount: com.content_groups[0].contents[1].value,
       date: com.content_groups[0].contents[3].value,
       memo: com.content_groups[0].contents[4].value,
-      percent: '10%',
+      percent: '',
       accountName: ' '
     }))
 
     return mappedComponents
-    // return data
   }
 
   async getTransactions () {
@@ -133,10 +132,10 @@ class DocumentApi extends BaseEosApi {
       id: i,
       uid: trans.transaction[0].uid,
       date: trans.transaction[0].content_groups[0].contents[1].value,
-      amount: '1000.0 USD', // It should be the sum of each component amount ??
+      amount: '--', // It should be the sum of each component amount ??
       memo: trans.transaction[0].content_groups[0].contents[3].value,
-      approved: true,
-      balanced: true
+      approved: '--',
+      balanced: '--'
     }))
 
     return mappedTransactions

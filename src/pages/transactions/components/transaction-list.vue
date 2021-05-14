@@ -5,7 +5,7 @@
         | Transactions
       .row.justify-between.q-gutter-md.q-my-lg
         .col-5.rounded-field
-          q-select(v-model="filter" outlined :options="options" label='Filter by account')
+          q-select(v-model="filter" outlined :options="options" label='Filter by account' @input="selectFirstOfArray()")
         .col-5
           q-input(outlined label='Search' type="search" )
             template(v-slot:append)
@@ -22,11 +22,12 @@
             q-td(key="date" :props="props") {{ formattedDate(props.row.date) }}
             q-td(key="amount" :props="props") {{ props.row.amount }}
             q-td(key="memo" :props="props") {{ props.row.memo }}
-            q-td(key="approved" :props="props")
-              q-icon.icon-sized(:color="(props.row.approved) ? 'positive' : 'negative'" :name="(props.row.approved) ? 'check_circle' : 'remove_circle'")
-            q-td(key="balanced" :props="props").flex.justify-center
-              span(v-show="props.row.balanced").letter-icon.bg-positive.self-center B
-              span(v-show="!props.row.balanced").letter-icon.bg-negative.self-center U
+            q-td(key="approved" :props="props") {{ props.row.approved }}
+              //- q-icon.icon-sized(:color="(props.row.approved) ? 'positive' : 'negative'" :name="(props.row.approved) ? 'check_circle' : 'remove_circle'")
+            q-td(key="balanced" :props="props").flex.justify-center {{ props.row.balanced }}
+            //- q-td(key="balanced" :props="props").flex.justify-center
+              //- span(v-show="props.row.balanced").letter-icon.bg-positive.self-center B
+              //- span(v-show="!props.row.balanced").letter-icon.bg-negative.self-center U
       //- End of table
       //- Data table
       q-table.q-mt-xl(
@@ -177,9 +178,10 @@ export default {
       }
     },
     selectUnbalancedTxn (index) {
+      console.log('hye idx', index)
       this.selectedIndex = index
       let selectedTxn = this.unbalancedTransactions[index]
-      selectedTxn.balanced = false
+      // selectedTxn.balanced = false
       this.$emit('update', selectedTxn)
     },
     async getBalancedTxns () {
@@ -202,6 +204,15 @@ export default {
       var options = { year: 'numeric', month: 'long', day: 'numeric' }
       let newDate = new Date(date)
       return newDate.toLocaleString('en-US', options)
+    },
+    selectFirstOfArray () {
+      if (this.filter === 'Unbalanced transactions') {
+        this.selectUnbalancedTxn(0)
+      }
+
+      if (this.filter === 'Balanced transactions') {
+        this.selectBalancedTxn(0)
+      }
     }
   }
 }

@@ -100,6 +100,7 @@ export default {
           align: 'center',
           label: 'Actions',
           field: 'actions',
+          headerStyle: 'min-width: 100px',
           headerClasses: 'bg-secondary text-white'
         }
       ],
@@ -123,8 +124,13 @@ export default {
     pushComponent (component) {
       this.componentForm = false
       component.amount = `${component.amount} ${(this.transaction.amount).split(' ')[1]}`
+      // component.amount = `--`
       component.id = this.txnComponents.length
+      component.account = component.account.hash
       this.txnComponents.push(component)
+      // console.log('index created', component.id)
+      // console.log('created', this.txnComponents[component.id])
+      this.getAccountPath(component.id)
     },
     componentPercent (compAmount) {
       let compAmountWOCurrency = compAmount.split(' ')[0]
@@ -175,7 +181,6 @@ export default {
       this.saveTransaction({ contentGroups: fullTransact })
     },
     formattedComponent ({ memo, account, amount }) {
-      console.log('Account', account)
       return [
         {
           'label': 'content_group_label',
@@ -186,9 +191,8 @@ export default {
           'value': ['string', memo]
         },
         {
-          'label': 'account', // Account hash
-          'value': ['checksum256', account]
-          // 'value': ['checksum256', '52a7982cbafb931f4f5a4dfb048a84df3dde392f69ead5fc158cc9922afcb418']
+          'label': 'account',
+          'value': ['checksum256', account.hash]
         },
         {
           'label': 'amount',
@@ -198,12 +202,13 @@ export default {
     },
     // At the begining
     async getAccountPath (idx) {
+      console.log('INDEX', idx, this.txnComponents[idx].account)
       try {
         // We get the account of the component
         let account = await this.getAccountPathByHash({ hash: this.txnComponents[idx].account })
         this.txnComponents[idx].accountName = account.accountName
-        console.log(this.txnComponents[idx])
 
+        console.log('res', account)
         /* HARD CODED */
         if (account.parentAccount) {
           let account2 = await this.getAccountPathByHash({ hash: account.parentAccount })

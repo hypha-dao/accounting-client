@@ -72,12 +72,14 @@ export default {
       component: {
         id: '',
         account: '',
+        accountName: '',
         memo: '',
         amount: ''
       },
       cleanComp: {
         id: '',
         account: '',
+        accountName: '',
         memo: '',
         amount: ''
       },
