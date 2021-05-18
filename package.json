@@ -1,8 +1,8 @@
 {
-  "name": "VenifyVarex",
+  "name": "Accounting",
   "version": "0.0.1",
-  "description": "Venify Varex",
-  "productName": "Venify Varex",
+  "description": "Accounting",
+  "productName": "Accounting",
   "cordovaId": "org.cordova.quasar.app",
   "author": "gregory-latinier <jmgayosso@m1ghty.com>",
   "private": true,
