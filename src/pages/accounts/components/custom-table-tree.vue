@@ -135,7 +135,7 @@ export default {
         let amount = this.getComponentsOfAccount(account.hash)
         return {
           accountName: content.find(v => v.label === 'account_name').value,
-          parentAccount: content.find(v => v.label === 'parent_account').value,
+          // parentAccount: content.find(v => v.label === 'parent_account').value,
           hash: account.hash,
           uid: account.uid,
           _id: account.uid,
@@ -163,7 +163,8 @@ export default {
         const content = account.content_groups[0].contents
         return {
           accountName: content.find(v => v.label === 'account_name').value,
-          parentAccount: content.find(v => v.label === 'parent_account').value,
+          // parentAccount: content.find(v => v.label === 'parent_account').value,
+          parentAccount: account.ownedby.hash,
           hash: account.hash,
           uid: account.uid,
           _hasChildren: !!account.account,

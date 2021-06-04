@@ -97,12 +97,32 @@ class EdgeApi extends BaseEosApi {
   }
 
   async getAccountById ({ uid }) {
+    // const query = `
+    // query account($uid:string)
+    // {
+    //   account(func: uid($uid)) {
+    //     uid
+    //       account {
+    //         uid
+    //         hash
+    //         account {
+    //           hash
+    //         }
+    //         content_groups (orderasc: content_group_sequence, first: 1) {
+    //           contents {
+    //             expand(_all_)
+    //           }
+    //         }
+    //       }
+    //   }
+    // }
+    // `
     const query = `
     query account($uid:string)
     {
       account(func: uid($uid)) {
         uid
-          account {
+          account (first:1) {
             uid
             hash
             account {
@@ -110,8 +130,12 @@ class EdgeApi extends BaseEosApi {
             }
             content_groups (orderasc: content_group_sequence, first: 1) {
               contents {
-                expand(_all_)
+                label
+                value
               }
+            }
+            ownedby {
+              hash
             }
           }
       }
@@ -119,7 +143,9 @@ class EdgeApi extends BaseEosApi {
     `
     const vars = { $uid: uid }
 
-    this.getAccountTotalAmount({ hash: '2336016affb318b325b6a007aaa458911118d0f3b76b6a2da8f1b30bb2f47d92' })
+    // console.log('loading child of', uid)
+
+    // this.getAccountTotalAmount({ hash: '2336016affb318b325b6a007aaa458911118d0f3b76b6a2da8f1b30bb2f47d92' })
 
     return this.dgraph.newTxn().queryWithVars(query, vars)
   }
