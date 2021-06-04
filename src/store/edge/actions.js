@@ -3,7 +3,6 @@ export const getEdges = async function ({ commit }) {
     commit('general/setIsLoading', true, { root: true })
     // const accountName = this.getters['accounts/account']
     const response = await this.$edgeApi.getChartOfAccount({ })
-    // await commit('setEdges', response)
     return response
   } catch (e) {
     console.error('An error ocurred while trying to get Charts of accounts', e)
@@ -18,6 +17,8 @@ export const getChartOfAccounts = async function ({ commit }) {
   try {
     commit('general/setIsLoading', true, { root: true })
     // const accountName = this.getters['accounts/account']
+    const components = await this.$edgeApi.getAllTransactionComponents({ })
+    await commit('setComponents', components)
     const response = await this.$edgeApi.getChartOfAccount({ })
     // await commit('setEdges', response)
     return response

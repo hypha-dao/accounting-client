@@ -119,6 +119,8 @@ class EdgeApi extends BaseEosApi {
     `
     const vars = { $uid: uid }
 
+    this.getAccountTotalAmount({ hash: '2336016affb318b325b6a007aaa458911118d0f3b76b6a2da8f1b30bb2f47d92' })
+
     return this.dgraph.newTxn().queryWithVars(query, vars)
   }
 
@@ -141,15 +143,6 @@ class EdgeApi extends BaseEosApi {
 
     let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
 
-    // // If it has a name
-    // if (data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account')) {
-
-    // }
-
-    // if (data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account')) {
-    //   console.log('has parent account')
-    // }
-
     let accountName = data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account') ? data.account[0].content_groups[0].contents.find(el => el.label === 'account_name').value : undefined
     let parentAccount = data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account') ? data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account').value : undefined
 
@@ -159,6 +152,31 @@ class EdgeApi extends BaseEosApi {
     }
 
     return mappedAccount
+  }
+
+  async getAllTransactionComponents () {
+    let query = `
+    {
+      component(func: has(account))
+      {
+        content_groups(orderasc:content_group_sequence, first:1)  {
+          contents(orderasc:label)
+          @filter(anyofterms(label, "amount account")) {
+            label
+            value
+          }
+        }
+      }
+    }
+    `
+    let { data } = await this.dgraph.newTxn().query(query)
+
+    let mappedComponents = data.component.map(com => ({
+      accountHash: com.content_groups[0].contents[0].value,
+      amount: com.content_groups[0].contents[1].value // Each component with the same hash
+    }))
+
+    return mappedComponents
   }
 
 /*   async createSetting ({ accountName, key, value }) {

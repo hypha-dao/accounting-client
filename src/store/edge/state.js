@@ -1,3 +1,4 @@
 export default () => ({
-  edges: null
+  edges: null,
+  coomponents: null
 })

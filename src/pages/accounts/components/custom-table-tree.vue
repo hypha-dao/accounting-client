@@ -72,7 +72,7 @@ import './custom-table-tree-style.css'
 // import VueAdsTableTree2 from 'vue-ads-table-tree'
 // const VueAdsPagination = window['vue-ads-pagination']
 // const VueAdsPageButton = window['vue-ads-pagination']
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 export default {
   name: 'custom-table-tree',
   components: {
@@ -120,6 +120,7 @@ export default {
   },
   methods: {
     ...mapActions('edge', ['getChartOfAccounts', 'getAccountById']),
+    ...mapState('edge', ['components']),
     selectAccount (account) {
       if (account.account) {
         this.accountSelected = account
@@ -131,13 +132,15 @@ export default {
       if (!this.accounts || !this.accounts.accounts) return undefined
       this.accountsTree = this.accounts.accounts.map(account => {
         const content = account.content_groups[0].contents
+        let amount = this.getComponentsOfAccount(account.hash)
         return {
           accountName: content.find(v => v.label === 'account_name').value,
           parentAccount: content.find(v => v.label === 'parent_account').value,
           hash: account.hash,
           uid: account.uid,
           _id: account.uid,
-          _hasChildren: true
+          _hasChildren: true,
+          amount
         }
       })
     },
@@ -184,6 +187,14 @@ export default {
     openRow (row) {
       console.log('row selected')
       this.$emit('rowSelected', row)
+    },
+    async getComponentsOfAccount (hash) {
+      let comps = await this.components()
+      let ownComps = comps.filter(v => v.accountHash === hash)
+
+      return ownComps.reduce((acc, curr) => {
+        return acc + curr
+      }, 0)
     }
   },
   data () {

@@ -18,7 +18,7 @@
         :data="txnComponents"
         )
         template(v-slot:body="props")
-          q-tr(:props="props" @click="getAccountPath(props.row.id)").styled-row
+          q-tr(:props="props" @click="printTrans(props.row.id)").styled-row
             q-td(key="memo" :props="props") {{ (props.row.memo != ' ') ? props.row.memo : '*No memo*' }}
             q-td(key="accountName" :props="props") {{ props.row.accountName }}
             q-td(key="amount" :props="props") {{ props.row.amount }}
@@ -110,6 +110,9 @@ export default {
   methods: {
     ...mapActions('document', ['getTransactionById', 'saveTransaction']),
     ...mapActions('edge', ['getAccountPathByHash']),
+    printTrans (idx) {
+      console.log(this.txnComponents[idx])
+    },
     formattedDate (date) {
       var options = { year: 'numeric', month: 'numeric', day: 'numeric' }
       let newDate = new Date(date)
@@ -209,7 +212,6 @@ export default {
         let account = await this.getAccountPathByHash({ hash: this.txnComponents[idx].account })
         this.txnComponents[idx].accountName = account.accountName
 
-        console.log('res', account)
         /* HARD CODED */
         if (account.parentAccount) {
           let account2 = await this.getAccountPathByHash({ hash: account.parentAccount })

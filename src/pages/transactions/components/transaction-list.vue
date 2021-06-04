@@ -178,7 +178,6 @@ export default {
       }
     },
     selectUnbalancedTxn (index) {
-      console.log('hye idx', index)
       this.selectedIndex = index
       let selectedTxn = this.unbalancedTransactions[index]
       // selectedTxn.balanced = false
