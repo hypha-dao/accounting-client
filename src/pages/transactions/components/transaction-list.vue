@@ -54,7 +54,7 @@
             q-icon(class="icon-sized" name="delete")
             span Delete
       q-dialog(v-model="create")
-        CreateTransaction(@created="getUnbalancedTransactions()")
+        CreateTransaction(@created="getTransactions()")
 </template>
 
 <script>
@@ -165,12 +165,13 @@ export default {
     }
   },
   async created () {
-    await this.getBalancedTxns()
-    await this.getUnbalancedTxns()
+    await this.getTxns()
+    // await this.getBalancedTxns()
+    // await this.getUnbalancedTxns()
     this.selectBalancedTxn(this.selectedIndex)
   },
   methods: {
-    ...mapActions('document', ['getTransactions', 'getUnbalancedTransactions']),
+    ...mapActions('document', ['getTransactions', 'getEvents', 'getTransactionById']),
     selectBalancedTxn (index) {
       if (this.balancedTransactions.length > 0) {
         this.selectedIndex = index
@@ -183,22 +184,27 @@ export default {
       // selectedTxn.balanced = false
       this.$emit('update', selectedTxn)
     },
-    async getBalancedTxns () {
+    async getTxns () {
       try {
-        let txns = await this.getTransactions()
-        this.balancedTransactions = txns
+        let txns = await this.getEvents()
+        let txns2 = await this.getTransactions()
+        let txn = await this.getTransactionById({ uid: '0x79ef' })
+        console.log('events', txns)
+        console.log('transax', txns2)
+        console.log('by id', txn)
+        // this.balancedTransactions = txns
       } catch (error) {
         console.log(error)
       }
     },
-    async getUnbalancedTxns () {
-      try {
-        let unTxns = await this.getUnbalancedTransactions()
-        this.unbalancedTransactions = unTxns
-      } catch (error) {
-        console.log(error)
-      }
-    },
+    // async getUnbalancedTxns () {
+    //   try {
+    //     let unTxns = await this.getUnbalancedTransactions()
+    //     this.unbalancedTransactions = unTxns
+    //   } catch (error) {
+    //     console.log(error)
+    //   }
+    // },
     formattedDate (date) {
       var options = { year: 'numeric', month: 'long', day: 'numeric' }
       let newDate = new Date(date)

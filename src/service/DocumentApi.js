@@ -128,20 +128,25 @@ class DocumentApi extends BaseEosApi {
     return this.eosApi.signTransaction(actions)
   }
 
+  // Returns details of transaction (components details)
   async getTransactionById ({ uid }) {
     const query = `
     query transactions($uid:string)
     {
       transaction(func: uid($uid)) {
         component {
-          content_groups(
-          orderasc:content_group_sequence,
-          first:1)
-          {
+          account {
+            content_groups(orderasc:content_group_sequence, first:1) {
+              contents(orderasc:label)  {
+                label
+                value
+              }
+            }
+          }
+          content_groups(orderasc:content_group_sequence, first:1) {
             contents(orderasc:label)  {
               label
               value
-              type
             }
           }
         }
@@ -153,17 +158,67 @@ class DocumentApi extends BaseEosApi {
 
     let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
 
-    let mappedComponents = data.transaction[0].component.map((com, idx) => ({
-      id: idx,
-      account: com.content_groups[0].contents[0].value,
-      amount: com.content_groups[0].contents[1].value,
-      date: com.content_groups[0].contents[3].value,
-      memo: com.content_groups[0].contents[4].value,
-      percent: '',
-      accountName: ' '
-    }))
+    let mappedTxn = data.transaction[0].component.map((com, idx) => {
+      let componentCont = com.content_groups[0].contents
+      // let eventCont = com.event.content_groups[0].contents
+      let accountCont = com.account[0].content_groups[0].contents
+      return {
+        id: idx,
+        amount: componentCont.find(el => el.label === 'amount'),
+        accountHash: componentCont.find(el => el.label === 'account'),
+        accountPath: accountCont.find(el => el.label === 'path'),
+        accountType: accountCont.find(el => el.label === 'account_tag_type'),
+        accountCode: accountCont.find(el => el.label === 'account_code'),
+        accountName: accountCont.find(el => el.label === 'account_name'),
+        date: componentCont.find(el => el.label === 'create_date'),
+        memo: componentCont.find(el => el.label === 'memo')
+      }
+    })
 
-    return mappedComponents
+    return mappedTxn
+  }
+
+  async getEvents () {
+    const query = `
+    {
+      events(func: has(hash))
+      {
+        event {
+          uid
+          hash
+          content_groups(orderasc:content_group_sequence, first:1) {
+            contents(orderasc:label) {
+              label
+              value
+            }
+          }
+        }
+      }
+    }
+    `
+    let { data } = await this.dgraph.newTxn().query(query)
+
+    let mappedEvents = data.events.map((event, i) => {
+      const contents = event.event[0].content_groups[0].contents
+      return {
+        id: i,
+        uid: event.event[0].uid,
+        hash: event.event[0].hash,
+        chainId: contents.find(el => el.label === 'chainId').value,
+        currency: contents.find(el => el.label === 'currency').value,
+        quantity: contents.find(el => el.label === 'quantity').value,
+        from: contents.find(el => el.label === 'from').value,
+        to: contents.find(el => el.label === 'to').value,
+        source: contents.find(el => el.label === 'source').value,
+        memo: contents.find(el => el.label === 'memo').value,
+        date: contents.find(el => el.label === 'timestamp').value,
+        usdValue: contents.find(el => el.label === 'usd_value').value,
+        treasuryId: contents.find(el => el.label === 'treasury_id').value
+      }
+    })
+
+    return mappedEvents
+    // return data
   }
 
   async getTransactions () {
@@ -173,6 +228,13 @@ class DocumentApi extends BaseEosApi {
       {
         transaction {
           uid
+          hash
+          unapproved {
+            hash
+          }
+          approved {
+            hash
+          }
           content_groups(orderasc:content_group_sequence, first:1) {
             contents(orderasc:label) {
               label
@@ -186,20 +248,18 @@ class DocumentApi extends BaseEosApi {
     `
     let { data } = await this.dgraph.newTxn().query(query)
 
-    /**
-     *  Contents[0] memo
-     *  Contents[1] date
-     *  Contents[2] ledger
-     */
-    let mappedTransactions = data.transactions.map((trans, i) => ({
-      id: i,
-      uid: trans.transaction[0].uid,
-      date: trans.transaction[0].content_groups[0].contents[1].value,
-      amount: '--', // It should be the sum of each component amount ??
-      memo: trans.transaction[0].content_groups[0].contents[3].value,
-      approved: '--',
-      balanced: '--'
-    }))
+    let mappedTransactions = data.transactions.map((trans, i) => {
+      let contents = trans.transaction[0].content_groups[0].contents
+      return {
+        id: i,
+        hash: trans.transaction[0].hash,
+        uid: trans.transaction[0].uid,
+        date: contents.find(el => el.label === 'trx_date').value,
+        ledger: contents.find(el => el.label === 'trx_ledger').value,
+        memo: contents.find(el => el.label === 'trx_memo').value,
+        approved: !(trans.transaction[0].unapproved)
+      }
+    })
 
     return mappedTransactions
     // return data

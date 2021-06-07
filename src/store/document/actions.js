@@ -14,6 +14,19 @@ export const getDocuments = async function ({ commit }) {
   }
 }
 
+export const getEvents = async function ({ commit }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const events = await this.$documentApi.getEvents()
+    return events
+  } catch (e) {
+    console.error('An error ocurred while trying to get events', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
+
 export const getTransactions = async function ({ commit }) {
   try {
     commit('general/setIsLoading', true, { root: true })
@@ -29,6 +42,7 @@ export const getTransactions = async function ({ commit }) {
 
 export const getTransactionById = async function ({ commit }, { uid }) {
   try {
+    console.log('uid', uid)
     commit('general/setIsLoading', true, { root: true })
     const transactions = await this.$documentApi.getTransactionById({ uid })
     return transactions
