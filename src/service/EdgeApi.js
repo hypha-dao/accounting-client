@@ -44,43 +44,27 @@ class EdgeApi extends BaseEosApi {
    * and its sub accounts.
    */
   async getChartOfAccount () {
-    // const query = `
-    // {
-    //   chartOfAccounts(func: has(hash))
-    //   @filter(eq(hash, ${this.baseNodeHash}))
-    //   {
-    //     hash
-    //     ledger {
-    //       uid
-    //       hash
-    //       created_date
-    //       creator
-    //       account {
-    //         hash
-    //         uid
-    //         creator
-    //         content_groups {
-    //           contents {
-    //             expand(_all_)
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
-    // `
     const query = `
     {
-      chartOfAccounts(func: type(Document)) @filter(eq(hash, ${this.baseNodeHash})) {
+      chartOfAccounts(func: type(Document)) @filter(eq(hash, 91806de20aafa70e53fdb8fd79c6fbfea1c58f85a9fd0b0d57eda162e04e05b4)) {
         hash
         ledger {
           hash
           account {
             hash
             uid
+            balances {
+              content_groups (orderasc: content_group_sequence, first: 1) {
+                contents {
+                  label
+                  value
+                }
+              }
+            }
             content_groups (orderasc: content_group_sequence, first: 1) {
               contents {
-                expand(_all_)
+                label
+                value
               }
             }
           }
@@ -89,7 +73,7 @@ class EdgeApi extends BaseEosApi {
     }
     `
     const queryResult = await this.dgraph.newTxn().query(query)
-    // console.log('queryResult', queryResult)
+    // console.log('queryResult', queryR esult)
     const data = {}
     data.accounts = queryResult.data.chartOfAccounts[0].ledger[0].account
     data.ledger_hash = queryResult.data.chartOfAccounts[0].ledger[0].hash
@@ -97,87 +81,53 @@ class EdgeApi extends BaseEosApi {
   }
 
   async getAccountById ({ uid }) {
-    // const query = `
-    // query account($uid:string)
-    // {
-    //   account(func: uid($uid)) {
-    //     uid
-    //       account {
-    //         uid
-    //         hash
-    //         account {
-    //           hash
-    //         }
-    //         content_groups (orderasc: content_group_sequence, first: 1) {
-    //           contents {
-    //             expand(_all_)
-    //           }
-    //         }
-    //       }
-    //   }
-    // }
-    // `
     const query = `
     query account($uid:string)
     {
       account(func: uid($uid)) {
         uid
-          account (first:1) {
-            uid
+        account (first:1) {
+          uid
+          hash
+          account {
             hash
-            account {
-              hash
+          }
+          content_groups (orderasc: content_group_sequence, first: 1) {
+            contents {
+              label
+              value
             }
-            content_groups (orderasc: content_group_sequence, first: 1) {
+          }
+          ownedby {
+            hash
+          }
+          balances {
+            content_groups (orderasc: content_group_sequence) {
               contents {
                 label
                 value
               }
             }
-            ownedby {
-              hash
-            }
-          }
-      }
-    }
-    `
-    const vars = { $uid: uid }
-
-    // console.log('loading child of', uid)
-
-    // this.getAccountTotalAmount({ hash: '2336016affb318b325b6a007aaa458911118d0f3b76b6a2da8f1b30bb2f47d92' })
-
-    return this.dgraph.newTxn().queryWithVars(query, vars)
-  }
-
-  async getAccountPathByHash ({ hash }) {
-    const query = `
-    query account($hash:string)
-    {
-      account(func: eq(hash, $hash)) {
-        uid
-        content_groups(orderasc:content_group_sequence, first:1) {
-          contents(orderasc:label) {
-            label
-            value
           }
         }
       }
     }
     `
-    const vars = { $hash: hash }
+    const vars = { $uid: uid }
 
-    let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
+    return this.dgraph.newTxn().queryWithVars(query, vars)
+  }
 
-    let accountName = data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account') ? data.account[0].content_groups[0].contents.find(el => el.label === 'account_name').value : undefined
-    let parentAccount = data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account') ? data.account[0].content_groups[0].contents.find(el => el.label === 'parent_account').value : undefined
-
-    let mappedAccount = {
-      accountName,
-      parentAccount
-    }
-
-    return mappedAccount
+  async createAccount ({ accountName, accountInfo }) {
+    const actions = [{
+      account: Contracts.BENNYFI,
+      name: 'createacc',
+      data: {
+        creator: accountName,
+        account_info: accountInfo
+      }
+    }]
+    return this.eosApi.signTransaction(actions)
   }
 
   async getAllTransactionComponents () {
@@ -204,31 +154,6 @@ class EdgeApi extends BaseEosApi {
 
     return mappedComponents
   }
-
-/*   async createSetting ({ accountName, key, value }) {
-    const actions = [{
-      account: Contracts.BENNYFI,
-      name: 'setsetting',
-      data: {
-        setter: accountName,
-        key: key,
-        value: value
-      }
-    }]
-    return this.eosApi.signTransaction(actions)
-  }
-
-  async eraseSetting ({ accountName, key }) {
-    const actions = [{
-      account: Contracts.BENNYFI,
-      name: 'eraseSetting',
-      data: {
-        setter: accountName,
-        key: key
-      }
-    }]
-    return this.eosApi.signTransaction(actions)
-  } */
 }
 
 export default EdgeApi

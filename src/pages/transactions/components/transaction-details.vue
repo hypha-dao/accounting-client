@@ -108,7 +108,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('document', ['getTransactionById', 'saveTransaction']),
+    ...mapActions('document', ['getTransactionById', 'createTxn']),
     ...mapActions('edge', ['getAccountPathByHash']),
     printTrans (idx) {
       console.log(this.txnComponents[idx])
@@ -183,7 +183,7 @@ export default {
 
       console.log('fullTransact', fullTransact)
 
-      this.saveTransaction({ contentGroups: fullTransact })
+      this.createTxn({ contentGroups: fullTransact })
     },
     formattedComponent ({ memo, account, amount }) {
       return [

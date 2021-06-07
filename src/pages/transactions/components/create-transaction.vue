@@ -4,7 +4,7 @@ q-card.full-width
     .text-h6 Create transaction
     q-space
     q-btn(icon="close", flat, round, v-close-popup)
-  q-form.q-px-lg.q-py-md(@submit.prevent="createTransaction()")
+  q-form.q-px-lg.q-py-md(@submit.prevent="addEvent()")
     q-select.q-my-lg(
       @input="getAvailableSources()"
       v-model="transaction.currency"
@@ -99,8 +99,8 @@ export default {
     this.getAvailableSources()
   },
   methods: {
-    ...mapActions('document', ['sendTransaction']),
-    async createTransaction () {
+    ...mapActions('document', ['createEvent']),
+    async addEvent () {
       let dateNow = new Date()
       dateNow = dateNow.toISOString()
 
@@ -164,7 +164,7 @@ export default {
         ]
       ]
       try {
-        await this.sendTransaction({ contentGroups: fullTransact })
+        await this.createEvent({ contentGroups: fullTransact })
         this.$emit('created')
       } catch (error) {
         console.log(error)

@@ -39,11 +39,11 @@ class DocumentApi extends BaseEosApi {
     return documents
   }
 
-  async sendTransaction ({ accountName, contentGroups }) {
+  async createEvent ({ accountName, contentGroups }) {
     console.log('api', accountName, contentGroups)
     const actions = [{
       account: Contracts.HYPHA,
-      name: 'newunrvwdtrx',
+      name: 'newevent',
       data: {
         issuer: accountName,
         trx_info: contentGroups
@@ -52,14 +52,77 @@ class DocumentApi extends BaseEosApi {
     return this.eosApi.signTransaction(actions)
   }
 
-  async saveTransaction ({ accountName, contentGroups }) {
+  async bindEvent ({ updater, eventHash, componentHash }) {
+    const actions = [{
+      account: Contracts.HYPHA,
+      name: 'bindevent',
+      data: {
+        updater,
+        event_hash: eventHash,
+        component_hash: componentHash
+      }
+    }]
+    return this.eosApi.signTransaction(actions)
+  }
+
+  async unbindEvent ({ updater, eventHash, componentHash }) {
+    const actions = [{
+      account: Contracts.HYPHA,
+      name: 'unbindevent',
+      data: {
+        updater,
+        event_hash: eventHash,
+        component_hash: componentHash
+      }
+    }]
+    return this.eosApi.signTransaction(actions)
+  }
+
+  async createTxn ({ accountName, contentGroups }) {
     console.log('api', accountName, contentGroups)
     const actions = [{
       account: Contracts.HYPHA,
-      name: 'transact',
+      name: 'createtrx',
       data: {
         issuer: accountName,
         trx_info: contentGroups
+      }
+    }]
+    return this.eosApi.signTransaction(actions)
+  }
+
+  async createTxnWithEvent ({ accountName, contentGroups }) {
+    console.log('api', accountName, contentGroups)
+    const actions = [{
+      account: Contracts.HYPHA,
+      name: 'createtrxwe',
+      data: {
+        issuer: accountName,
+        trx_info: contentGroups
+      }
+    }]
+    return this.eosApi.signTransaction(actions)
+  }
+  async updateTxn ({ updater, transactionHash, contentGroups }) {
+    const actions = [{
+      account: Contracts.HYPHA,
+      name: 'updatetrx',
+      data: {
+        updater,
+        trx_hash: transactionHash,
+        trx_info: contentGroups
+      }
+    }]
+    return this.eosApi.signTransaction(actions)
+  }
+
+  async balanceTxn ({ issuer, transactionHash }) {
+    const actions = [{
+      account: Contracts.HYPHA,
+      name: 'balancetrx',
+      data: {
+        issuer,
+        trx_hash: transactionHash
       }
     }]
     return this.eosApi.signTransaction(actions)

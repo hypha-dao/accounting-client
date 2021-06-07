@@ -53,29 +53,101 @@ export const getUnbalancedTransactions = async function ({ commit }) {
   }
 }
 
-export const sendTransaction = async function ({ commit }, { contentGroups }) {
+export const createEvent = async function ({ commit }, { contentGroups }) {
   try {
     commit('general/setIsLoading', true, { root: true })
     const accountName = await this.getters['accounts/account']
-    const transaction = await this.$documentApi.sendTransaction({ contentGroups, accountName })
-    return transaction
+    const event = await this.$documentApi.createEvent({ contentGroups, accountName })
+    return event
   } catch (e) {
-    console.error('An error ocurred while trying to get unbalanced transactions', e)
+    console.error('An error ocurred while trying to create event', e)
     commit('general/setErrorMsg', e.message || e, { root: true })
   } finally {
     commit('general/setIsLoading', false, { root: true })
   }
 }
 
-export const saveTransaction = async function ({ commit }, { contentGroups }) {
+export const bindEvent = async function ({ commit }, { eventHash, componentHash }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const updater = await this.getters['accounts/account']
+    const event = await this.$documentApi.bindEvent({ updater, eventHash, componentHash })
+    return event
+  } catch (e) {
+    console.error('An error ocurred while trying to bind event', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
+
+export const unbindEvent = async function ({ commit }, { eventHash, componentHash }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const updater = await this.getters['accounts/account']
+    const event = await this.$documentApi.unbindEvent({ updater, eventHash, componentHash })
+    return event
+  } catch (e) {
+    console.error('An error ocurred while trying to unbind event', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
+
+export const createTxn = async function ({ commit }, { contentGroups }) {
   try {
     commit('general/setIsLoading', true, { root: true })
     const accountName = await this.getters['accounts/account']
     console.log('store', contentGroups)
-    const transaction = await this.$documentApi.saveTransaction({ contentGroups, accountName })
+    const transaction = await this.$documentApi.createTxn({ contentGroups, accountName })
     return transaction
   } catch (e) {
-    console.error('An error ocurred while trying to get unbalanced transactions', e)
+    console.error('An error ocurred while trying to create txn', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
+
+export const createTxnWithEvent = async function ({ commit }, { contentGroups }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const accountName = await this.getters['accounts/account']
+    console.log('store', contentGroups)
+    const transaction = await this.$documentApi.createTxnWithEvent({ contentGroups, accountName })
+    return transaction
+  } catch (e) {
+    console.error('An error ocurred while trying to crerate txn with event', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
+
+export const updateTxn = async function ({ commit }, { transactionHash, contentGroups }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const updater = await this.getters['accounts/account']
+    // console.log('store', contentGroups)
+    const transaction = await this.$documentApi.updateTxn({ updater, transactionHash, contentGroups })
+    return transaction
+  } catch (e) {
+    console.error('An error ocurred while trying to crerate txn with event', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
+
+export const balanceTxn = async function ({ commit }, { transactionHash }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const issuer = await this.getters['accounts/account']
+    const transaction = await this.$documentApi.updateTxn({ issuer, transactionHash })
+    return transaction
+  } catch (e) {
+    console.error('An error ocurred while trying to crerate txn with event', e)
     commit('general/setErrorMsg', e.message || e, { root: true })
   } finally {
     commit('general/setIsLoading', false, { root: true })
