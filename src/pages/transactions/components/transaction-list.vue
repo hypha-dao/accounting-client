@@ -12,37 +12,34 @@
               q-icon(name="search")
       //- Data table
       q-table.q-mt-xl(
-        :columns="columnsBalanced"
-        :data="balancedTransactions"
+        :columns="columns"
+        :data="transactions"
         :selected.sync="selected"
-        v-if="filter === 'Balanced transactions'"
       )
         template(v-slot:body="props")
-          q-tr(:props="props" @click="selectBalancedTxn(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row.cursor-pointer
+          q-tr(:props="props" @click="selectTxn(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row.cursor-pointer
             q-td(key="date" :props="props") {{ formattedDate(props.row.date) }}
             q-td(key="amount" :props="props") {{ props.row.amount }}
             q-td(key="memo" :props="props") {{ props.row.memo }}
-            q-td(key="approved" :props="props") {{ props.row.approved }}
-              //- q-icon.icon-sized(:color="(props.row.approved) ? 'positive' : 'negative'" :name="(props.row.approved) ? 'check_circle' : 'remove_circle'")
+            q-td(key="approved" :props="props")
+              q-icon(:name="props.row.approved ? 'check' : 'remove_circle'" size="25px")
             q-td(key="balanced" :props="props").flex.justify-center {{ props.row.balanced }}
-            //- q-td(key="balanced" :props="props").flex.justify-center
-              //- span(v-show="props.row.balanced").letter-icon.bg-positive.self-center B
-              //- span(v-show="!props.row.balanced").letter-icon.bg-negative.self-center U
       //- End of table
+
       //- Data table
-      q-table.q-mt-xl(
-        :columns="columnsUnbalanced"
-        :data="unbalancedTransactions"
-        :selected.sync="selected"
-        v-if="filter === 'Unbalanced transactions'"
-      )
-        template(v-slot:body="props")
-          q-tr(:props="props" @click="selectUnbalancedTxn(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row.cursor-pointer
-            q-td(key="date" :props="props") {{ formattedDate(props.row.date) }}
-            q-td(key="amount" :props="props") {{ props.row.amount }}
-            q-td(key="memo" :props="props") {{ props.row.memo }}
-            q-td(key="from" :props="props") {{ props.row.from }}
-            q-td(key="to" :props="props") {{ props.row.to }}
+      //- q-table.q-mt-xl(
+      //-   :columns="columnsUnbalanced"
+      //-   :data="unbalancedTransactions"
+      //-   :selected.sync="selected"
+      //-   v-if="filter === 'Unbalanced transactions'"
+      //- )
+      //-   template(v-slot:body="props")
+      //-     q-tr(:props="props" @click="selectUnbalancedTxn(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row.cursor-pointer
+      //-       q-td(key="date" :props="props") {{ formattedDate(props.row.date) }}
+      //-       q-td(key="amount" :props="props") {{ props.row.amount }}
+      //-       q-td(key="memo" :props="props") {{ props.row.memo }}
+      //-       q-td(key="from" :props="props") {{ props.row.from }}
+      //-       q-td(key="to" :props="props") {{ props.row.to }}
       //- End of table
       .q-mt-xl.flex.column
         .row.self-center.q-my-md
@@ -50,7 +47,7 @@
             q-icon(class="icon-sized" name="note_add")
             span New
         .row.self-center.q-my-md
-          q-btn.q-px-xl.btn-md(color="primary" @click="balancedTransactions.splice(selectedIndex, 1)" )
+          q-btn.q-px-xl.btn-md(color="primary" @click="transactions.splice(selectedIndex, 1)" )
             q-icon(class="icon-sized" name="delete")
             span Delete
       q-dialog(v-model="create")
@@ -76,30 +73,29 @@ export default {
         'Balanced transactions',
         'Unbalanced transactions'
       ],
-      balancedTransactions: [],
-      unbalancedTransactions: [],
-      columnsBalanced: [
+      transactions: [],
+      columns: [
         {
           name: 'date',
           align: 'center',
           label: 'Date',
-          field: 'date',
+          field: row => row.date,
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         },
-        {
-          name: 'amount',
-          align: 'center',
-          label: 'Amount',
-          field: 'amount',
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        },
+        // {
+        //   name: 'amount',
+        //   align: 'center',
+        //   label: 'Amount',
+        //   field: row => row.currency + ' ' + row.quantity,
+        //   sortable: true,
+        //   headerClasses: 'bg-secondary text-white'
+        // },
         {
           name: 'memo',
           align: 'center',
           label: 'Memo',
-          field: 'memo',
+          field: row => row.memo,
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         },
@@ -107,60 +103,26 @@ export default {
           name: 'approved',
           align: 'center',
           label: 'Approved',
-          field: 'approved',
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        },
-        {
-          name: 'balanced',
-          align: 'center',
-          label: 'Balanced',
-          field: 'balanced',
+          field: row => row.approved,
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         }
-      ],
-      columnsUnbalanced: [
-        {
-          name: 'date',
-          align: 'center',
-          label: 'Date',
-          field: 'date',
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        },
-        {
-          name: 'amount',
-          align: 'center',
-          label: 'Amount',
-          field: 'amount',
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        },
-        {
-          name: 'memo',
-          align: 'center',
-          label: 'Memo',
-          field: 'memo',
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        },
-        {
-          name: 'from',
-          align: 'center',
-          label: 'From',
-          field: 'from',
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        },
-        {
-          name: 'to',
-          align: 'center',
-          label: 'To',
-          field: 'to',
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        }
+        // {
+        //   name: 'from',
+        //   align: 'center',
+        //   label: 'From',
+        //   field: row => row.from,
+        //   sortable: true,
+        //   headerClasses: 'bg-secondary text-white'
+        // },
+        // {
+        //   name: 'to',
+        //   align: 'center',
+        //   label: 'To',
+        //   field: row => row.to,
+        //   sortable: true,
+        //   headerClasses: 'bg-secondary text-white'
+        // }
       ]
     }
   },
@@ -168,22 +130,22 @@ export default {
     await this.getTxns()
     // await this.getBalancedTxns()
     // await this.getUnbalancedTxns()
-    this.selectBalancedTxn(this.selectedIndex)
+    this.selectTxn(this.selectedIndex)
   },
   methods: {
     ...mapActions('document', ['getTransactions', 'getEvents', 'getTransactionById']),
-    selectBalancedTxn (index) {
-      if (this.balancedTransactions.length > 0) {
+    selectTxn (index) {
+      if (this.transactions.length > 0) {
         this.selectedIndex = index
-        this.$emit('update', this.balancedTransactions[index])
+        this.$emit('update', this.transactions[index])
       }
     },
-    selectUnbalancedTxn (index) {
-      this.selectedIndex = index
-      let selectedTxn = this.unbalancedTransactions[index]
-      // selectedTxn.balanced = false
-      this.$emit('update', selectedTxn)
-    },
+    // selectUnbalancedTxn (index) {
+    //   this.selectedIndex = index
+    //   let selectedTxn = this.unbalancedTransactions[index]
+    //   // selectedTxn.balanced = false
+    //   this.$emit('update', selectedTxn)
+    // },
     async getTxns () {
       try {
         let txns = await this.getEvents()
@@ -192,7 +154,7 @@ export default {
         console.log('events', txns)
         console.log('transax', txns2)
         console.log('by id', txn)
-        // this.balancedTransactions = txns
+        this.transactions = txns
       } catch (error) {
         console.log(error)
       }
@@ -211,13 +173,14 @@ export default {
       return newDate.toLocaleString('en-US', options)
     },
     selectFirstOfArray () {
-      if (this.filter === 'Unbalanced transactions') {
-        this.selectUnbalancedTxn(0)
-      }
+      this.transactions(0)
+      // if (this.filter === 'Unbalanced transactions') {
+      //   this.selectUnbalancedTxn(0)
+      // }
 
-      if (this.filter === 'Balanced transactions') {
-        this.selectBalancedTxn(0)
-      }
+      // if (this.filter === 'Balanced transactions') {
+      //   this.selectBalancedTxn(0)
+      // }
     }
   }
 }

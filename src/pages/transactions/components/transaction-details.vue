@@ -19,10 +19,12 @@
         )
         template(v-slot:body="props")
           q-tr(:props="props" @click="printTrans(props.row.id)").styled-row
+            q-td(key="code" :props="props") {{ props.row.accountCode }}
+            q-td(key="type" :props="props") {{ props.row.accountType }}
             q-td(key="memo" :props="props") {{ (props.row.memo != ' ') ? props.row.memo : '*No memo*' }}
-            q-td(key="accountName" :props="props") {{ props.row.accountName }}
+            q-td(key="accountPath" :props="props") {{ props.row.accountPath }}
             q-td(key="amount" :props="props") {{ props.row.amount }}
-            q-td(key="percent" :props="props") {{ componentPercent(props.row.amount) }}
+            //- q-td(key="percent" :props="props") {{ componentPercent(props.row.amount) }}
             q-td(key="actions" :props="props")
               .row.justify-between
                 q-icon(name="edit" :size="'sm'" color="primary" @click="editComponent(props.row)").cursor-pointer
@@ -64,6 +66,22 @@ export default {
       txnComponents: [],
       columns: [
         {
+          name: 'code',
+          align: 'center',
+          label: 'Code',
+          field: 'accountCode',
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        },
+        {
+          name: 'type',
+          align: 'center',
+          label: 'Account type',
+          field: 'accountType',
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        },
+        {
           name: 'memo',
           align: 'center',
           label: 'Memo',
@@ -72,10 +90,10 @@ export default {
           headerClasses: 'bg-secondary text-white'
         },
         {
-          name: 'accountName',
+          name: 'accountPath',
           align: 'center',
           label: 'Account',
-          field: 'accountName',
+          field: 'accountPath',
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         },
@@ -87,14 +105,30 @@ export default {
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         },
-        {
-          name: 'percent',
-          align: 'center',
-          label: 'Percent',
-          field: 'percent',
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        },
+        // {
+        //   name: 'from',
+        //   align: 'center',
+        //   label: 'From',
+        //   field: 'from',
+        //   sortable: true,
+        //   headerClasses: 'bg-secondary text-white'
+        // },
+        // {
+        //   name: 'to',
+        //   align: 'center',
+        //   label: 'To',
+        //   field: 'to',
+        //   sortable: true,
+        //   headerClasses: 'bg-secondary text-white'
+        // },
+        // {
+        //   name: 'percent',
+        //   align: 'center',
+        //   label: 'Percent',
+        //   field: 'percent',
+        //   sortable: true,
+        //   headerClasses: 'bg-secondary text-white'
+        // },
         {
           name: 'actions',
           align: 'center',
@@ -109,7 +143,6 @@ export default {
   },
   methods: {
     ...mapActions('document', ['getTransactionById', 'createTxn']),
-    ...mapActions('edge', ['getAccountPathByHash']),
     printTrans (idx) {
       console.log(this.txnComponents[idx])
     },
@@ -119,23 +152,19 @@ export default {
       return newDate.toLocaleString('en-US', options)
     },
     async getTransactionComponents () {
-      if (this.transaction.balanced) {
-        let response = await this.getTransactionById({ uid: this.transaction.uid })
-        this.txnComponents = response
-      }
+      let response = await this.getTransactionById({ uid: this.transaction.uid })
+      this.txnComponents = response
+      console.log('txn components', this.txnComponents)
     },
     pushComponent (component) {
       this.componentForm = false
       component.amount = `${component.amount} ${(this.transaction.amount).split(' ')[1]}`
-      // component.amount = `--`
       component.id = this.txnComponents.length
       component.account = component.account.hash
       this.txnComponents.push(component)
-      // console.log('index created', component.id)
-      // console.log('created', this.txnComponents[component.id])
-      this.getAccountPath(component.id)
     },
     componentPercent (compAmount) {
+      console.log('comp amount', compAmount)
       let compAmountWOCurrency = compAmount.split(' ')[0]
       let totalAmount = (this.transaction.amount).split(' ')[0]
       let percent = (100 / totalAmount) * Math.abs(compAmountWOCurrency)
@@ -205,39 +234,45 @@ export default {
         }
       ]
     },
-    // At the begining
-    async getAccountPath (idx) {
-      try {
-        // We get the account of the component
-        let account = await this.getAccountPathByHash({ hash: this.txnComponents[idx].account })
-        this.txnComponents[idx].accountName = account.accountName
-
-        /* HARD CODED */
-        if (account.parentAccount) {
-          let account2 = await this.getAccountPathByHash({ hash: account.parentAccount })
-          if (account2.accountName) {
-            this.txnComponents[idx].accountName = account2.accountName + ' > ' + this.txnComponents[idx].accountName
-          }
-          if (account2.parentAccount) {
-            let account3 = await this.getAccountPathByHash({ hash: account2.parentAccount })
-            if (account3.accountName) {
-              this.txnComponents[idx].accountName = account3.accountName + ' > ' + this.txnComponents[idx].accountName
-            }
-          }
-        }
-      } catch (error) {
-        console.error(error)
-      }
+    amountOf (asset) {
+      return asset.split(' ')[0]
+    },
+    currencyOf (asset) {
+      return asset.split(' ')[1]
     }
+    // At the begining
+    // async getAccountPath (idx) {
+    //   try {
+    //     // We get the account of the component
+    //     let account = await this.getAccountPathByHash({ hash: this.txnComponents[idx].account })
+    //     this.txnComponents[idx].accountName = account.accountName
+
+    //     /* HARD CODED */
+    //     if (account.parentAccount) {
+    //       let account2 = await this.getAccountPathByHash({ hash: account.parentAccount })
+    //       if (account2.accountName) {
+    //         this.txnComponents[idx].accountName = account2.accountName + ' > ' + this.txnComponents[idx].accountName
+    //       }
+    //       if (account2.parentAccount) {
+    //         let account3 = await this.getAccountPathByHash({ hash: account2.parentAccount })
+    //         if (account3.accountName) {
+    //           this.txnComponents[idx].accountName = account3.accountName + ' > ' + this.txnComponents[idx].accountName
+    //         }
+    //       }
+    //     }
+    //   } catch (error) {
+    //     console.error(error)
+    //   }
+    // }
   },
   watch: {
     transaction: async function () {
       this.txnComponents = []
       await this.getTransactionComponents()
 
-      this.txnComponents.forEach((val, idx) => {
-        this.getAccountPath(idx)
-      })
+      // this.txnComponents.forEach((val, idx) => {
+      //   this.getAccountPath(idx)
+      // })
     }
   }
 }

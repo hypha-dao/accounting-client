@@ -164,14 +164,14 @@ class DocumentApi extends BaseEosApi {
       let accountCont = com.account[0].content_groups[0].contents
       return {
         id: idx,
-        amount: componentCont.find(el => el.label === 'amount'),
-        accountHash: componentCont.find(el => el.label === 'account'),
-        accountPath: accountCont.find(el => el.label === 'path'),
-        accountType: accountCont.find(el => el.label === 'account_tag_type'),
-        accountCode: accountCont.find(el => el.label === 'account_code'),
-        accountName: accountCont.find(el => el.label === 'account_name'),
-        date: componentCont.find(el => el.label === 'create_date'),
-        memo: componentCont.find(el => el.label === 'memo')
+        amount: componentCont.find(el => el.label === 'amount').value,
+        accountHash: componentCont.find(el => el.label === 'account').value,
+        accountPath: accountCont.find(el => el.label === 'path').value,
+        accountType: accountCont.find(el => el.label === 'account_tag_type').value,
+        accountCode: accountCont.find(el => el.label === 'account_code').value,
+        accountName: accountCont.find(el => el.label === 'account_name').value,
+        date: componentCont.find(el => el.label === 'create_date').value,
+        memo: componentCont.find(el => el.label === 'memo').value
       }
     })
 
