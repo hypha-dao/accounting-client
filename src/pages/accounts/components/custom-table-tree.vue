@@ -119,8 +119,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('edge', ['getChartOfAccounts', 'getAccountById']),
-    ...mapState('edge', ['components']),
+    ...mapActions('contAccount', ['getChartOfAccounts', 'getAccountById']),
+    ...mapState('contAccount', ['components']),
     selectAccount (account) {
       if (account.account) {
         this.accountSelected = account

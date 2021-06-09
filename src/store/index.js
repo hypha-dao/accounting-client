@@ -5,8 +5,9 @@ import accounts from './accounts'
 import general from './general'
 import concurrency from './concurrency'
 import cursor from './cursor'
-import document from './document'
-import edge from './edge'
+import contAccount from './contAccount'
+import transaction from './transaction'
+import event from './event'
 import exRate from './exRate'
 
 Vue.use(Vuex)
@@ -23,8 +24,9 @@ export default function (/* { ssrContext } */) {
       general,
       concurrency,
       cursor,
-      document,
-      edge,
+      transaction,
+      event,
+      contAccount,
       exRate
     },
 

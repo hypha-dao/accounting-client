@@ -142,7 +142,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('document', ['getTransactionById', 'createTxn']),
+    ...mapActions('transaction', ['getTransactionById', 'createTxn']),
     printTrans (idx) {
       console.log(this.txnComponents[idx])
     },

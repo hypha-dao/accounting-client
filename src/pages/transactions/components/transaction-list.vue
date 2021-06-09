@@ -133,7 +133,8 @@ export default {
     this.selectTxn(this.selectedIndex)
   },
   methods: {
-    ...mapActions('document', ['getTransactions', 'getEvents', 'getTransactionById']),
+    ...mapActions('transaction', ['getTransactions', 'getEvents', 'getTransactionById']),
+    ...mapActions('event', ['getEvents']),
     selectTxn (index) {
       if (this.transactions.length > 0) {
         this.selectedIndex = index

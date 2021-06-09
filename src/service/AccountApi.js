@@ -3,7 +3,7 @@ import {
   Contracts
 } from '~/const/contracts'
 
-class EdgeApi extends BaseEosApi {
+class AccountApi extends BaseEosApi {
   constructor ({
     eosApi,
     dgraph,
@@ -28,15 +28,6 @@ class EdgeApi extends BaseEosApi {
   */
   async _parseRows (rows, modifierProps) {
     return rows
-  }
-
-  async getEdges ({ offset, limit }) {
-    const edges = await this.fetch({
-      scope: Contracts.HYPHA,
-      offset,
-      limit
-    })
-    return edges
   }
 
   /**
@@ -73,7 +64,6 @@ class EdgeApi extends BaseEosApi {
     }
     `
     const queryResult = await this.dgraph.newTxn().query(query)
-    // console.log('queryResult', queryR esult)
     const data = {}
     data.accounts = queryResult.data.chartOfAccounts[0].ledger[0].account
     data.ledger_hash = queryResult.data.chartOfAccounts[0].ledger[0].hash
@@ -156,4 +146,4 @@ class EdgeApi extends BaseEosApi {
   }
 }
 
-export default EdgeApi
+export default AccountApi

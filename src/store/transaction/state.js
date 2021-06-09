@@ -1,3 +1,3 @@
 export default () => ({
-  documents: null
+  transactions: null
 })

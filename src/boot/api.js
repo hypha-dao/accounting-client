@@ -3,8 +3,9 @@ import { Api, JsonRpc } from 'eosjs'
 import {
   ConcurrencyApi,
   CursorApi,
-  DocumentApi,
-  EdgeApi,
+  AccountApi,
+  TransactionApi,
+  EventApi,
   ExRateApi
 } from '~/service'
 
@@ -69,12 +70,17 @@ export default ({ store }) => {
     dgraph
   })
 
-  const documentApi = new DocumentApi({
+  const accountApi = new AccountApi({
     eosApi: api,
     dgraph
   })
 
-  const edgeApi = new EdgeApi({
+  const transactionApi = new TransactionApi({
+    eosApi: api,
+    dgraph
+  })
+
+  const eventApi = new EventApi({
     eosApi: api,
     dgraph
   })
@@ -87,7 +93,8 @@ export default ({ store }) => {
   store['$api'] = api
   store['$concurrencyApi'] = concurrencyApi
   store['$cursorApi'] = cursorApi
-  store['$documentApi'] = documentApi
-  store['$edgeApi'] = edgeApi
+  store['$accountApi'] = accountApi
+  store['$transactionApi'] = transactionApi
+  store['$eventApi'] = eventApi
   store['$exRateApi'] = exRateApi
 }
