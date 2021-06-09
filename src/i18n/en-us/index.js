@@ -66,6 +66,35 @@ export default {
       percent: 'Percent',
       filterCategory: 'Filter Category',
       newAccount: 'New Account'
+    },
+    transactions: {
+      transaction: 'Transaction',
+      transactions: 'Transactions',
+      or: 'Or',
+      memo: 'Memo',
+      date: 'Date',
+      approved: 'Approved',
+      balanced: 'Balanced',
+      account: 'Account',
+      from: 'From',
+      to: 'To',
+      amount: 'Amount',
+      currency: 'Currency',
+      action: 'Action',
+      actions: 'Actions',
+      selectTransaction: 'Select Transaction',
+      approve: 'Approve',
+      notes: 'Notes',
+      save: 'Save'
+    },
+    events: {
+      events: 'Events',
+      from: 'From',
+      to: 'To',
+      amount: 'Amount',
+      memo: 'Memo',
+      date: 'Date',
+      actions: 'Actions'
     }
   }
 }

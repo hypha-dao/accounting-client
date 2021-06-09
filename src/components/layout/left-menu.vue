@@ -14,6 +14,15 @@ export default {
     q-list
       q-item(
         v-if="isAuthenticated"
+        to="/transactions2"
+        clickable
+        v-ripple
+      )
+        q-item-section(avatar)
+          q-icon(name="app:my-profile")
+        q-item-section {{ $t('menu.transactions') }} v2
+      q-item(
+        v-if="isAuthenticated"
         to="/transactions"
         clickable
         v-ripple

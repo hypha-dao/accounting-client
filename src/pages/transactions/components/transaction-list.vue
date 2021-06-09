@@ -1,5 +1,5 @@
 <template lang="pug">
-  q-card( flat ).full-h
+  q-card.transaction-card
     q-card-section
       .text-h6
         | Transactions
@@ -188,6 +188,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.transaction-card {
+  // height: 500px;
+  flex: 1;
+  overflow: auto;
+  display: block;
+}
 
 .btn-md {
   size: 35px;

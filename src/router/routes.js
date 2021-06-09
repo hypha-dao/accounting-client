@@ -4,6 +4,7 @@ const routes = [
   // { path: '/home', component: () => import('pages/home/home.vue'), name: 'home' },
   // { path: '/dashboard', component: () => import('pages/home/dashboard.vue'), name: 'dashboard' },
   { path: '/transactions', component: () => import('pages/transactions/transactions.vue'), name: 'transactions' },
+  { path: '/transactions2', component: () => import('pages/transactions/transactions2.vue'), name: 'transactions2' },
   { path: '/chart-accounts', component: () => import('pages/accounts/chartAccounts.vue'), name: 'chartAccounts' }
 ]
 
