@@ -141,15 +141,9 @@ export default {
         this.$emit('update', this.transactions[index])
       }
     },
-    // selectUnbalancedTxn (index) {
-    //   this.selectedIndex = index
-    //   let selectedTxn = this.unbalancedTransactions[index]
-    //   // selectedTxn.balanced = false
-    //   this.$emit('update', selectedTxn)
-    // },
     async getTxns () {
       try {
-        let txns = await this.getEvents()
+        let txns = await this.getEvents({ first: 2, offset: 0 })
         let txns2 = await this.getTransactions()
         let txn = await this.getTransactionById({ uid: '0x79ef' })
         console.log('events', txns)
@@ -160,14 +154,7 @@ export default {
         console.log(error)
       }
     },
-    // async getUnbalancedTxns () {
-    //   try {
-    //     let unTxns = await this.getUnbalancedTransactions()
-    //     this.unbalancedTransactions = unTxns
-    //   } catch (error) {
-    //     console.log(error)
-    //   }
-    // },
+
     formattedDate (date) {
       var options = { year: 'numeric', month: 'long', day: 'numeric' }
       let newDate = new Date(date)
@@ -175,13 +162,6 @@ export default {
     },
     selectFirstOfArray () {
       this.transactions(0)
-      // if (this.filter === 'Unbalanced transactions') {
-      //   this.selectUnbalancedTxn(0)
-      // }
-
-      // if (this.filter === 'Balanced transactions') {
-      //   this.selectBalancedTxn(0)
-      // }
     }
   }
 }

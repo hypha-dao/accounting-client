@@ -30,32 +30,36 @@ class EventApi extends BaseEosApi {
     return rows
   }
 
-  async getEvents () {
+  async getEvents ({ first, offset }) {
     const query = `
-    {
-      events(func: has(hash))
-      {
-        event {
-          uid
-          hash
-          content_groups(orderasc:content_group_sequence, first:1) {
-            contents(orderasc:label) {
-              label
-              value
-            }
+    query events($first:string, $offset:string) {
+      var(func: has(event)) {
+        events as event
+      }
+      event(func: uid(events), first:$first, offset:$offset) {
+        uid
+        hash
+        content_groups(orderasc:content_group_sequence, first:1) {
+          contents(orderasc:label) {
+            label
+            value
           }
         }
       }
     }
     `
-    let { data } = await this.dgraph.newTxn().query(query)
 
-    let mappedEvents = data.events.map((event, i) => {
-      const contents = event.event[0].content_groups[0].contents
+    let vars = { $first: first.toString(), $offset: offset.toString() }
+    let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
+
+    console.log('data', data.event)
+
+    let mappedEvents = data.event.map((ev, i) => {
+      const contents = ev.content_groups[0].contents
       return {
         id: i,
-        uid: event.event[0].uid,
-        hash: event.event[0].hash,
+        uid: ev.uid,
+        hash: ev.hash,
         chainId: contents.find(el => el.label === 'chainId').value,
         currency: contents.find(el => el.label === 'currency').value,
         quantity: contents.find(el => el.label === 'quantity').value,

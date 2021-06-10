@@ -1,7 +1,7 @@
-export const getEvents = async function ({ commit }) {
+export const getEvents = async function ({ commit }, { first, offset }) {
   try {
     commit('general/setIsLoading', true, { root: true })
-    const events = await this.$eventApi.getEvents()
+    const events = await this.$eventApi.getEvents({ first, offset })
     return events
   } catch (e) {
     console.error('An error ocurred while trying to get events', e)
