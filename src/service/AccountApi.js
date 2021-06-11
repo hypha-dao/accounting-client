@@ -37,7 +37,7 @@ class AccountApi extends BaseEosApi {
   async getChartOfAccount () {
     const query = `
     {
-      chartOfAccounts(func: type(Document)) @filter(eq(hash, 91806de20aafa70e53fdb8fd79c6fbfea1c58f85a9fd0b0d57eda162e04e05b4)) {
+      chartOfAccounts(func: type(Document)) @filter(eq(hash, ${process.env.DGRAPH_BASE_NODE_HASH})) {
         hash
         ledger {
           hash
