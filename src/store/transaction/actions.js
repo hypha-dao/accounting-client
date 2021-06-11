@@ -10,6 +10,31 @@ export const getTransactions = async function ({ commit }) {
     commit('general/setIsLoading', false, { root: true })
   }
 }
+export const getUnapprovedTransactions = async function ({ commit }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const transactions = await this.$transactionApi.getUnapprovedTransactions()
+    return transactions
+  } catch (e) {
+    console.error('An error ocurred while trying to get transactions', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
+
+export const getApprovedTransactions = async function ({ commit }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const transactions = await this.$transactionApi.getApprovedTransactions()
+    return transactions
+  } catch (e) {
+    console.error('An error ocurred while trying to get transactions', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
 
 export const getTransactionById = async function ({ commit }, { uid }) {
   try {
