@@ -72,6 +72,78 @@ class TransactionApi extends BaseEosApi {
     return mappedTransactions
   }
 
+  async getUnapprovedTransactions () {
+    const query = `
+    {
+      transactions(func: has(hash))
+      {
+        transaction @filter(has(unapproved)) {
+          uid
+          hash
+          content_groups(orderasc:content_group_sequence, first:1) {
+            contents(orderasc:label) {
+              label
+              value
+              type
+            }
+          }
+        }
+      }
+    }
+    `
+    let { data } = await this.dgraph.newTxn().query(query)
+
+    let mappedTransactions = data.transactions.map((trans, i) => {
+      let contents = trans.transaction[0].content_groups[0].contents
+      return {
+        id: i,
+        hash: trans.transaction[0].hash,
+        uid: trans.transaction[0].uid,
+        date: contents.find(el => el.label === 'trx_date').value,
+        ledger: contents.find(el => el.label === 'trx_ledger').value,
+        memo: contents.find(el => el.label === 'trx_memo').value,
+        approved: false
+      }
+    })
+    return mappedTransactions
+  }
+
+  async getApprovedTransactions () {
+    const query = `
+    {
+      transactions(func: has(hash))
+      {
+        transaction @filter(has(approved)) {
+          uid
+          hash
+          content_groups(orderasc:content_group_sequence, first:1) {
+            contents(orderasc:label) {
+              label
+              value
+              type
+            }
+          }
+        }
+      }
+    }
+    `
+    let { data } = await this.dgraph.newTxn().query(query)
+
+    let mappedTransactions = data.transactions.map((trans, i) => {
+      let contents = trans.transaction[0].content_groups[0].contents
+      return {
+        id: i,
+        hash: trans.transaction[0].hash,
+        uid: trans.transaction[0].uid,
+        date: contents.find(el => el.label === 'trx_date').value,
+        ledger: contents.find(el => el.label === 'trx_ledger').value,
+        memo: contents.find(el => el.label === 'trx_memo').value,
+        approved: true
+      }
+    })
+    return mappedTransactions
+  }
+
   async getTransactionById ({ uid }) {
     const query = `
     query transactions($uid:string)
