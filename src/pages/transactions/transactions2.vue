@@ -1,9 +1,9 @@
 <template lang="pug">
 #main-container.main
   #cont1.q-pa-sm
-    event-list
+    event-list(@eventClick="onEventAdded" ref="eventListView")
   #cont2.q-pa-sm
-    transaction-view
+    transaction-view(ref="transactionView")
     //- TransactionsList
   //- .row
   //-   event-list
@@ -14,7 +14,13 @@ import EventList from './components/event-list'
 import TransactionView from './components/transaction-view'
 export default {
   name: 'transaction2',
-  components: { EventList, TransactionView }
+  components: { EventList, TransactionView },
+  methods: {
+    onEventAdded (event) {
+      console.log('onEventAdded', event)
+      this.$refs.transactionView.addEventToTransaction(event)
+    }
+  }
 }
 </script>
 

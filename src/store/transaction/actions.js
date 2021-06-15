@@ -13,8 +13,7 @@ export const getTransactions = async function ({ commit }) {
 export const getUnapprovedTransactions = async function ({ commit }) {
   try {
     commit('general/setIsLoading', true, { root: true })
-    const transactions = await this.$transactionApi.getUnapprovedTransactions()
-    return transactions
+    return this.$transactionApi.getUnapprovedTransactions()
   } catch (e) {
     console.error('An error ocurred while trying to get transactions', e)
     commit('general/setErrorMsg', e.message || e, { root: true })

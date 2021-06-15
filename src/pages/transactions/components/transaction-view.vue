@@ -21,15 +21,32 @@ q-card.q-pa-sm.full-width
         .row.q-gutter-md
             q-input.transaction-input(
               :label="$t('pages.transactions.transaction')"
+              v-model="transaction"
               dense
               filled
+              v-if="!isSelect"
+            )
+            q-select.transaction-input(
+              :label="$t('pages.transactions.transaction')"
+              filled
+              dense
+              v-model="transaction"
+              clearable
+              use-input
+              hide-selected
+              fill-input
+              input-debounce="0"
+              :options="unapprovedTransactionsOptions"
+              style="width: 250px"
+              v-else
             )
             .text.self-center.text-secondary.text-uppercase.text-bold {{ $t('pages.transactions.or') }}
             q-btn(
-                :label="$t('pages.transactions.selectTransaction')"
+                :label="labelModeSelectTransaction"
                 dense
                 size="sm"
                 color="secondary"
+                @click="isSelect = !isSelect"
             )
     .col-4
         q-input(
@@ -46,15 +63,31 @@ q-card.q-pa-sm.full-width
   #container
     q-table.sticky-virtscroll-table.q-mt-sm.t-table(
         :columns="columns"
-        :data="transactions"
+        :data="components"
         virtual-scroll
         :rows-per-page-options="[0]"
         :virtual-scroll-item-size="pageSize - 2"
         :virtual-scroll-sticky-size-start="pageSize - 2"
     )
+      template(v-slot:body-cell-from="props")
+        q-td.text-center
+          .text-cell {{ props.row.from }}
+          q-popup-edit(v-model="props.row.from")
+            q-input(v-model="props.row.from" dense autofocus counter :label="$t('pages.transactions.from')" color="secondary")
+      template(v-slot:body-cell-to="props")
+        q-td.text-center
+          .text-cell {{ props.row.to }}
+          q-popup-edit(v-model="props.row.to")
+            q-input(v-model="props.row.to" dense autofocus counter :label="$t('pages.transactions.to')" color="secondary")
+      template(v-slot:body-cell-amount="props")
+        q-td.text-center
+          .text-cell {{ props.row.quantity }}
+          q-popup-edit(v-model="props.row.quantity")
+            q-input(v-model="props.row.quantity" type="number" dense autofocus counter :label="$t('pages.transactions.amount')" color="secondary")
       template(v-slot:body-cell-actions="props")
         q-td.text-center
-          q-btn(icon="add" round size="sm")
+          q-btn(icon="remove" round size="sm")
+    //- Foot
     .row.q-col-gutter-sm.q-mt-xs
         .col-6
             q-input(
@@ -79,19 +112,21 @@ q-card.q-pa-sm.full-width
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   name: 'transaction-view',
   data () {
     return {
       pageSize: 20,
       nextPage: 2,
-      transactions: [],
+      components: [],
       columns: [
         {
           name: 'account',
           align: 'center',
           label: this.$t('pages.transactions.account'),
-          field: row => row.from,
+          field: row => row.account,
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         },
@@ -115,7 +150,7 @@ export default {
           name: 'amount',
           align: 'center',
           label: this.$t('pages.transactions.amount'),
-          field: row => row.amount,
+          field: row => row.quantity,
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         },
@@ -151,7 +186,37 @@ export default {
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         }
-      ]
+      ],
+      isSelect: true,
+      unapprovedTransactions: undefined,
+      transaction: undefined
+    }
+  },
+  computed: {
+    labelModeSelectTransaction () {
+      return this.isSelect ? this.$t('pages.transactions.selectTransaction') : 'Create new transaction'
+    },
+    unapprovedTransactionsOptions () {
+      if (!this.unapprovedTransactions) return
+      return this.unapprovedTransactions.map(v => {
+        return {
+          label: v.memo,
+          value: v
+        }
+      })
+    }
+  },
+  mounted () {
+    this.loadUnapprovedTransactions()
+  },
+  methods: {
+    ...mapActions('transaction', ['getUnapprovedTransactions']),
+    addEventToTransaction (event) {
+      console.log('addEventToTransaction', event)
+      this.components.push(event)
+    },
+    async loadUnapprovedTransactions () {
+      this.unapprovedTransactions = await this.getUnapprovedTransactions()
     }
   }
 }
