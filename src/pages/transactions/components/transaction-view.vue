@@ -108,11 +108,14 @@ q-card.q-pa-sm.full-width
                 dense
                 size="md"
                 class="bg-grey-6 text-white"
+                @click="storeTransaction()"
             )
 </template>
 
 <script>
 import { mapActions } from 'vuex'
+import { transactionPayout } from '~/const/payouts/transaction-payout'
+import { componentPayout } from '~/const/payouts/component-payout'
 
 export default {
   name: 'transaction-view',
@@ -210,13 +213,41 @@ export default {
     this.loadUnapprovedTransactions()
   },
   methods: {
-    ...mapActions('transaction', ['getUnapprovedTransactions']),
+    ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn']),
     addEventToTransaction (event) {
       console.log('addEventToTransaction', event)
       this.components.push(event)
     },
     async loadUnapprovedTransactions () {
       this.unapprovedTransactions = await this.getUnapprovedTransactions()
+    },
+    storeTransaction () {
+      let fullTrx = transactionPayout
+      let trxHash = ''
+      if (this.isSelect) trxHash = this.transaction.value.hash
+
+      fullTrx[0][1].value[1] = this.transaction.value.date
+      fullTrx[0][3].value[1] = this.transaction.value.memo
+
+      // Creates an content group for each component. It nead memo, account hash and amount
+      this.components.forEach(comp => {
+        fullTrx.push(this.formattedComponent(comp))
+      })
+
+      // console.log(trxHash, 'complete trx', fullTrx)
+
+      !this.isSelect ? this.createTxn({ contentGroups: fullTrx }) : this.updateTxn({ contentGroups: fullTrx, transactionHash: trxHash })
+    },
+    formattedComponent ({ memo, account, quantity, currency }) {
+      // console.log('add compo')
+      // let acc = 'f462d1b4fa41e7456faddda9d088db6a2ab4073d9a2a441dbd73d9555b608f8d'
+      let component = componentPayout
+
+      component[1].value[1] = memo
+      component[2].value[1] = account
+      component[3].value[1] = `${quantity} ${currency}`
+
+      return component
     }
   }
 }
