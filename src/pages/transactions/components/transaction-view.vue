@@ -71,22 +71,40 @@ q-card.q-pa-sm.full-width
     )
       template(v-slot:body-cell-from="props")
         q-td.text-center
-          .text-cell {{ props.row.from }}
-          q-popup-edit(v-model="props.row.from")
-            q-input(v-model="props.row.from" dense autofocus counter :label="$t('pages.transactions.from')" color="secondary")
+          .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.from }}
+          q-input(v-else autofocus v-model="props.row.from" dense counter :label="$t('pages.transactions.from')" color="secondary")
       template(v-slot:body-cell-to="props")
         q-td.text-center
-          .text-cell {{ props.row.to }}
-          q-popup-edit(v-model="props.row.to")
-            q-input(v-model="props.row.to" dense autofocus counter :label="$t('pages.transactions.to')" color="secondary")
+          .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.to }}
+          q-input(v-else v-model="props.row.to" dense counter :label="$t('pages.transactions.to')" color="secondary")
       template(v-slot:body-cell-amount="props")
         q-td.text-center
-          .text-cell {{ props.row.quantity }}
-          q-popup-edit(v-model="props.row.quantity")
-            q-input(v-model="props.row.quantity" type="number" dense autofocus counter :label="$t('pages.transactions.amount')" color="secondary")
-      template(v-slot:body-cell-actions="props")
+          .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.quantity }}
+          q-input(v-else v-model="props.row.quantity" type="number" step="0.1" min="0" dense counter :label="$t('pages.transactions.amount')" color="secondary")
+      template(v-slot:body-cell-currency="props")
         q-td.text-center
-          q-btn(icon="remove" round size="sm")
+          .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.currency }}
+          q-input(v-else v-model="props.row.currency" dense counter :label="$t('pages.transactions.currency')" color="secondary")
+      template(v-slot:body-cell-memo="props")
+        q-td.text-center
+          .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.memo }}
+          q-input(v-else v-model="props.row.memo" dense counter :label="$t('pages.transactions.memo')" color="secondary")
+      template(v-slot:body-cell-date="props")
+        q-td.text-center
+          .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.date }}
+          q-input(v-else v-model="props.row.date" dense counter :label="$t('pages.transactions.date')" color="secondary")
+      template(v-slot:body-cell-actions="props")
+        q-td.text-center.q-gutter-xs
+          q-btn(v-if="editingRow !== props.row.hash" icon="edit" round size="sm" color="positive" @click="onClickEditRow(props.row)")
+          q-btn(v-else icon="save" round size="sm" color="primary" @click="onClickSaveRow(props.row)")
+          q-btn(v-if="addingComponent && editingRow === props.row.hash" icon="close" round size="sm" color="negative" @click="onClickCancelAdding(props.row)")
+          q-btn(v-if="editingRow === false" icon="delete" round size="sm" color="negative" @click="onClickRemoveRow(props.row)")
+      template(v-slot:bottom v-if="!addingComponent")
+        q-tr
+          q-btn.full-width(icon="add" size="sm" label="Add component" @click="onClickAddRow")
+      template(v-slot:no-data v-if="!addingComponent")
+        q-tr
+          q-btn.full-width(icon="add" size="sm" label="Add component" @click="onClickAddRow")
     //- Foot
     .row.q-col-gutter-sm.q-mt-xs
         .col-6
@@ -189,7 +207,9 @@ export default {
       ],
       isSelect: true,
       unapprovedTransactions: undefined,
-      transaction: undefined
+      transaction: undefined,
+      editingRow: false,
+      addingComponent: false
     }
   },
   computed: {
@@ -217,6 +237,47 @@ export default {
     },
     async loadUnapprovedTransactions () {
       this.unapprovedTransactions = await this.getUnapprovedTransactions()
+    },
+    onClickEditRow (row) {
+      this.editingRow = row.hash
+    },
+    onClickAddRow () {
+      if (!this.addingComponent) {
+        this.addingComponent = true
+        const tempHash = [...Array(8)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')
+        console.log('tempHash', tempHash)
+        this.components.push({
+          hash: tempHash,
+          isCustomComponent: true
+
+        })
+        this.editingRow = tempHash
+      }
+    },
+    onClickSaveRow (row) {
+      if (!this.validateRow(row)) {
+        this.showErrorMsg('Please review all fields are filled')
+        return
+      }
+      row.date = new Date()
+      this.editingRow = false
+      this.addingComponent = false
+    },
+    onClickCancelAdding (row) {
+      this.editingRow = false
+      this.addingComponent = false
+      this.onClickRemoveRow(row)
+    },
+    onClickRemoveRow (row) {
+      const rowIndex = this.components.findIndex(v => row === v)
+      this.components.splice(rowIndex, 1)
+    },
+    validateRow (row) {
+      let isValidRow = true
+      if (!row.from) {
+        isValidRow = false
+      }
+      return isValidRow
     }
   }
 }
