@@ -51,6 +51,7 @@
 <script>
 import { mapActions } from 'vuex'
 import ComponentForm from './component-form'
+import { transactionPayout } from '~/const/payouts/transaction-payout'
 
 export default {
   name: 'transaction-list',
@@ -184,6 +185,8 @@ export default {
       this.txnComponents.splice(id, 1)
     },
     storeTransaction () {
+      console.log('pay', transactionPayout)
+
       let fullTransact = [
         [
           {

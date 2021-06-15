@@ -133,7 +133,7 @@ export default {
     this.selectTxn(this.selectedIndex)
   },
   methods: {
-    ...mapActions('transaction', ['getTransactions', 'getEvents', 'getTransactionById']),
+    ...mapActions('transaction', ['getTransactions']),
     ...mapActions('event', ['getEvents']),
     selectTxn (index) {
       if (this.transactions.length > 0) {
@@ -144,11 +144,11 @@ export default {
     async getTxns () {
       try {
         let txns = await this.getEvents({ first: 2, offset: 0 })
-        let txns2 = await this.getTransactions()
-        let txn = await this.getTransactionById({ uid: '0x79ef' })
-        console.log('events', txns)
-        console.log('transax', txns2)
-        console.log('by id', txn)
+        // let txns2 = await this.getTransactions()
+        // let txn = await this.getTransactionById({ uid: '0x79ef' })
+        // console.log('events', txns)
+        // console.log('transax', txns2)
+        // console.log('by id', txn)
         this.transactions = txns
       } catch (error) {
         console.log(error)
