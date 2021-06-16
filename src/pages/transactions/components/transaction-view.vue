@@ -105,8 +105,8 @@ q-card.q-pa-sm.full-width
           q-input(v-else v-model="props.row.date" dense counter :label="$t('pages.transactions.date')" color="secondary")
       template(v-slot:body-cell-actions="props")
         q-td.text-center.q-gutter-xs
-          q-btn(v-if="editingRow !== props.row.hash" icon="edit" round size="sm" color="positive" @click="onClickEditRow(props.row)")
-          q-btn(v-else icon="save" round size="sm" color="primary" @click="onClickSaveRow(props.row)")
+          q-btn(v-if="editingRow !== props.row.hash && !addingComponent" icon="edit" round size="sm" color="positive" @click="onClickEditRow(props.row)")
+          q-btn(v-if="editingRow === props.row.hash" icon="save" round size="sm" color="primary" @click="onClickSaveRow(props.row)")
           q-btn(v-if="addingComponent && editingRow === props.row.hash" icon="close" round size="sm" color="negative" @click="onClickCancelAdding(props.row)")
           q-btn(v-if="editingRow === false" icon="delete" round size="sm" color="negative" @click="onClickRemoveRow(props.row)")
       template(v-slot:bottom v-if="!addingComponent")
@@ -254,6 +254,11 @@ export default {
       this.unapprovedTransactions = await this.getUnapprovedTransactions()
     },
     onClickEditRow (row) {
+      if (this.editingRow !== false) {
+        if (!this.onClickSaveRow(row)) {
+          return
+        }
+      }
       this.editingRow = row.hash
     },
     onClickAddRow () {
