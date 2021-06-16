@@ -71,9 +71,14 @@ q-card.q-pa-sm.full-width
     )
       template(v-slot:body-cell-account="props")
         q-td.text-center
-          .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.account }}
-          q-popup-edit.pop-edit(v-model="props.row.account")
-            custom-table-tree
+          .text-cell(v-if="props.row.account") {{ props.row.account.accountName }}
+            span(v-if="editingRow === props.row.hash")
+              q-icon.q-ml-xs(name="edit" color="positive")
+          .text-cell(v-else) ---
+            span(v-if="editingRow === props.row.hash")
+              q-icon.q-ml-xs(name="edit" color="positive")
+          q-popup-edit.pop-edit(v-if="editingRow === props.row.hash" separate-close-popup v-model="props.row.account" auto-save)
+            custom-table-tree(v-model="props.row.account")
       template(v-slot:body-cell-from="props")
         q-td.text-center
           .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.from }}
@@ -258,7 +263,8 @@ export default {
         console.log('tempHash', tempHash)
         this.components.push({
           hash: tempHash,
-          isCustomComponent: true
+          isCustomComponent: true,
+          account: undefined
 
         })
         this.editingRow = tempHash
@@ -284,13 +290,26 @@ export default {
     },
     validateRow (row) {
       let isValidRow = true
-      if (!row.from) {
+      if (!row.account) {
+        isValidRow = false
+      } else if (!row.from) {
+        isValidRow = false
+      } else if (!row.to) {
+        isValidRow = false
+      } else if (!row.quantity) {
+        isValidRow = false
+      } else if (!row.currency) {
+        isValidRow = false
+      } else if (!row.memo) {
+        isValidRow = false
+      } else if (!row.date) {
         isValidRow = false
       }
       return isValidRow
     },
     storeTransaction () {
       let fullTrx = transactionPayout
+      debugger
       let trxHash = ''
       if (this.isSelect) trxHash = this.transaction.value.hash
 

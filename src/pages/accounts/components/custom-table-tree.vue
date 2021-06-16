@@ -2,7 +2,7 @@
 #container-tree
     vue-ads-table-tree(
       :columns='columns',
-      :rows='accountsTree',
+      :rows='treeAccountsTemp',
       :page='page',
       :call-children="loadChildren"
       :call-rows="loadChildren"
@@ -20,25 +20,10 @@
 </template>
 
 <script>
-// import RowItemTableTree from '~/pages/projects/read/components/row-item-table-tree'
-// import { EventBus } from '~/boot/event-bus'
-
-// CHANGE THIS LINE TO REFER FROM OTHER SOURCE
 import VueAdsTableTree from 'vue-ads-table-tree'
-// import VueAdsTableTree from '../../../vendor/vue-ads-table-tree-develop/src/index'
-// import VueAdsTableTree from '~/vue-ads-table-tree-developing/src'
-
-// import VueAdsPagination, { VueAdsPageButton } from 'vue-ads-pagination'
-// import VueAdsPagination, { VueAdsPageButton } from 'vue-ads-pagination'
 import '~/../node_modules/@fortawesome/fontawesome-free/css/all.css'
 import './custom-table-tree-style.css'
-// import '~/../node_modules/vue-ads-table-tree/dist/vue-ads-table-tree.css'
-
-// import { VueAdsPageButton } from 'vue-ads-pagination'
-// import VueAdsTableTree2 from 'vue-ads-table-tree'
-// const VueAdsPagination = window['vue-ads-pagination']
-// const VueAdsPageButton = window['vue-ads-pagination']
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapMutations } from 'vuex'
 export default {
   name: 'custom-table-tree',
   components: {
@@ -46,8 +31,16 @@ export default {
     // VueAdsPagination,
     // VueAdsPageButton
   },
+  props: {
+    value: {}
+  },
   mounted (v) {
-    this.loadAccounts()
+    console.log('account on mounted', this.value)
+    if (this.treeAccounts.length === 0) {
+      this.loadAccounts()
+    } else {
+      this.treeAccountsTemp = Array.from(this.treeAccounts)
+    }
     // this.loadRows()
     console.log('accounts by project', this.accountList)
 
@@ -63,31 +56,17 @@ export default {
   },
   watch: {
     accountSelected (v) {
-      this.$emit('accountChanged', v)
+      // this.$emit('accountChanged', v)
+      this.$emit('input', v)
     }
   },
   computed: {
     ...mapState('contAccount', ['treeAccounts'])
-    // ...mapState('accounting', ['accountList'])
-    // ...mapGetters('accounting', ['accountListFormatted'])
-    // rows2 () {
-    //   if (!this.accounts || !this.accounts.accounts) return undefined
-    //   return this.accounts.accounts.map(account => {
-    //     const content = account.content_groups[0].contents
-    //     return {
-    //       accountName: content.find(v => v.label === 'account_name').value,
-    //       parentAccount: content.find(v => v.label === 'parent_account').value,
-    //       hash: account.hash,
-    //       uid: account.uid,
-    //       _hasChildren: true,
-    //       _children: []
-    //     }
-    //   })
-    // }
   },
   methods: {
     ...mapActions('contAccount', ['getChartOfAccounts', 'getAccountById']),
     ...mapState('contAccount', ['components']),
+    ...mapMutations('contAccount', ['setTreeAccounts']),
     selectAccount (account) {
       if (account.account) {
         this.accountSelected = account
@@ -97,7 +76,7 @@ export default {
       console.log('loadAccounts')
       this.accounts = await this.getChartOfAccounts()
       if (!this.accounts || !this.accounts.accounts) return undefined
-      this.accountsTree = this.accounts.accounts.map(account => {
+      const result = this.accounts.accounts.map(account => {
         const content = account.content_groups[0].contents
         let amount = this.getComponentsOfAccount(account.hash)
         return {
@@ -110,6 +89,8 @@ export default {
           amount
         }
       })
+      this.setTreeAccounts(Object.create(result))
+      this.treeAccountsTemp = result
     },
     findChildrenOpened (parent) {
       parent.forEach(children => {
@@ -167,6 +148,7 @@ export default {
   },
   data () {
     return {
+      treeAccountsTemp: [],
       childrenOpened: [],
       page: 0,
       filter: '',
