@@ -292,6 +292,9 @@ export default {
     onClickRemoveRow (row) {
       const rowIndex = this.components.findIndex(v => row === v)
       this.components.splice(rowIndex, 1)
+      if (!row.isCustomComponent) {
+        this.$emit('eventRemoved', row)
+      }
     },
     validateRow (row) {
       let isValidRow = true

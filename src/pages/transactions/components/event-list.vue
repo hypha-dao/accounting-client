@@ -98,6 +98,9 @@ export default {
       const indexEvent = this.events.findIndex(v => event === v)
       console.log('indexEvent', indexEvent, this.events)
       this.events.splice(indexEvent, 1)
+    },
+    returnEventRemoved (event) {
+      this.events.push(event)
     }
     // async onScroll ({ to, ref, index, direction }) {
     //   try {
