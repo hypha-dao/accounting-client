@@ -69,6 +69,11 @@ q-card.q-pa-sm.full-width
         :virtual-scroll-item-size="pageSize - 2"
         :virtual-scroll-sticky-size-start="pageSize - 2"
     )
+      template(v-slot:body-cell-account="props")
+        q-td.text-center
+          .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.account }}
+          q-popup-edit.pop-edit(v-model="props.row.account")
+            custom-table-tree
       template(v-slot:body-cell-from="props")
         q-td.text-center
           .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.from }}
@@ -134,9 +139,11 @@ q-card.q-pa-sm.full-width
 import { mapActions } from 'vuex'
 import { transactionPayout } from '~/const/payouts/transaction-payout'
 import { componentPayout } from '~/const/payouts/component-payout'
+import CustomTableTree from '~/pages/accounts/components/custom-table-tree'
 
 export default {
   name: 'transaction-view',
+  components: { CustomTableTree },
   data () {
     return {
       pageSize: 20,
@@ -319,4 +326,7 @@ export default {
   min-width: 250px
 .t-table
   height: 30vh
+.pop-edit
+  max-width: 1500px !important
+  min-width: 400px !important
 </style>

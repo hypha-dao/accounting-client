@@ -1,4 +1,5 @@
 export default () => ({
   edges: null,
-  coomponents: null
+  coomponents: null,
+  treeAccounts: []
 })

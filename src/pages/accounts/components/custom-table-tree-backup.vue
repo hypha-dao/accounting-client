@@ -1,5 +1,15 @@
 <template lang='pug'>
-#container-tree
+#container
+  div
+    //- vue-ads-table-tree(
+    //-   :columns='columns',
+    //-   :rows='rows',
+    //-   :page='page',
+    //-   @filter-change='filterChanged',
+    //-   @page-change='pageChanged',
+    //-   :call-children="loadChildren"
+    //-   :call-rows="loadChildren"
+    //- )
     vue-ads-table-tree(
       :columns='columns',
       :rows='accountsTree',
@@ -17,6 +27,30 @@
             q-icon.q-mr-sm(name="account_balance", size="20px")
             q-radio.q-mr-sm( v-if="props.row.isSelectable" dense v-model="accountSelected" :val="props.row")
             p {{ props.row.accountName }}
+      //- template.container-btn(slot='action' slot-scope='props')
+      //-   .row.justify-center
+      //-     //- q-btn(round color="cyan-6" icon="info" size="xs" @click="doAction(props.row)")
+      //-     q-btn(color="secondary", :label="$t('common.buttons.actions')", icon-right="expand_more")
+            //- q-menu(
+            //-   transition-show="jump-down"
+            //-   transition-hide="jump-up"
+            //- )
+            //-   q-list(style="min-width: 100px")
+            //-     q-item(v-if="props.row.balanceValue.amount === 0 || props.row.numChildren > 0" clickable, v-close-popup, @click="$emit('createAccount', props.row)")
+            //-       q-item-section {{$t('pages.accounting.createAccount')}}
+            //-     q-item(clickable, v-close-popup, @click="$emit('editAccount', props.row)")
+            //-       q-item-section {{$t('pages.accounting.editAccount')}}
+            //-     q-item(v-if="props.row.numChildren === 0" clickable, v-close-popup, @click="$emit('newTransaction', props.row)")
+            //-       q-item-section {{$t('pages.accounting.newTransaction')}}
+            //-     q-item(v-if="" clickable, v-close-popup, @click="$emit('viewTransactions', props.row)")
+            //-       q-item-section {{$t('pages.accounting.viewTransactions')}}
+            //-     q-item(v-if="props.row.numChildren === 0 && props.row.balanceValue.amount === 0 && props.row.parentId !== 0" clickable, v-close-popup, @click="$emit('deleteAccount', props.row)")
+            //-       q-item-section {{$t('notifications.actions.accounts.deleteaccnt.title')}}
+          //- a(:href='`https://www.google.com/search?q=${props.row.firstName}+${props.row.lastName}`' target='_blank')
+          //-   | {{ props.row.firstName }}
+      //- template(slot="_1", slot-scope='props')
+      //-   div.custom-row(props) {{ props.row[props.column.property] }}
+
 </template>
 
 <script>
@@ -67,23 +101,22 @@ export default {
     }
   },
   computed: {
-    ...mapState('contAccount', ['treeAccounts'])
     // ...mapState('accounting', ['accountList'])
     // ...mapGetters('accounting', ['accountListFormatted'])
-    // rows2 () {
-    //   if (!this.accounts || !this.accounts.accounts) return undefined
-    //   return this.accounts.accounts.map(account => {
-    //     const content = account.content_groups[0].contents
-    //     return {
-    //       accountName: content.find(v => v.label === 'account_name').value,
-    //       parentAccount: content.find(v => v.label === 'parent_account').value,
-    //       hash: account.hash,
-    //       uid: account.uid,
-    //       _hasChildren: true,
-    //       _children: []
-    //     }
-    //   })
-    // }
+    rows2 () {
+      if (!this.accounts || !this.accounts.accounts) return undefined
+      return this.accounts.accounts.map(account => {
+        const content = account.content_groups[0].contents
+        return {
+          accountName: content.find(v => v.label === 'account_name').value,
+          parentAccount: content.find(v => v.label === 'parent_account').value,
+          hash: account.hash,
+          uid: account.uid,
+          _hasChildren: true,
+          _children: []
+        }
+      })
+    }
   },
   methods: {
     ...mapActions('contAccount', ['getChartOfAccounts', 'getAccountById']),
@@ -208,7 +241,4 @@ export default {
   background-color: red
 .selectableRow
   cursor: pointer
-#container-tree
-  min-width: 400px
-  max-width: 1500px
 </style>
