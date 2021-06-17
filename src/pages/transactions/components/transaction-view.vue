@@ -323,10 +323,10 @@ export default {
       console.log('trans', this.transaction)
       if (this.isSelect) {
         trxHash = this.transaction.value.hash
-        // fullTrx[0].push({
-        //   label: 'id',
-        //   value: ['string', this.transaction.value.udi]
-        // })
+        fullTrx[0].push({
+          label: 'id',
+          value: ['int64', this.transaction.value.uid]
+        })
       }
 
       fullTrx[0][1].value[1] = this.transaction.value.date

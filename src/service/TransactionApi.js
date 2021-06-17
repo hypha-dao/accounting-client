@@ -62,7 +62,7 @@ class TransactionApi extends BaseEosApi {
       return {
         id: i,
         hash: trans.transaction[0].hash,
-        uid: trans.transaction[0].uid,
+        uid: contents.find(el => el.label === 'id').value,
         date: contents.find(el => el.label === 'trx_date').value,
         ledger: contents.find(el => el.label === 'trx_ledger').value,
         memo: contents.find(el => el.label === 'trx_memo').value,
@@ -98,7 +98,7 @@ class TransactionApi extends BaseEosApi {
       return {
         id: i,
         hash: trans.transaction[0].hash,
-        uid: trans.transaction[0].uid,
+        uid: contents.find(el => el.label === 'id').value,
         date: contents.find(el => el.label === 'trx_date').value,
         ledger: contents.find(el => el.label === 'trx_ledger').value,
         memo: contents.find(el => el.label === 'trx_memo').value,
@@ -134,7 +134,7 @@ class TransactionApi extends BaseEosApi {
       return {
         id: i,
         hash: trans.transaction[0].hash,
-        uid: trans.transaction[0].uid,
+        uid: contents.find(el => el.label === 'id').value,
         date: contents.find(el => el.label === 'trx_date').value,
         ledger: contents.find(el => el.label === 'trx_ledger').value,
         memo: contents.find(el => el.label === 'trx_memo').value,
