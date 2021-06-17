@@ -21,7 +21,7 @@ q-card.q-pa-sm.full-width
         .row.q-gutter-md
             q-input.transaction-input(
               :label="$t('pages.transactions.transaction')"
-              v-model="transaction"
+              v-model="transaction.value.name"
               dense
               filled
               v-if="!isSelect"
@@ -53,12 +53,14 @@ q-card.q-pa-sm.full-width
             :label="$t('pages.transactions.memo')"
             dense
             filled
+            v-model="transaction.value.memo"
         )
     .col-3
         q-input(
             :label="$t('pages.transactions.date')"
             dense
             filled
+            v-model="transaction.value.date"
         )
   #container
     q-table.sticky-virtscroll-table.q-mt-sm.t-table(
@@ -222,7 +224,15 @@ export default {
       ],
       isSelect: true,
       unapprovedTransactions: undefined,
-      transaction: undefined,
+      transaction: {
+        label: undefined,
+        value: {
+          memo: undefined,
+          date: undefined,
+          account: undefined,
+          name: undefined
+        }
+      },
       editingRow: false,
       addingComponent: false
     }
@@ -309,30 +319,35 @@ export default {
     },
     storeTransaction () {
       let fullTrx = transactionPayout
-      debugger
       let trxHash = ''
-      if (this.isSelect) trxHash = this.transaction.value.hash
+      console.log('trans', this.transaction)
+      if (this.isSelect) {
+        trxHash = this.transaction.value.hash
+        // fullTrx[0].push({
+        //   label: 'id',
+        //   value: ['string', this.transaction.value.udi]
+        // })
+      }
 
       fullTrx[0][1].value[1] = this.transaction.value.date
-      fullTrx[0][3].value[1] = this.transaction.value.memo
+      fullTrx[0][2].value[1] = this.transaction.value.name ? this.transaction.value.name : this.transaction.value.memo
+      fullTrx[0][4].value[1] = this.transaction.value.memo
 
       // Creates an content group for each component. It nead memo, account hash and amount
       this.components.forEach(comp => {
         fullTrx.push(this.formattedComponent(comp))
       })
 
-      // console.log(trxHash, 'complete trx', fullTrx)
+      console.log(JSON.stringify(fullTrx, null, 2))
 
       !this.isSelect ? this.createTxn({ contentGroups: fullTrx }) : this.updateTxn({ contentGroups: fullTrx, transactionHash: trxHash })
     },
     formattedComponent ({ memo, account, quantity, currency }) {
-      // console.log('add compo')
-      // let acc = 'f462d1b4fa41e7456faddda9d088db6a2ab4073d9a2a441dbd73d9555b608f8d'
       let component = componentPayout
 
       component[1].value[1] = memo
-      component[2].value[1] = account
       component[3].value[1] = `${quantity} ${currency}`
+      component[2].value[1] = account.hash
 
       return component
     }

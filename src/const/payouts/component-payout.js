@@ -5,14 +5,14 @@ export const componentPayout = [
   },
   {
     'label': 'memo',
-    'value': ['string', undefined]
+    'value': ['string', '']
   },
   {
     'label': 'account',
-    'value': ['checksum256', undefined]
+    'value': ['checksum256', '']
   },
   {
     'label': 'amount',
-    'value': ['asset', undefined]
+    'value': ['asset', '']
   }
 ]

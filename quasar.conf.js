@@ -130,7 +130,8 @@ module.exports = function (ctx) {
         BLOCKCHAIN_EXPLORER: process.env.BLOCKCHAIN_EXPLORER,
         GOOGLE_ANALYTICS: process.env.GOOGLE_ANALYTICS,
         DGRAPH_URL: process.env.DGRAPH_URL,
-        DGRAPH_BASE_NODE_HASH: process.env.DGRAPH_BASE_NODE_HASH
+        DGRAPH_BASE_NODE_HASH: process.env.DGRAPH_BASE_NODE_HASH,
+        DGRAPH_TRX_LEDGER: process.env.DGRAPH_TRX_LEDGER
       },
       scopeHoisting: true,
       vueRouterMode: 'history',
