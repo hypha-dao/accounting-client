@@ -27,7 +27,7 @@ q-card.q-pa-sm.full-width
               v-if="!isSelect"
             )
             q-select.transaction-input(
-              :label="$t('pages.transactions.transaction')"
+              :label="$t('pages.transactions.chooseTransaction')"
               filled
               dense
               v-model="transaction"
@@ -56,12 +56,19 @@ q-card.q-pa-sm.full-width
             v-model="transaction.value.memo"
         )
     .col-3
-        q-input(
-            :label="$t('pages.transactions.date')"
-            dense
-            filled
-            v-model="transaction.value.date"
-        )
+      q-input(filled v-model="transaction.value.date" dense mask="date" :rules="['date']")
+        template(v-slot:append)
+         q-icon(name="event" class="cursor-pointer")
+          q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
+            q-date(v-model="transaction.value.date")
+              div(class="row items-center justify-end")
+                q-btn(v-close-popup label="Close" color="primary" flat)
+        //- q-input(
+        //-     :label="$t('pages.transactions.date')"
+        //-     dense
+        //-     filled
+        //-     v-model="transaction.value.date"
+        //- )
   #container
     q-table.sticky-virtscroll-table.q-mt-sm.t-table(
         :columns="columns"
@@ -72,7 +79,7 @@ q-card.q-pa-sm.full-width
         :virtual-scroll-sticky-size-start="pageSize - 2"
     )
       template(v-slot:body-cell-account="props")
-        q-td.text-center
+        q-td
           .text-cell(v-if="props.row.account") {{ props.row.account.accountName }}
             span(v-if="editingRow === props.row.hash")
               q-icon.q-ml-xs(name="edit" color="positive")
@@ -82,29 +89,29 @@ q-card.q-pa-sm.full-width
           q-popup-edit.pop-edit(v-if="editingRow === props.row.hash" separate-close-popup v-model="props.row.account" auto-save)
             custom-table-tree(v-model="props.row.account")
       template(v-slot:body-cell-from="props")
-        q-td.text-center
-          .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.from }}
-          q-input(v-else autofocus v-model="props.row.from" dense counter :label="$t('pages.transactions.from')" color="secondary")
+        q-td
+          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" autofocus v-model="props.row.from" dense counter :label="$t('pages.transactions.from')" color="secondary")
+          .text-cell(v-else) {{ props.row.from }}
       template(v-slot:body-cell-to="props")
-        q-td.text-center
-          .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.to }}
-          q-input(v-else v-model="props.row.to" dense counter :label="$t('pages.transactions.to')" color="secondary")
+        q-td
+          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.to" dense counter :label="$t('pages.transactions.to')" color="secondary")
+          .text-cell(v-else) {{ props.row.to }}
       template(v-slot:body-cell-amount="props")
-        q-td.text-center
-          .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.quantity }}
-          q-input(v-else v-model="props.row.quantity" type="number" step="0.1" min="0" dense counter :label="$t('pages.transactions.amount')" color="secondary")
+        q-td.text-right
+          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.quantity" type="number" step="0.1" min="0" dense counter :label="$t('pages.transactions.amount')" color="secondary")
+          .text-cell(v-else) {{ props.row.quantity }}
       template(v-slot:body-cell-currency="props")
-        q-td.text-center
-          .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.currency }}
-          q-input(v-else v-model="props.row.currency" dense counter :label="$t('pages.transactions.currency')" color="secondary")
+        q-td
+          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense counter :label="$t('pages.transactions.currency')" color="secondary")
+          .text-cell(v-else) {{ props.row.currency }}
       template(v-slot:body-cell-memo="props")
-        q-td.text-center
-          .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.memo }}
-          q-input(v-else v-model="props.row.memo" dense counter :label="$t('pages.transactions.memo')" color="secondary")
+        q-td
+          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.memo" dense counter :label="$t('pages.transactions.memo')" color="secondary")
+          .text-cell(v-else) {{ props.row.memo }}
       template(v-slot:body-cell-date="props")
-        q-td.text-center
-          .text-cell(v-if="editingRow !== props.row.hash") {{ props.row.date }}
-          q-input(v-else v-model="props.row.date" dense counter :label="$t('pages.transactions.date')" color="secondary")
+        q-td
+          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.date" dense counter :label="$t('pages.transactions.date')" color="secondary")
+          .text-cell(v-else) {{ new Date(props.row.date).toUTCString().replace('GMT', '') }}
       template(v-slot:body-cell-actions="props")
         q-td.text-center.q-gutter-xs
           q-btn(v-if="editingRow !== props.row.hash && !addingComponent" icon="edit" round size="sm" color="positive" @click="onClickEditRow(props.row)")
@@ -120,10 +127,16 @@ q-card.q-pa-sm.full-width
     //- Foot
     .row.q-col-gutter-sm.q-mt-xs
         .col-6
-            q-input(
-                :label="$t('pages.transactions.notes')"
+            //- q-input(
+            //-     :label="$t('pages.transactions.notes')"
+            //-     dense
+            //-     filled
+            //- )
+            q-btn.full-width(
+                :label="$t('pages.transactions.delete')"
                 dense
-                filled
+                size="md"
+                class="bg-grey-6 text-white"
             )
         .col.self-center
             q-btn.full-width(
@@ -159,7 +172,7 @@ export default {
       columns: [
         {
           name: 'account',
-          align: 'center',
+          align: 'left',
           label: this.$t('pages.transactions.account'),
           field: row => row.account,
           sortable: true,
@@ -167,7 +180,7 @@ export default {
         },
         {
           name: 'from',
-          align: 'center',
+          align: 'left',
           label: this.$t('pages.transactions.from'),
           field: row => row.from,
           sortable: true,
@@ -175,7 +188,7 @@ export default {
         },
         {
           name: 'to',
-          align: 'center',
+          align: 'left',
           label: this.$t('pages.transactions.to'),
           field: row => row.to,
           sortable: true,
@@ -183,7 +196,7 @@ export default {
         },
         {
           name: 'amount',
-          align: 'center',
+          align: 'right',
           label: this.$t('pages.transactions.amount'),
           field: row => row.quantity,
           sortable: true,
@@ -191,7 +204,7 @@ export default {
         },
         {
           name: 'currency',
-          align: 'center',
+          align: 'left',
           label: this.$t('pages.transactions.currency'),
           field: row => row.currency,
           sortable: true,
@@ -199,7 +212,7 @@ export default {
         },
         {
           name: 'memo',
-          align: 'center',
+          align: 'left',
           label: this.$t('pages.transactions.memo'),
           field: row => row.memo,
           sortable: true,
@@ -207,11 +220,12 @@ export default {
         },
         {
           name: 'date',
-          align: 'center',
+          align: 'left',
           label: this.$t('pages.transactions.date'),
           field: row => row.date,
           sortable: true,
           headerClasses: 'bg-secondary text-white'
+          // format: v => new Date(v).toUTCString()
         },
         {
           name: 'actions',
@@ -239,7 +253,7 @@ export default {
   },
   computed: {
     labelModeSelectTransaction () {
-      return this.isSelect ? this.$t('pages.transactions.selectTransaction') : 'Create new transaction'
+      return this.isSelect ? this.$t('pages.transactions.newTransaction') : this.$t('pages.transactions.chooseTransaction')
     },
     unapprovedTransactionsOptions () {
       if (!this.unapprovedTransactions) return

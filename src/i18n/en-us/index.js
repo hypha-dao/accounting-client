@@ -85,7 +85,9 @@ export default {
       selectTransaction: 'Select Transaction',
       approve: 'Approve',
       notes: 'Notes',
-      save: 'Save'
+      save: 'Save',
+      chooseTransaction: 'Choose Transaction',
+      newTransaction: 'New Transaction'
     },
     events: {
       events: 'Events',
