@@ -33,7 +33,7 @@ export default {
       columns: [
         {
           name: 'from',
-          align: 'center',
+          align: 'left',
           label: this.$t('pages.events.from'),
           field: row => row.from,
           sortable: true,
@@ -41,7 +41,7 @@ export default {
         },
         {
           name: 'to',
-          align: 'center',
+          align: 'left',
           label: this.$t('pages.events.to'),
           field: row => row.to,
           sortable: true,
@@ -49,15 +49,23 @@ export default {
         },
         {
           name: 'amount',
-          align: 'center',
+          align: 'right',
           label: this.$t('pages.events.amount'),
-          field: row => `${row.quantity} ${row.currency}`,
+          field: row => `${row.quantity}`,
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        },
+        {
+          name: 'currency',
+          align: 'left',
+          label: this.$t('pages.transactions.currency'),
+          field: row => `${row.currency}`,
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         },
         {
           name: 'memo',
-          align: 'center',
+          align: 'left',
           label: this.$t('pages.events.memo'),
           field: row => row.memo,
           sortable: true,
@@ -65,11 +73,12 @@ export default {
         },
         {
           name: 'date',
-          align: 'center',
+          align: 'left',
           label: this.$t('pages.events.date'),
           field: row => row.date,
           sortable: true,
-          headerClasses: 'bg-secondary text-white'
+          headerClasses: 'bg-secondary text-white',
+          format: v => new Date(v).toUTCString().replace('GMT', '')
         },
         {
           name: 'actions',
@@ -91,7 +100,10 @@ export default {
   methods: {
     ...mapActions('event', ['getEvents']),
     onEventClick (event) {
-      this.$emit('eventClick', event)
+      this.$emit('eventClick', {
+        ...event,
+        isFromEvent: true
+      })
       this.tempRemoveEvent(event)
     },
     tempRemoveEvent (event) {
