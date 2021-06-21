@@ -102,7 +102,11 @@ q-card.q-pa-sm.full-width
           .text-cell(v-else) {{ props.row.quantity }}
       template(v-slot:body-cell-currency="props")
         q-td
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense counter :label="$t('pages.transactions.currency')" color="secondary")
+          q-select(
+            :options="optionsCurrencies"
+            v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense counter :label="$t('pages.transactions.currency')" color="secondary"
+          )
+          //- q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense counter :label="$t('pages.transactions.currency')" color="secondary")
           .text-cell(v-else) {{ props.row.currency }}
       template(v-slot:body-cell-memo="props")
         q-td
@@ -110,7 +114,14 @@ q-card.q-pa-sm.full-width
           .text-cell(v-else) {{ props.row.memo }}
       template(v-slot:body-cell-date="props")
         q-td
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.date" dense counter :label="$t('pages.transactions.date')" color="secondary")
+          //- q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.date" dense counter :label="$t('pages.transactions.date')" color="secondary")
+          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent"  filled v-model="props.row.date" dense mask="date" :rules="['date']")
+            template(v-slot:append)
+              q-icon(name="event" class="cursor-pointer")
+                q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
+                  q-date(v-model="props.row.date")
+                    div(class="row items-center justify-end")
+                      q-btn(v-close-popup label="Close" color="primary" flat)
           .text-cell(v-else) {{ new Date(props.row.date).toUTCString().replace('GMT', '') }}
       template(v-slot:body-cell-actions="props")
         q-td.text-center.q-gutter-xs
@@ -126,17 +137,18 @@ q-card.q-pa-sm.full-width
           q-btn.full-width(icon="add" size="sm" label="Add component" @click="onClickAddRow")
     //- Foot
     .row.q-col-gutter-sm.q-mt-xs
-        .col-6
+        .col
             //- q-input(
             //-     :label="$t('pages.transactions.notes')"
             //-     dense
             //-     filled
             //- )
             q-btn.full-width(
-                :label="$t('pages.transactions.delete')"
+                :label="$t('pages.transactions.deleteTransaction')"
                 dense
                 size="md"
-                class="bg-grey-6 text-white"
+                class="bg-red-6 text-white"
+                color="negative"
             )
         .col.self-center
             q-btn.full-width(
@@ -166,6 +178,9 @@ export default {
   components: { CustomTableTree },
   data () {
     return {
+      optionsCurrencies: [
+        'BTC', 'TLOS', 'USD', 'ETH'
+      ],
       pageSize: 20,
       nextPage: 2,
       components: [],

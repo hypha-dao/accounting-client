@@ -87,7 +87,8 @@ export default {
       notes: 'Notes',
       save: 'Save',
       chooseTransaction: 'Choose Transaction',
-      newTransaction: 'New Transaction'
+      newTransaction: 'New Transaction',
+      deleteTransaction: 'Delete transaction'
     },
     events: {
       events: 'Events',
