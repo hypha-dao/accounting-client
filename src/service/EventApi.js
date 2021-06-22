@@ -52,7 +52,7 @@ class EventApi extends BaseEosApi {
     let vars = { $first: first.toString(), $offset: offset.toString() }
     let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
 
-    console.log('data', data.event)
+    // console.log('data', data.event)
 
     let mappedEvents = data.event.map((ev, i) => {
       const contents = ev.content_groups[0].contents
