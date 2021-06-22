@@ -4,17 +4,25 @@ q-card.q-pa-sm.full-width
     .text-h6 {{ $t('pages.transactions.transactions') }}
     #transaction-info
         .row.q-gutter-md
-            .row.q-gutter-xs
-                .text-secondary.text-bold Approved
-                q-icon.self-center(
-                name="app:unapproved"
-                size="sm"
-                )
-            .row.q-gutter-xs
-                .text-secondary.text-bold Balanced
+            //- .row.q-gutter-xs
+            //-     .text-secondary.text-bold Approved
+            //-     q-icon.self-center(
+            //-     name="app:unapproved"
+            //-     size="sm"
+            //-     )
+            #unbalanced(v-if="!transactionBalanced")
+              .row.q-gutter-xs
+                .text-secondary.text-bold Unbalanced
                 q-icon.self-center(
                 name="app:unbalanced"
                 size="sm"
+                )
+            #unbalanced(v-else)
+              .row.q-gutter-xs
+                .text-secondary.text-bold Balanced
+                q-icon.self-center(
+                  name="check_circle_done"
+                  size="sm"
                 )
   .row.q-col-gutter-sm
     .col
@@ -30,7 +38,7 @@ q-card.q-pa-sm.full-width
               :label="$t('pages.transactions.chooseTransaction')"
               filled
               dense
-              v-model="transaction"
+              v-model="selectedTransaction"
               clearable
               use-input
               hide-selected
@@ -92,6 +100,10 @@ q-card.q-pa-sm.full-width
         q-td
           q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" autofocus v-model="props.row.from" dense counter :label="$t('pages.transactions.from')" color="secondary")
           .text-cell(v-else) {{ props.row.from }}
+      template(v-slot:body-cell-type="props")
+        q-td
+          //- q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" autofocus v-model="props.row.from" dense counter :label="$t('pages.transactions.from')" color="secondary")
+          .text-cell(v-if="props.row.account") {{ props.row.account.typeTag }}
       template(v-slot:body-cell-to="props")
         q-td
           q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.to" dense counter :label="$t('pages.transactions.to')" color="secondary")
@@ -178,6 +190,7 @@ export default {
   components: { CustomTableTree },
   data () {
     return {
+      transactionBalanced: false,
       optionsCurrencies: [
         'BTC', 'TLOS', 'USD', 'ETH'
       ],
@@ -189,6 +202,14 @@ export default {
           name: 'account',
           align: 'left',
           label: this.$t('pages.transactions.account'),
+          field: row => row.account,
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        },
+        {
+          name: 'type',
+          align: 'left',
+          label: this.$t('pages.transactions.type'),
           field: row => row.account,
           sortable: true,
           headerClasses: 'bg-secondary text-white'
@@ -253,6 +274,7 @@ export default {
       ],
       isSelect: true,
       unapprovedTransactions: undefined,
+      selectedTransaction: undefined,
       transaction: {
         label: undefined,
         value: {
@@ -280,11 +302,30 @@ export default {
       })
     }
   },
+  watch: {
+    components (v) {
+      console.log('components changed', v)
+      this.checkIsBalancedTransaction()
+    }
+  },
   mounted () {
     this.loadUnapprovedTransactions()
   },
   methods: {
     ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn']),
+    checkIsBalancedTransaction () {
+      const listValues = this.optionsCurrencies.map(v => {
+        return {
+          currency: v,
+          value: 0
+        }
+      })
+      console.log('listValues', listValues)
+
+      this.components.forEach(component => {
+        console.log('a component', component)
+      })
+    },
     addEventToTransaction (event) {
       console.log('addEventToTransaction', event)
       this.components.push(event)
