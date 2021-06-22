@@ -48,7 +48,6 @@ class TransactionApi extends BaseEosApi {
             contents(orderasc:label) {
               label
               value
-              type
             }
           }
         }
@@ -60,9 +59,9 @@ class TransactionApi extends BaseEosApi {
     let mappedTransactions = data.transactions.map((trans, i) => {
       let contents = trans.transaction[0].content_groups[0].contents
       return {
-        id: i,
+        id: contents.find(el => el.label === 'id').value,
         hash: trans.transaction[0].hash,
-        uid: contents.find(el => el.label === 'id').value,
+        uid: trans.transaction[0].uid,
         date: contents.find(el => el.label === 'trx_date').value,
         ledger: contents.find(el => el.label === 'trx_ledger').value,
         memo: contents.find(el => el.label === 'trx_memo').value,
@@ -75,16 +74,16 @@ class TransactionApi extends BaseEosApi {
   async getUnapprovedTransactions () {
     const query = `
     {
-      transactions(func: has(hash))
-      {
-        transaction @filter(has(unapproved)) {
-          uid
-          hash
-          content_groups(orderasc:content_group_sequence, first:1) {
-            contents(orderasc:label) {
-              label
-              value
-              type
+      node(func: uid(0x75c6)) {
+        trxbucket {
+          unapproved {
+            hash
+            uid
+            content_groups(orderasc:content_group_sequence, first:1) {
+              contents {
+                label
+                value
+              }
             }
           }
         }
@@ -93,12 +92,12 @@ class TransactionApi extends BaseEosApi {
     `
     let { data } = await this.dgraph.newTxn().query(query)
 
-    let mappedTransactions = data.transactions.map((trans, i) => {
-      let contents = trans.transaction[0].content_groups[0].contents
+    let mappedTransactions = data.node[0].trxbucket[0].unapproved.map((trans, i) => {
+      let contents = trans.content_groups[0].contents
       return {
-        id: i,
-        hash: trans.transaction[0].hash,
-        uid: contents.find(el => el.label === 'id').value,
+        id: contents.find(el => el.label === 'id').value,
+        hash: trans.hash,
+        uid: trans.uid,
         date: contents.find(el => el.label === 'trx_date').value,
         ledger: contents.find(el => el.label === 'trx_ledger').value,
         memo: contents.find(el => el.label === 'trx_memo').value,
@@ -111,16 +110,16 @@ class TransactionApi extends BaseEosApi {
   async getApprovedTransactions () {
     const query = `
     {
-      transactions(func: has(hash))
-      {
-        transaction @filter(has(approved)) {
-          uid
-          hash
-          content_groups(orderasc:content_group_sequence, first:1) {
-            contents(orderasc:label) {
-              label
-              value
-              type
+      node(func: uid(0x75c6)) {
+        trxbucket {
+          approved {
+            hash
+            uid
+            content_groups(orderasc:content_group_sequence, first:1) {
+              contents {
+                label
+                value
+              }
             }
           }
         }
@@ -129,12 +128,12 @@ class TransactionApi extends BaseEosApi {
     `
     let { data } = await this.dgraph.newTxn().query(query)
 
-    let mappedTransactions = data.transactions.map((trans, i) => {
-      let contents = trans.transaction[0].content_groups[0].contents
+    let mappedTransactions = data.node[0].trxbucket[0].approved.map((trans, i) => {
+      let contents = trans.content_groups[0].contents
       return {
-        id: i,
-        hash: trans.transaction[0].hash,
-        uid: contents.find(el => el.label === 'id').value,
+        hash: trans.hash,
+        uid: trans.uid,
+        id: contents.find(el => el.label === 'id').value,
         date: contents.find(el => el.label === 'trx_date').value,
         ledger: contents.find(el => el.label === 'trx_ledger').value,
         memo: contents.find(el => el.label === 'trx_memo').value,
@@ -189,6 +188,35 @@ class TransactionApi extends BaseEosApi {
       }
     })
     return mappedTxn
+  }
+
+  async getLastTransaction () {
+    const query = `
+    {
+      component(func: has(component), orderdesc: created_date, first:1)
+      {
+        component {
+          hash
+          created_date
+        }
+      }
+    }
+    `
+    let { data } = await this.dgraph.newTxn().query(query)
+
+    let mappedTransactions = data.transactions.map((trans, i) => {
+      let contents = trans.transaction[0].content_groups[0].contents
+      return {
+        id: i,
+        hash: trans.transaction[0].hash,
+        uid: contents.find(el => el.label === 'id').value,
+        date: contents.find(el => el.label === 'trx_date').value,
+        ledger: contents.find(el => el.label === 'trx_ledger').value,
+        memo: contents.find(el => el.label === 'trx_memo').value,
+        approved: !(trans.transaction[0].unapproved)
+      }
+    })
+    return mappedTransactions
   }
 
   async createTxn ({ accountName, contentGroups }) {
