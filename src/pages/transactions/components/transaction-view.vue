@@ -313,13 +313,18 @@ export default {
     },
     addingComponent (v) {
       this.checkIsBalancedTransaction()
+    },
+    async selectedTransaction (v) {
+      console.log('transaction changed', v.value)
+      const trx = await this.getTransactionById({ uid: v.value.uid })
+      console.log('transaction got', trx)
     }
   },
   mounted () {
     this.loadUnapprovedTransactions()
   },
   methods: {
-    ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn']),
+    ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById']),
     checkIsBalancedTransaction () {
       let isBalanced = true
       let allWithAccount = true
