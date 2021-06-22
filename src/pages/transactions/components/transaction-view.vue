@@ -21,8 +21,9 @@ q-card.q-pa-sm.full-width
               .row.q-gutter-xs
                 .text-secondary.text-bold Balanced
                 q-icon.self-center(
-                  name="check_circle_done"
+                  name="check_circle"
                   size="sm"
+                  color="positive"
                 )
   .row.q-col-gutter-sm
     .col
@@ -192,7 +193,7 @@ export default {
     return {
       transactionBalanced: false,
       optionsCurrencies: [
-        'BTC', 'TLOS', 'USD', 'ETH'
+        'BTC', 'ETH', 'TLOS', 'HUSD', 'HYPHA', 'SEEDS'
       ],
       pageSize: 20,
       nextPage: 2,
@@ -306,6 +307,12 @@ export default {
     components (v) {
       console.log('components changed', v)
       this.checkIsBalancedTransaction()
+    },
+    editingRow (v) {
+      this.checkIsBalancedTransaction()
+    },
+    addingComponent (v) {
+      this.checkIsBalancedTransaction()
     }
   },
   mounted () {
@@ -314,6 +321,8 @@ export default {
   methods: {
     ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn']),
     checkIsBalancedTransaction () {
+      let isBalanced = true
+      let allWithAccount = true
       const listValues = this.optionsCurrencies.map(v => {
         return {
           currency: v,
@@ -324,7 +333,29 @@ export default {
 
       this.components.forEach(component => {
         console.log('a component', component)
+        if (component.account) {
+          if (component.account.typeTag === 'DEBIT') {
+            listValues.find(v => v.currency === component.currency).value += Number.parseFloat(component.quantity)
+          } else if (component.account.typeTag === 'CREDIT') {
+            listValues.find(v => v.currency === component.currency).value -= Number.parseFloat(component.quantity)
+          }
+        } else {
+          allWithAccount = false
+        }
       })
+
+      listValues.forEach(v => {
+        if (v.value !== 0) {
+          isBalanced = false
+        }
+      })
+
+      console.log('listValues After', listValues, allWithAccount, isBalanced)
+      if (allWithAccount && isBalanced) {
+        this.transactionBalanced = true
+      } else {
+        this.transactionBalanced = false
+      }
     },
     addEventToTransaction (event) {
       console.log('addEventToTransaction', event)
