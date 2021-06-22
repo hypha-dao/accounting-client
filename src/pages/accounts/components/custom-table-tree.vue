@@ -79,6 +79,7 @@ export default {
       const result = this.accounts.accounts.map(account => {
         const content = account.content_groups[0].contents
         let amount = this.getComponentsOfAccount(account.hash)
+        // console.log('loadAccounts', con)
         return {
           accountName: content.find(v => v.label === 'account_name').value,
           // parentAccount: content.find(v => v.label === 'parent_account').value,
@@ -86,6 +87,8 @@ export default {
           uid: account.uid,
           _id: account.uid,
           _hasChildren: true,
+          accountCode: content.find(v => v.label === 'account_code').value,
+          typeTag: content.find(v => v.label === 'account_tag_type').value,
           amount
         }
       })
@@ -104,7 +107,7 @@ export default {
       return new Promise(resolve => setTimeout(resolve, ms))
     },
     async setUpAccountChildren (children) {
-      // console.log('original children', children)
+      console.log('original children', children)
       const accounts = children.data.account[0].account
       // console.log('children acc', accounts)
       return accounts.map(account => {
@@ -117,7 +120,9 @@ export default {
           uid: account.uid,
           _hasChildren: !!account.account,
           _id: account.uid,
-          isSelectable: !account.account
+          isSelectable: !account.account,
+          typeTag: content.find(v => v.label === 'account_tag_type').value,
+          accountCode: content.find(v => v.label === 'account_code').value
         }
       })
     },
@@ -160,8 +165,15 @@ export default {
           filterable: false
         },
         {
-          property: 'uid',
-          title: 'Id',
+          property: 'accountCode',
+          title: 'Code',
+          direction: null,
+          filterable: true,
+          collapseIcon: false
+        },
+        {
+          property: 'typeTag',
+          title: 'Type',
           direction: null,
           filterable: true,
           collapseIcon: false

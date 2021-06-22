@@ -4,17 +4,26 @@ q-card.q-pa-sm.full-width
     .text-h6 {{ $t('pages.transactions.transactions') }}
     #transaction-info
         .row.q-gutter-md
-            .row.q-gutter-xs
-                .text-secondary.text-bold Approved
-                q-icon.self-center(
-                name="app:unapproved"
-                size="sm"
-                )
-            .row.q-gutter-xs
-                .text-secondary.text-bold Balanced
+            //- .row.q-gutter-xs
+            //-     .text-secondary.text-bold Approved
+            //-     q-icon.self-center(
+            //-     name="app:unapproved"
+            //-     size="sm"
+            //-     )
+            #unbalanced(v-if="!transactionBalanced")
+              .row.q-gutter-xs
+                .text-secondary.text-bold Unbalanced
                 q-icon.self-center(
                 name="app:unbalanced"
                 size="sm"
+                )
+            #unbalanced(v-else)
+              .row.q-gutter-xs
+                .text-secondary.text-bold Balanced
+                q-icon.self-center(
+                  name="check_circle"
+                  size="sm"
+                  color="positive"
                 )
   .row.q-col-gutter-sm
     .col
@@ -30,7 +39,7 @@ q-card.q-pa-sm.full-width
               :label="$t('pages.transactions.chooseTransaction')"
               filled
               dense
-              v-model="transaction"
+              v-model="selectedTransaction"
               clearable
               use-input
               hide-selected
@@ -92,6 +101,10 @@ q-card.q-pa-sm.full-width
         q-td
           q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" autofocus v-model="props.row.from" dense counter :label="$t('pages.transactions.from')" color="secondary")
           .text-cell(v-else) {{ props.row.from }}
+      template(v-slot:body-cell-type="props")
+        q-td
+          //- q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" autofocus v-model="props.row.from" dense counter :label="$t('pages.transactions.from')" color="secondary")
+          .text-cell(v-if="props.row.account") {{ props.row.account.typeTag }}
       template(v-slot:body-cell-to="props")
         q-td
           q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.to" dense counter :label="$t('pages.transactions.to')" color="secondary")
@@ -102,7 +115,11 @@ q-card.q-pa-sm.full-width
           .text-cell(v-else) {{ props.row.quantity }}
       template(v-slot:body-cell-currency="props")
         q-td
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense counter :label="$t('pages.transactions.currency')" color="secondary")
+          q-select(
+            :options="optionsCurrencies"
+            v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense counter :label="$t('pages.transactions.currency')" color="secondary"
+          )
+          //- q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense counter :label="$t('pages.transactions.currency')" color="secondary")
           .text-cell(v-else) {{ props.row.currency }}
       template(v-slot:body-cell-memo="props")
         q-td
@@ -110,7 +127,14 @@ q-card.q-pa-sm.full-width
           .text-cell(v-else) {{ props.row.memo }}
       template(v-slot:body-cell-date="props")
         q-td
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.date" dense counter :label="$t('pages.transactions.date')" color="secondary")
+          //- q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.date" dense counter :label="$t('pages.transactions.date')" color="secondary")
+          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent"  filled v-model="props.row.date" dense mask="date" :rules="['date']")
+            template(v-slot:append)
+              q-icon(name="event" class="cursor-pointer")
+                q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
+                  q-date(v-model="props.row.date")
+                    div(class="row items-center justify-end")
+                      q-btn(v-close-popup label="Close" color="primary" flat)
           .text-cell(v-else) {{ new Date(props.row.date).toUTCString().replace('GMT', '') }}
       template(v-slot:body-cell-actions="props")
         q-td.text-center.q-gutter-xs
@@ -126,17 +150,18 @@ q-card.q-pa-sm.full-width
           q-btn.full-width(icon="add" size="sm" label="Add component" @click="onClickAddRow")
     //- Foot
     .row.q-col-gutter-sm.q-mt-xs
-        .col-6
+        .col
             //- q-input(
             //-     :label="$t('pages.transactions.notes')"
             //-     dense
             //-     filled
             //- )
             q-btn.full-width(
-                :label="$t('pages.transactions.delete')"
+                :label="$t('pages.transactions.deleteTransaction')"
                 dense
                 size="md"
-                class="bg-grey-6 text-white"
+                class="bg-red-6 text-white"
+                color="negative"
             )
         .col.self-center
             q-btn.full-width(
@@ -166,6 +191,10 @@ export default {
   components: { CustomTableTree },
   data () {
     return {
+      transactionBalanced: false,
+      optionsCurrencies: [
+        'BTC', 'ETH', 'TLOS', 'HUSD', 'HYPHA', 'SEEDS'
+      ],
       pageSize: 20,
       nextPage: 2,
       components: [],
@@ -174,6 +203,14 @@ export default {
           name: 'account',
           align: 'left',
           label: this.$t('pages.transactions.account'),
+          field: row => row.account,
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        },
+        {
+          name: 'type',
+          align: 'left',
+          label: this.$t('pages.transactions.type'),
           field: row => row.account,
           sortable: true,
           headerClasses: 'bg-secondary text-white'
@@ -238,6 +275,7 @@ export default {
       ],
       isSelect: true,
       unapprovedTransactions: undefined,
+      selectedTransaction: undefined,
       transaction: {
         label: undefined,
         value: {
@@ -265,11 +303,60 @@ export default {
       })
     }
   },
+  watch: {
+    components (v) {
+      console.log('components changed', v)
+      this.checkIsBalancedTransaction()
+    },
+    editingRow (v) {
+      this.checkIsBalancedTransaction()
+    },
+    addingComponent (v) {
+      this.checkIsBalancedTransaction()
+    }
+  },
   mounted () {
     this.loadUnapprovedTransactions()
   },
   methods: {
     ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn']),
+    checkIsBalancedTransaction () {
+      let isBalanced = true
+      let allWithAccount = true
+      const listValues = this.optionsCurrencies.map(v => {
+        return {
+          currency: v,
+          value: 0
+        }
+      })
+      console.log('listValues', listValues)
+
+      this.components.forEach(component => {
+        console.log('a component', component)
+        if (component.account) {
+          if (component.account.typeTag === 'DEBIT') {
+            listValues.find(v => v.currency === component.currency).value += Number.parseFloat(component.quantity)
+          } else if (component.account.typeTag === 'CREDIT') {
+            listValues.find(v => v.currency === component.currency).value -= Number.parseFloat(component.quantity)
+          }
+        } else {
+          allWithAccount = false
+        }
+      })
+
+      listValues.forEach(v => {
+        if (v.value !== 0) {
+          isBalanced = false
+        }
+      })
+
+      console.log('listValues After', listValues, allWithAccount, isBalanced)
+      if (allWithAccount && isBalanced) {
+        this.transactionBalanced = true
+      } else {
+        this.transactionBalanced = false
+      }
+    },
     addEventToTransaction (event) {
       console.log('addEventToTransaction', event)
       this.components.push(event)
