@@ -339,7 +339,7 @@ export default {
       }
       return isValidRow
     },
-    storeTransaction () {
+    async storeTransaction () {
       let fullTrx = transactionPayout
       let trxHash = ''
       // console.log('trans', this.transaction)
@@ -347,7 +347,7 @@ export default {
         trxHash = this.transaction.value.hash
         fullTrx[0].push({
           label: 'id',
-          value: ['int64', this.transaction.value.uid]
+          value: ['int64', this.transaction.value.id]
         })
       }
 
@@ -364,10 +364,20 @@ export default {
 
       console.log(JSON.stringify(fullTrx, null, 2))
 
-      !this.isSelect ? this.createTxn({ contentGroups: fullTrx }) : this.updateTxn({ contentGroups: fullTrx, transactionHash: trxHash })
+      !this.isSelect ? await this.createTxn({ contentGroups: fullTrx }) : await this.updateTxn({ contentGroups: fullTrx, transactionHash: trxHash })
+
+      // console.log(JSON.stringify(response, null, 2))
     },
-    formattedComponent ({ memo, account, quantity, currency }) {
+    formattedComponent ({ memo, account, quantity, currency, hash }) {
       let component = componentPayout
+
+      console.log('lengt', hash.length)
+      if (hash.length === 64) {
+        component.push({
+          label: 'event',
+          value: ['checksum256', hash]
+        })
+      }
 
       component[1].value[1] = memo
       component[3].value[1] = `${quantity} ${currency}`

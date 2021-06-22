@@ -36,7 +36,9 @@ class EventApi extends BaseEosApi {
       var(func: has(event)) {
         events as event
       }
-      event(func: uid(events), first:$first, offset:$offset) {
+      event(func: uid(events), first:$first, offset:$offset)
+      @filter(NOT has(component))
+      {
         uid
         hash
         content_groups(orderasc:content_group_sequence, first:1) {
