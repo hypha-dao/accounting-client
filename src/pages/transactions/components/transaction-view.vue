@@ -398,7 +398,7 @@ export default {
     storeTransaction () {
       let fullTrx = transactionPayout
       let trxHash = ''
-      console.log('trans', this.transaction)
+      // console.log('trans', this.transaction)
       if (this.isSelect) {
         trxHash = this.transaction.value.hash
         fullTrx[0].push({
@@ -407,9 +407,11 @@ export default {
         })
       }
 
-      fullTrx[0][1].value[1] = this.transaction.value.date
+      fullTrx[0][1].value[1] = `${(this.transaction.value.date).replaceAll('/', '-')}T00:00:00` // Need to have this formmat
       fullTrx[0][2].value[1] = this.transaction.value.name ? this.transaction.value.name : this.transaction.value.memo
       fullTrx[0][4].value[1] = this.transaction.value.memo
+
+      // console.log('date', fullTrx[0][1].value[1])
 
       // Creates an content group for each component. It nead memo, account hash and amount
       this.components.forEach(comp => {

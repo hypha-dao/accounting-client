@@ -89,7 +89,8 @@ export default {
       chooseTransaction: 'Choose Transaction',
       newTransaction: 'New Transaction',
       deleteTransaction: 'Delete transaction',
-      type: 'Type'
+      type: 'Type',
+      delete: 'Delete'
     },
     events: {
       events: 'Events',
