@@ -211,12 +211,13 @@ class TransactionApi extends BaseEosApi {
             hash: comp.event ? comp.event[0].hash : '',
             from: comp.event ? event.find(el => el.label === 'from').value : '',
             to: comp.event ? event.find(el => el.label === 'to').value : '',
-            currency: comp.event ? event.find(el => el.label === 'currency').value : '',
-            quantity: comp.event ? event.find(el => el.label === 'quantity').value : '',
+            // currency: comp.event ? event.find(el => el.label === 'currency').value : '',
+            // quantity: comp.event ? event.find(el => el.label === 'quantity').value : '',
             treasuryId: comp.event ? event.find(el => el.label === 'treasury_id').value : '',
             source: comp.event ? event.find(el => el.label === 'source').value : '',
             usdValue: comp.event ? event.find(el => el.label === 'usd_value').value : '',
             // accountHash: compo.find(el => el.label === 'account').value,
+            amount: compo.find(el => el.label === 'amount'),
             date: compo.find(el => el.label === 'create_date').value,
             memo: compo.find(el => el.label === 'memo').value
           }
