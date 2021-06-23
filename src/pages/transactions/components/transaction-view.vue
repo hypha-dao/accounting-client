@@ -520,6 +520,7 @@ export default {
       component[3].value[1] = `${quantity} ${currency}`
       component[2].value[1] = account.hash
 
+      console.log('component Formatted', component)
       return component
     }
   }
