@@ -180,24 +180,35 @@ class TransactionApi extends BaseEosApi {
 
     let transaction = data.transaction.map((cont, idx) => {
       let trx = cont.content_groups[0].contents
-      let comps = cont.component.map(comp => {
-        let event = comp.event[0].content_groups[0].contents
-        let compo = comp.content_groups[0].contents
-        return {
-          from: event.find(el => el.label === 'from').value,
-          to: event.find(el => el.label === 'to').value,
-          currency: event.find(el => el.label === 'currency').value,
-          quantity: event.find(el => el.label === 'quantity').value,
-          treasuryId: event.find(el => el.label === 'treasury_id').value,
-          source: event.find(el => el.label === 'source').value,
-          usdValue: event.find(el => el.label === 'usd_value').value,
 
-          accountHash: compo.find(el => el.label === 'account').value,
-          // amount: compo.find(el => el.label === 'amount').value,
-          date: compo.find(el => el.label === 'create_date').value,
-          memo: compo.find(el => el.label === 'memo').value
-        }
-      })
+      var comps = []
+      if (cont.component) {
+        comps = cont.component.map(comp => {
+          let event = comp.event[0].content_groups[0].contents
+          let compo = comp.content_groups[0].contents
+
+          if (comp.event) {
+            return {
+              from: event.find(el => el.label === 'from').value,
+              to: event.find(el => el.label === 'to').value,
+              currency: event.find(el => el.label === 'currency').value,
+              quantity: event.find(el => el.label === 'quantity').value,
+              treasuryId: event.find(el => el.label === 'treasury_id').value,
+              source: event.find(el => el.label === 'source').value,
+              usdValue: event.find(el => el.label === 'usd_value').value,
+              accountHash: compo.find(el => el.label === 'account').value,
+              date: compo.find(el => el.label === 'create_date').value,
+              memo: compo.find(el => el.label === 'memo').value
+            }
+          }
+
+          return {
+            accountHash: compo.find(el => el.label === 'account').value,
+            date: compo.find(el => el.label === 'create_date').value,
+            memo: compo.find(el => el.label === 'memo').value
+          }
+        })
+      }
 
       return {
         id: trx.find(el => el.label === 'id').value,
@@ -209,7 +220,7 @@ class TransactionApi extends BaseEosApi {
       }
     })
 
-    console.log('trx', transaction[0])
+    // console.log('trx', transaction[0])
 
     return transaction[0]
   }
