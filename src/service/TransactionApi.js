@@ -207,6 +207,7 @@ class TransactionApi extends BaseEosApi {
               accountCode: account.find(el => el.label === 'account_code').value,
               typeTag: account.find(el => el.label === 'account_tag_type').value
             },
+            isFromEvent: !!comp.event,
             hash: comp.event ? comp.event[0].hash : '',
             from: comp.event ? event.find(el => el.label === 'from').value : '',
             to: comp.event ? event.find(el => el.label === 'to').value : '',
