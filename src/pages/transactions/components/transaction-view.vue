@@ -348,9 +348,11 @@ export default {
       console.log('transaction got', trx)
       if (trx) {
         this.transaction.value = {
+          hash: trx.hash,
           memo: trx.memo,
           date: trx.date,
-          name: trx.memo
+          name: trx.memo,
+          id: trx.id
         }
         this.components = trx.components.map(v => {
           return {
@@ -482,6 +484,8 @@ export default {
       // console.log('trans', this.transaction)
       if (this.isSelect) {
         trxHash = this.transaction.value.hash
+        console.log('TRXN', this.transaction)
+
         fullTrx[0].push({
           label: 'id',
           value: ['int64', this.transaction.value.id]
@@ -499,17 +503,20 @@ export default {
         fullTrx.push(this.formattedComponent(comp))
       })
 
-      console.log(JSON.stringify(fullTrx, null, 2))
+      // for(let comp of )
+
+      // console.log(JSON.stringify(fullTrx, null, 2))
 
       !this.isSelect ? await this.createTxn({ contentGroups: fullTrx }) : await this.updateTxn({ contentGroups: fullTrx, transactionHash: trxHash })
 
       // console.log(JSON.stringify(response, null, 2))
     },
-    formattedComponent ({ memo, account, quantity, currency, hash }) {
-      let component = componentPayout
+    formattedComponent ({ memo, account, quantity, currency, hash, isFromEvent }) {
+      let component = [...componentPayout]
 
-      console.log('lengt', hash.length)
-      if (hash.length === 64) {
+      console.log(componentPayout)
+
+      if (isFromEvent) {
         component.push({
           label: 'event',
           value: ['checksum256', hash]
@@ -520,7 +527,10 @@ export default {
       component[3].value[1] = `${quantity} ${currency}`
       component[2].value[1] = account.hash
 
-      console.log('component Formatted', component)
+      console.log('===')
+      console.log('final component', component)
+      console.log('===')
+
       return component
     }
   }
