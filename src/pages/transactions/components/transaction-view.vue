@@ -313,6 +313,11 @@ export default {
     },
     addingComponent (v) {
       this.checkIsBalancedTransaction()
+    },
+    async selectedTransaction (v) {
+      console.log('transaction changed', v.value)
+      const trx = await this.getTransactionById({ uid: v.value.uid })
+      console.log('transaction got', trx)
     }
   },
   mounted () {
