@@ -317,9 +317,10 @@ export default {
   },
   mounted () {
     this.loadUnapprovedTransactions()
+    this.getTransactionById({ uid: '0x8000' })
   },
   methods: {
-    ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn']),
+    ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById']),
     checkIsBalancedTransaction () {
       let isBalanced = true
       let allWithAccount = true

@@ -144,19 +144,46 @@ class TransactionApi extends BaseEosApi {
   }
 
   async getTransactionById ({ uid }) {
+    // const query = `
+    // query transactions($uid:string)
+    // {
+    //   transaction(func: uid($uid)) {
+    //     content_groups(orderasc:content_group_sequence, first:1) {
+    //       contents(orderasc:label)  {
+    //         label
+    //         value
+    //       }
+    //     }
+    //     component {
+    //       account {
+    //         content_groups(orderasc:content_group_sequence, first:1) {
+    //           contents(orderasc:label)  {
+    //             label
+    //             value
+    //           }
+    //         }
+    //       }
+    //       content_groups(orderasc:content_group_sequence, first:1) {
+    //         contents(orderasc:label)  {
+    //           label
+    //           value
+    //         }
+    //       }
+    //     }
+    //   }
+    // }
+    // `
     const query = `
     query transactions($uid:string)
     {
       transaction(func: uid($uid)) {
-        component {
-          account {
-            content_groups(orderasc:content_group_sequence, first:1) {
-              contents(orderasc:label)  {
-                label
-                value
-              }
-            }
+        content_groups(orderasc:content_group_sequence, first:1) {
+          contents(orderasc:label)  {
+            label
+            value
           }
+        }
+        component {
           content_groups(orderasc:content_group_sequence, first:1) {
             contents(orderasc:label)  {
               label
@@ -172,51 +199,37 @@ class TransactionApi extends BaseEosApi {
 
     let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
 
-    let mappedTxn = data.transaction[0].component.map((com, idx) => {
-      let componentCont = com.content_groups[0].contents
-      let accountCont = com.account[0].content_groups[0].contents
-      return {
-        id: idx,
-        amount: componentCont.find(el => el.label === 'amount').value,
-        accountHash: componentCont.find(el => el.label === 'account').value,
-        accountPath: accountCont.find(el => el.label === 'path').value,
-        accountType: accountCont.find(el => el.label === 'account_tag_type').value,
-        accountCode: accountCont.find(el => el.label === 'account_code').value,
-        accountName: accountCont.find(el => el.label === 'account_name').value,
-        date: componentCont.find(el => el.label === 'create_date').value,
-        memo: componentCont.find(el => el.label === 'memo').value
-      }
-    })
-    return mappedTxn
-  }
+    let transaction = data.transaction.map((cont, idx) => {
+      let trx = cont.content_groups[0].contents
+      let comps = cont.component.map(comp => {
+        // let account = comp.account[0].content_groups[0].contents
+        let compo = comp.content_groups[0].contents
+        return {
+          // accountCode: account.find(el => el.label === 'account_code').value,
+          // accountName: account.find(el => el.label === 'account_name').value,
+          // accountTagType: account.find(el => el.label === 'account_tag_type').value,
+          // accountPath: account.find(el => el.label === 'path').value,
 
-  async getLastTransaction () {
-    const query = `
-    {
-      component(func: has(component), orderdesc: created_date, first:1)
-      {
-        component {
-          hash
-          created_date
+          accountHash: compo.find(el => el.label === 'account').value,
+          amount: compo.find(el => el.label === 'amount').value,
+          date: compo.find(el => el.label === 'create_date').value,
+          memo: compo.find(el => el.label === 'memo').value
         }
-      }
-    }
-    `
-    let { data } = await this.dgraph.newTxn().query(query)
+      })
 
-    let mappedTransactions = data.transactions.map((trans, i) => {
-      let contents = trans.transaction[0].content_groups[0].contents
       return {
-        id: i,
-        hash: trans.transaction[0].hash,
-        uid: contents.find(el => el.label === 'id').value,
-        date: contents.find(el => el.label === 'trx_date').value,
-        ledger: contents.find(el => el.label === 'trx_ledger').value,
-        memo: contents.find(el => el.label === 'trx_memo').value,
-        approved: !(trans.transaction[0].unapproved)
+        id: trx.find(el => el.label === 'id').value,
+        name: trx.find(el => el.label === 'trx_name').value,
+        memo: trx.find(el => el.label === 'trx_memo').value,
+        date: trx.find(el => el.label === 'trx_date').value,
+        ledger: trx.find(el => el.label === 'trx_ledger').value,
+        components: comps
       }
     })
-    return mappedTransactions
+
+    // console.log('trx', transaction[0])
+
+    return transaction[0]
   }
 
   async createTxn ({ accountName, contentGroups }) {
