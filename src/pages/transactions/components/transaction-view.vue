@@ -499,11 +499,13 @@ export default {
       // console.log('date', fullTrx[0][1].value[1])
 
       // Creates an content group for each component. It nead memo, account hash and amount
-      this.components.forEach(comp => {
-        fullTrx.push(this.formattedComponent(comp))
-      })
+      // this.components.forEach(async (comp) => {
+      //   fullTrx.push(await this.formattedComponent(comp))
+      // })
 
-      // for(let comp of )
+      for (let comp of this.components) {
+        fullTrx.push(await this.formattedComponent(comp))
+      }
 
       // console.log(JSON.stringify(fullTrx, null, 2))
 
@@ -512,9 +514,7 @@ export default {
       // console.log(JSON.stringify(response, null, 2))
     },
     formattedComponent ({ memo, account, quantity, currency, hash, isFromEvent }) {
-      let component = [...componentPayout]
-
-      console.log(componentPayout)
+      let component = JSON.parse(JSON.stringify(componentPayout))
 
       if (isFromEvent) {
         component.push({
