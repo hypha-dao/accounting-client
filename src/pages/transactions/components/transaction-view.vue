@@ -281,7 +281,6 @@ export default {
         value: {
           memo: undefined,
           date: undefined,
-          account: undefined,
           name: undefined
         }
       },
@@ -318,11 +317,24 @@ export default {
       console.log('transaction changed', v.value)
       const trx = await this.getTransactionById({ uid: v.value.uid })
       console.log('transaction got', trx)
+      if (trx) {
+        this.transaction.value = {
+          memo: trx.memo,
+          date: trx.date,
+          name: trx.memo
+        }
+        this.components = trx.components.map(v => {
+          return {
+            ...v,
+            isLinked: true
+          }
+        })
+      }
     }
   },
   mounted () {
     this.loadUnapprovedTransactions()
-    this.getTransactionById({ uid: '0x8359' })
+    // this.getTransactionById({ uid: '0x8359' })
   },
   methods: {
     ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById']),
@@ -357,7 +369,7 @@ export default {
       })
 
       console.log('listValues After', listValues, allWithAccount, isBalanced)
-      if (allWithAccount && isBalanced) {
+      if (allWithAccount && isBalanced && this.components.length >= 2) {
         this.transactionBalanced = true
       } else {
         this.transactionBalanced = false
