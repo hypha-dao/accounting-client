@@ -89,13 +89,13 @@ q-card.q-pa-sm.full-width
     )
       template(v-slot:body-cell-account="props")
         q-td
-          .text-cell(v-if="props.row.account") {{ props.row.account.accountName }}
-            span(v-if="editingRow === props.row.hash")
+          .text-cell(v-if="props.row.account") {{ props.row.account.accountCode }} - {{ props.row.account.accountName }}
+            span
               q-icon.q-ml-xs(name="edit" color="positive")
           .text-cell(v-else) ---
-            span(v-if="editingRow === props.row.hash")
+            span
               q-icon.q-ml-xs(name="edit" color="positive")
-          q-popup-edit.pop-edit(v-if="editingRow === props.row.hash" separate-close-popup v-model="props.row.account" auto-save)
+          q-popup-edit.pop-edit(separate-close-popup v-model="props.row.account" auto-save)
             custom-table-tree(v-model="props.row.account")
       template(v-slot:body-cell-from="props")
         q-td
@@ -138,7 +138,7 @@ q-card.q-pa-sm.full-width
           .text-cell(v-else) {{ new Date(props.row.date).toUTCString().replace('GMT', '') }}
       template(v-slot:body-cell-actions="props")
         q-td.text-center.q-gutter-xs
-          q-btn(v-if="editingRow !== props.row.hash && !addingComponent" icon="edit" round size="sm" color="positive" @click="onClickEditRow(props.row)")
+          q-btn(v-if="editingRow !== props.row.hash && !addingComponent && !props.row.isFromEvent" icon="edit" round size="sm" color="positive" @click="onClickEditRow(props.row)")
           q-btn(v-if="editingRow === props.row.hash" icon="save" round size="sm" color="primary" @click="onClickSaveRow(props.row)")
           q-btn(v-if="addingComponent && editingRow === props.row.hash" icon="close" round size="sm" color="negative" @click="onClickCancelAdding(props.row)")
           q-btn(v-if="editingRow === false" icon="delete" round size="sm" color="negative" @click="onClickRemoveRow(props.row)")
