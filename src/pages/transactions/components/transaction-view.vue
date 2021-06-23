@@ -479,9 +479,9 @@ export default {
       return isValidRow
     },
     async storeTransaction () {
-      let fullTrx = transactionPayout
+      let fullTrx = JSON.parse(JSON.stringify(transactionPayout))
+
       let trxHash = ''
-      // console.log('trans', this.transaction)
       if (this.isSelect) {
         trxHash = this.transaction.value.hash
         console.log('TRXN', this.transaction)
@@ -496,13 +496,6 @@ export default {
       fullTrx[0][2].value[1] = this.transaction.value.name ? this.transaction.value.name : this.transaction.value.memo
       fullTrx[0][4].value[1] = this.transaction.value.memo
 
-      // console.log('date', fullTrx[0][1].value[1])
-
-      // Creates an content group for each component. It nead memo, account hash and amount
-      // this.components.forEach(async (comp) => {
-      //   fullTrx.push(await this.formattedComponent(comp))
-      // })
-
       for (let comp of this.components) {
         fullTrx.push(await this.formattedComponent(comp))
       }
@@ -510,13 +503,11 @@ export default {
       // console.log(JSON.stringify(fullTrx, null, 2))
 
       !this.isSelect ? await this.createTxn({ contentGroups: fullTrx }) : await this.updateTxn({ contentGroups: fullTrx, transactionHash: trxHash })
-
-      // console.log(JSON.stringify(response, null, 2))
     },
-    formattedComponent ({ memo, account, quantity, currency, hash, isCustomComponent }) {
+    formattedComponent ({ memo, account, quantity, currency, hash, isCustomComponent, isFromEvent }) {
       let component = JSON.parse(JSON.stringify(componentPayout))
 
-      if (!isCustomComponent) {
+      if (!isCustomComponent && isFromEvent) {
         component.push({
           label: 'event',
           value: ['checksum256', hash]
@@ -526,10 +517,6 @@ export default {
       component[1].value[1] = memo
       component[3].value[1] = `${quantity} ${currency}`
       component[2].value[1] = account.hash
-
-      console.log('===')
-      console.log('final component', component)
-      console.log('===')
 
       return component
     }
