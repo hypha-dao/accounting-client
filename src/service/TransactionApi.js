@@ -148,6 +148,7 @@ class TransactionApi extends BaseEosApi {
     query transactions($uid:string)
     {
       transaction(func: uid($uid)) {
+        hash
         content_groups(orderasc:content_group_sequence, first:1) {
           contents(orderasc:label)  {
             label
@@ -156,6 +157,16 @@ class TransactionApi extends BaseEosApi {
         }
         component {
           event {
+            hash
+            content_groups(orderasc:content_group_sequence, first:1) {
+              contents(orderasc:label)  {
+                label
+                value
+               }
+             }
+          }
+          account {
+            hash
             content_groups(orderasc:content_group_sequence, first:1) {
               contents(orderasc:label)  {
                 label
@@ -180,14 +191,23 @@ class TransactionApi extends BaseEosApi {
 
     let transaction = data.transaction.map((cont, idx) => {
       let trx = cont.content_groups[0].contents
-
+      // let acc = cont.component
       var comps = []
       if (cont.component) {
         comps = cont.component.map(comp => {
           let event = (comp.event) ? comp.event[0].content_groups[0].contents : ''
+          let account = (comp.account) ? comp.account[0].content_groups[0].contents : ''
           let compo = comp.content_groups[0].contents
 
           return {
+            account: {
+              _hasChildren: false,
+              hash: comp.account ? comp.account[0].hash : '',
+              accountName: account.find(el => el.label === 'account_name').value,
+              accountCode: account.find(el => el.label === 'account_code').value,
+              typeTag: account.find(el => el.label === 'account_tag_type').value
+            },
+            hash: comp.event ? comp.event[0].hash : '',
             from: comp.event ? event.find(el => el.label === 'from').value : '',
             to: comp.event ? event.find(el => el.label === 'to').value : '',
             currency: comp.event ? event.find(el => el.label === 'currency').value : '',
@@ -195,7 +215,7 @@ class TransactionApi extends BaseEosApi {
             treasuryId: comp.event ? event.find(el => el.label === 'treasury_id').value : '',
             source: comp.event ? event.find(el => el.label === 'source').value : '',
             usdValue: comp.event ? event.find(el => el.label === 'usd_value').value : '',
-            accountHash: compo.find(el => el.label === 'account').value,
+            // accountHash: compo.find(el => el.label === 'account').value,
             date: compo.find(el => el.label === 'create_date').value,
             memo: compo.find(el => el.label === 'memo').value
           }
@@ -203,6 +223,7 @@ class TransactionApi extends BaseEosApi {
       }
 
       return {
+        hash: cont.hash,
         id: trx.find(el => el.label === 'id').value,
         name: trx.find(el => el.label === 'trx_name').value,
         memo: trx.find(el => el.label === 'trx_memo').value,
@@ -212,7 +233,7 @@ class TransactionApi extends BaseEosApi {
       }
     })
 
-    // console.log('trx', transaction[0])
+    console.log('trx', transaction[0])
 
     return transaction[0]
   }
