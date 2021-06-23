@@ -513,10 +513,10 @@ export default {
 
       // console.log(JSON.stringify(response, null, 2))
     },
-    formattedComponent ({ memo, account, quantity, currency, hash, isFromEvent }) {
+    formattedComponent ({ memo, account, quantity, currency, hash, isCustomComponent }) {
       let component = JSON.parse(JSON.stringify(componentPayout))
 
-      if (isFromEvent) {
+      if (!isCustomComponent) {
         component.push({
           label: 'event',
           value: ['checksum256', hash]
