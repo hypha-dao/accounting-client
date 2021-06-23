@@ -169,6 +169,7 @@ q-card.q-pa-sm.full-width
                 dense
                 size="md"
                 class="bg-grey-6 text-white"
+                :disable="!transactionBalanced"
             )
         .col.self-center
             q-btn.full-width(
@@ -177,6 +178,7 @@ q-card.q-pa-sm.full-width
                 size="md"
                 class="bg-grey-6 text-white"
                 @click="storeTransaction()"
+                :disable="!readyToSave"
             )
 </template>
 
@@ -300,6 +302,23 @@ export default {
           value: v
         }
       })
+    },
+    readyToSave () {
+      // debugger
+      let ready = true
+      if (this.isSelect) {
+        if (!this.selectedTransaction) {
+          ready = false
+        }
+      } else {
+        if (!this.transaction || !this.transaction.value || !this.transaction.value.name) {
+          ready = false
+        }
+      }
+      if (!this.transaction.value.date) {
+        ready = false
+      }
+      return ready
     }
   },
   watch: {
@@ -314,6 +333,16 @@ export default {
       this.checkIsBalancedTransaction()
     },
     async selectedTransaction (v) {
+      if (!v) {
+        this.transaction.value = {
+          memo: undefined,
+          date: undefined,
+          name: undefined
+        }
+        this.components = []
+        this.requestRefreshEvents()
+        return
+      }
       console.log('transaction changed', v.value)
       const trx = await this.getTransactionById({ uid: v.value.uid })
       console.log('transaction got', trx)
@@ -340,6 +369,9 @@ export default {
   },
   methods: {
     ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById']),
+    requestRefreshEvents () {
+      this.$emit('requestRefreshEvents')
+    },
     checkIsBalancedTransaction () {
       let isBalanced = true
       let allWithAccount = true

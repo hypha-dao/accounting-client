@@ -91,14 +91,17 @@ export default {
       ]
     }
   },
-  async mounted () {
-    this.events = await this.getEvents({
-      offset: 0,
-      first: 100
-    })
+  mounted () {
+    this.loadEvents()
   },
   methods: {
     ...mapActions('event', ['getEvents']),
+    async loadEvents () {
+      this.events = await this.getEvents({
+        offset: 0,
+        first: 100
+      })
+    },
     onEventClick (event) {
       this.$emit('eventClick', {
         ...event,

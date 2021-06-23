@@ -3,7 +3,11 @@
   #cont1.q-pa-sm
     event-list(@eventClick="onEventAdded" ref="eventListView")
   #cont2.q-pa-sm
-    transaction-view(ref="transactionView" @eventRemoved="onEventRemovedFromTransaction")
+    transaction-view(
+      ref="transactionView"
+      @eventRemoved="onEventRemovedFromTransaction"
+      @requestRefreshEvents="onRequestRefreshEvents"
+    )
     //- TransactionsList
   //- .row
   //-   event-list
@@ -22,6 +26,9 @@ export default {
     },
     onEventRemovedFromTransaction (event) {
       this.$refs.eventListView.returnEventRemoved(event)
+    },
+    onRequestRefreshEvents () {
+      this.$refs.eventListView.loadEvents()
     }
   }
 }
