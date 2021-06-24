@@ -42,7 +42,6 @@ q-card.q-pa-sm.full-width
               dense
               v-model="selectedTransaction"
               clearable
-              hide-selected
               fill-input
               :options="unapprovedTransactionsOptions"
               style="width: 350px"
@@ -87,6 +86,7 @@ q-card.q-pa-sm.full-width
         :rows-per-page-options="[0]"
         :virtual-scroll-item-size="pageSize - 2"
         :virtual-scroll-sticky-size-start="pageSize - 2"
+        dense
     )
       template(v-slot:body-cell-account="props")
         q-td
@@ -100,7 +100,7 @@ q-card.q-pa-sm.full-width
             custom-table-tree(v-model="props.row.account")
       template(v-slot:body-cell-from="props")
         q-td
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" autofocus v-model="props.row.from" dense counter :label="$t('pages.transactions.from')" color="secondary")
+          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" autofocus v-model="props.row.from" dense :label="$t('pages.transactions.from')" color="secondary")
           .text-cell(v-else) {{ props.row.from }}
       template(v-slot:body-cell-type="props")
         q-td
@@ -108,28 +108,28 @@ q-card.q-pa-sm.full-width
           .text-cell(v-if="props.row.account") {{ props.row.account.typeTag }}
       template(v-slot:body-cell-to="props")
         q-td
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.to" dense counter :label="$t('pages.transactions.to')" color="secondary")
+          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.to" dense :label="$t('pages.transactions.to')" color="secondary")
           .text-cell(v-else) {{ props.row.to }}
       template(v-slot:body-cell-amount="props")
         q-td.text-right
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.quantity" type="number" step="0.1" min="0" dense counter :label="$t('pages.transactions.amount')" color="secondary")
+          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.quantity" type="number" step="0.1" min="0" dense :label="$t('pages.transactions.amount')" color="secondary")
           .text-cell(v-else) {{ props.row.quantity }}
       template(v-slot:body-cell-currency="props")
         q-td
           q-select(
             :options="optionsCurrencies"
-            v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense counter :label="$t('pages.transactions.currency')" color="secondary"
+            v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense :label="$t('pages.transactions.currency')" color="secondary"
           )
           //- q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense counter :label="$t('pages.transactions.currency')" color="secondary")
           .text-cell(v-else) {{ props.row.currency }}
       template(v-slot:body-cell-memo="props")
         q-td
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.memo" dense counter :label="$t('pages.transactions.memo')" color="secondary")
+          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.memo" dense :label="$t('pages.transactions.memo')" color="secondary")
           .text-cell(v-else) {{ props.row.memo }}
       template(v-slot:body-cell-date="props")
         q-td
-          //- q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.date" dense counter :label="$t('pages.transactions.date')" color="secondary")
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent"  filled v-model="props.row.date" dense mask="date" :rules="['date']")
+          //- q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.date" dense mask="date" :rules="['date']" :label="$t('pages.transactions.date')" color="secondary")
+          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.date" dense :label="$t('pages.transactions.date')" mask="date" color="secondary")
             template(v-slot:append)
               q-icon(name="event" class="cursor-pointer")
                 q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
@@ -138,11 +138,11 @@ q-card.q-pa-sm.full-width
                       q-btn(v-close-popup label="Close" color="primary" flat)
           .text-cell(v-else) {{ new Date(props.row.date).toUTCString().replace('GMT', '') }}
       template(v-slot:body-cell-actions="props")
-        q-td.text-center.q-gutter-xs
-          q-btn(v-if="editingRow !== props.row.hash && !addingComponent && !props.row.isFromEvent" icon="edit" round size="sm" color="positive" @click="onClickEditRow(props.row)")
-          q-btn(v-if="editingRow === props.row.hash" icon="save" round size="sm" color="primary" @click="onClickSaveRow(props.row)")
-          q-btn(v-if="addingComponent && editingRow === props.row.hash" icon="close" round size="sm" color="negative" @click="onClickCancelAdding(props.row)")
-          q-btn(v-if="editingRow === false" icon="delete" round size="sm" color="negative" @click="onClickRemoveRow(props.row)")
+        q-td.q-gutter-xs.text-right
+          q-btn(v-if="editingRow !== props.row.hash && !addingComponent && !props.row.isFromEvent" icon="edit" round size="xs" color="positive" @click="onClickEditRow(props.row)")
+          q-btn(v-if="editingRow === props.row.hash" icon="save" round size="xs" color="primary" @click="onClickSaveRow(props.row)")
+          q-btn(v-if="addingComponent && editingRow === props.row.hash" icon="close" round size="xs" color="negative" @click="onClickCancelAdding(props.row)")
+          q-btn(v-if="editingRow === false" icon="delete" round size="xs" color="negative" @click="onClickRemoveRow(props.row)")
       template(v-slot:bottom v-if="!addingComponent")
         q-tr
           q-btn.full-width(icon="add" size="sm" label="Add component" @click="onClickAddRow")
@@ -337,17 +337,27 @@ export default {
     addingComponent (v) {
       this.checkIsBalancedTransaction()
     },
-    async selectedTransaction (v) {
-      if (!v) {
-        this.transaction.value = {
-          memo: undefined,
-          date: undefined,
-          name: undefined
-        }
-        this.components = []
-        this.requestRefreshEvents()
-        return
+    isSelect (v) {
+      this.transaction.value = {
+        memo: undefined,
+        date: undefined,
+        name: undefined
       }
+      this.components = []
+      this.requestRefreshEvents()
+      this.selectedTransaction = undefined
+    },
+    async selectedTransaction (v) {
+      // if (!v) {
+      this.transaction.value = {
+        memo: undefined,
+        date: undefined,
+        name: undefined
+      }
+      this.components = []
+      this.requestRefreshEvents()
+      // return
+      // }
       console.log('transaction changed', v.value)
       const trx = await this.getTransactionById({ uid: v.value.uid })
       console.log('transaction got', trx)
@@ -417,6 +427,11 @@ export default {
     },
     addEventToTransaction (event) {
       console.log('addEventToTransaction', event)
+      if (this.components.length === 0) {
+        this.isSelect = false
+        const defaultName = `${event.from} to ${event.to} (${event.quantity} ${event.currency})`
+        this.transaction.value.name = defaultName
+      }
       this.components.push(event)
     },
     async loadUnapprovedTransactions () {
@@ -449,7 +464,7 @@ export default {
         this.showErrorMsg('Please review all fields are filled')
         return
       }
-      row.date = new Date()
+      // row.date = new Date()
       this.editingRow = false
       this.addingComponent = false
     },
@@ -557,7 +572,7 @@ export default {
 .transaction-input
   min-width: 250px
 .t-table
-  height: 30vh
+  height: 35vh
 .pop-edit
   max-width: 1500px !important
   min-width: 400px !important
