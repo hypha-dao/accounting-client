@@ -543,7 +543,7 @@ export default {
         this.showErrorMsg(e)
       }
 
-      await this.cleanTrx()
+      // await this.cleanTrx()
     },
     formattedComponent ({ memo, account, quantity, currency, hash, isCustomComponent, isFromEvent }) {
       let component = JSON.parse(JSON.stringify(componentPayout))
