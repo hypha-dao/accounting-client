@@ -35,6 +35,8 @@ q-card.q-pa-sm.full-width
               filled
               v-if="!isSelect"
               style="width: 350px"
+              ref="newTrxInput"
+              color="secondary"
             )
             q-select.transaction-input(
               :label="$t('pages.transactions.chooseTransaction')"
@@ -46,6 +48,8 @@ q-card.q-pa-sm.full-width
               :options="unapprovedTransactionsOptions"
               style="width: 350px"
               v-else
+              ref="chooseTrxSelect"
+              color="secondary"
             )
             .text.self-center.text-secondary.text-uppercase.text-bold {{ $t('pages.transactions.or') }}
             q-btn.mode-btn(
@@ -63,9 +67,10 @@ q-card.q-pa-sm.full-width
             dense
             filled
             v-model="transaction.value.memo"
+            color="secondary"
         )
     .col-2
-      q-input(filled v-model="transaction.value.date" dense mask="date" :rules="['date']")
+      q-input(filled v-model="transaction.value.date" dense mask="date" label="Date" color="secondary")
         template(v-slot:append)
          q-icon(name="event" class="cursor-pointer")
           q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
@@ -272,7 +277,7 @@ export default {
           headerClasses: 'bg-secondary text-white'
         }
       ],
-      isSelect: true,
+      isSelect: false,
       unapprovedTransactions: undefined,
       selectedTransaction: undefined,
       transaction: {
@@ -338,7 +343,7 @@ export default {
     addingComponent (v) {
       this.checkIsBalancedTransaction()
     },
-    isSelect (v) {
+    async isSelect (v) {
       this.transaction.value = {
         memo: undefined,
         date: undefined,
@@ -347,6 +352,13 @@ export default {
       this.components = []
       this.requestRefreshEvents()
       this.selectedTransaction = undefined
+
+      await this.$nextTick()
+      if (v) {
+        this.$refs.chooseTrxSelect.showPopup()
+      } else {
+        this.$refs.newTrxInput.focus()
+      }
     },
     async selectedTransaction (v) {
       // if (!v) {
