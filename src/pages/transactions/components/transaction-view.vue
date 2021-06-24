@@ -181,6 +181,7 @@ q-card.q-pa-sm.full-width
                 size="md"
                 class="bg-red-20 text-white"
                 color="negative"
+                @click="deleteTransaction()"
             )
 </template>
 
