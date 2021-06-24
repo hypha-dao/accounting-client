@@ -162,6 +162,7 @@ q-card.q-pa-sm.full-width
                 size="md"
                 class="bg-red-6 text-white"
                 color="negative"
+                @click="deleteTransaction()"
             )
         .col.self-center
             q-btn.full-width(
@@ -183,7 +184,7 @@ q-card.q-pa-sm.full-width
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import { transactionPayout } from '~/const/payouts/transaction-payout'
 import { componentPayout } from '~/const/payouts/component-payout'
 import CustomTableTree from '~/pages/accounts/components/custom-table-tree'
@@ -286,6 +287,14 @@ export default {
           name: undefined
         }
       },
+      baseTrx: {
+        label: undefined,
+        value: {
+          memo: undefined,
+          date: undefined,
+          name: undefined
+        }
+      },
       editingRow: false,
       addingComponent: false
     }
@@ -298,7 +307,7 @@ export default {
       if (!this.unapprovedTransactions) return
       return this.unapprovedTransactions.map(v => {
         return {
-          label: v.memo,
+          label: v.name,
           value: v
         }
       })
@@ -368,7 +377,8 @@ export default {
     // this.getTransactionById({ uid: '0x8359' })
   },
   methods: {
-    ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById']),
+    ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById', 'deteleTxn']),
+    ...mapMutations('general', ['setIsLoading']),
     requestRefreshEvents () {
       this.$emit('requestRefreshEvents')
     },
@@ -493,7 +503,7 @@ export default {
       }
 
       fullTrx[0][1].value[1] = `${(this.transaction.value.date).replaceAll('/', '-')}T00:00:00` // Need to have this formmat
-      fullTrx[0][2].value[1] = this.transaction.value.name ? this.transaction.value.name : this.transaction.value.memo
+      fullTrx[0][2].value[1] = this.transaction.value.name
       fullTrx[0][4].value[1] = this.transaction.value.memo
 
       for (let comp of this.components) {
@@ -503,6 +513,8 @@ export default {
       // console.log(JSON.stringify(fullTrx, null, 2))
 
       !this.isSelect ? await this.createTxn({ contentGroups: fullTrx }) : await this.updateTxn({ contentGroups: fullTrx, transactionHash: trxHash })
+
+      await this.cleanTrx()
     },
     formattedComponent ({ memo, account, quantity, currency, hash, isCustomComponent, isFromEvent }) {
       let component = JSON.parse(JSON.stringify(componentPayout))
@@ -519,6 +531,21 @@ export default {
       component[2].value[1] = account.hash
 
       return component
+    },
+    async deleteTransaction () {
+      await this.deteleTxn({ transactionHash: this.transaction.value.hash })
+      await this.cleanTrx()
+    },
+    async cleanTrx () {
+      this.setIsLoading(true)
+      this.transaction = { ...this.baseTrx }
+      this.components = []
+      this.isSelect = true
+      setTimeout(async () => {
+        await this.loadUnapprovedTransactions()
+        this.selectedTransaction = undefined
+        this.setIsLoading(false)
+      }, 2000)
     }
   }
 }

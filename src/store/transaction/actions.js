@@ -107,3 +107,17 @@ export const balanceTxn = async function ({ commit }, { transactionHash }) {
     commit('general/setIsLoading', false, { root: true })
   }
 }
+
+export const deteleTxn = async function ({ commit }, { transactionHash }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const deleter = await this.getters['accounts/account']
+    const transaction = await this.$transactionApi.deteleTxn({ deleter, transactionHash })
+    return transaction
+  } catch (e) {
+    console.error('An error ocurred while trying to crerate txn with event', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
