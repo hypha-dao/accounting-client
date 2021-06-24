@@ -43,7 +43,6 @@ q-card.q-pa-sm.full-width
               filled
               dense
               v-model="selectedTransaction"
-              clearable
               fill-input
               :options="unapprovedTransactionsOptions"
               style="width: 350px"
