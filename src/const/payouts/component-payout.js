@@ -15,4 +15,12 @@ export const componentPayout = [
     'label': 'amount',
     'value': ['asset', '']
   }
+  // {
+  //   'label': 'from',
+  //   'value': ['string', '']
+  // },
+  // {
+  //   'label': 'to',
+  //   'value': ['string', '']
+  // }
 ]

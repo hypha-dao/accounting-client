@@ -302,6 +302,7 @@ export default {
     unapprovedTransactionsOptions () {
       if (!this.unapprovedTransactions) return
       return this.unapprovedTransactions.map(v => {
+        console.log('vi', v)
         return {
           label: v.name,
           value: v
