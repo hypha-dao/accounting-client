@@ -292,6 +292,8 @@ class TransactionApi extends BaseEosApi {
         trx_hash: transactionHash
       }
     }]
+
+    console.log('balance', actions)
     return this.eosApi.signTransaction(actions)
   }
 

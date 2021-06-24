@@ -171,6 +171,7 @@ q-card.q-pa-sm.full-width
                 size="md"
                 class="bg-grey-6 text-white"
                 :disable="!transactionBalanced"
+                @click="aproveTransaction()"
             )
         .col.self-center
             q-btn.full-width(
@@ -377,7 +378,7 @@ export default {
     // this.getTransactionById({ uid: '0x8359' })
   },
   methods: {
-    ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById', 'deteleTxn']),
+    ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById', 'deteleTxn', 'balanceTxn']),
     ...mapMutations('general', ['setIsLoading']),
     requestRefreshEvents () {
       this.$emit('requestRefreshEvents')
@@ -535,6 +536,12 @@ export default {
     async deleteTransaction () {
       await this.deteleTxn({ transactionHash: this.transaction.value.hash })
       await this.cleanTrx()
+    },
+    async aproveTransaction () {
+      console.log('aprove!', this.transaction.value.hash)
+      this.balanceTxn({ transactionHash: this.transaction.value.hash })
+
+      this.cleanTrx()
     },
     async cleanTrx () {
       this.setIsLoading(true)
