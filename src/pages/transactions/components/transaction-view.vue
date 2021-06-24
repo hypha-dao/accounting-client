@@ -34,6 +34,7 @@ q-card.q-pa-sm.full-width
               dense
               filled
               v-if="!isSelect"
+              style="width: 350px"
             )
             q-select.transaction-input(
               :label="$t('pages.transactions.chooseTransaction')"
@@ -41,30 +42,30 @@ q-card.q-pa-sm.full-width
               dense
               v-model="selectedTransaction"
               clearable
-              use-input
               hide-selected
               fill-input
-              input-debounce="0"
               :options="unapprovedTransactionsOptions"
-              style="width: 250px"
+              style="width: 350px"
               v-else
             )
             .text.self-center.text-secondary.text-uppercase.text-bold {{ $t('pages.transactions.or') }}
-            q-btn(
-                :label="labelModeSelectTransaction"
+            q-btn.mode-btn(
                 dense
                 size="sm"
                 color="secondary"
                 @click="isSelect = !isSelect"
+                no-caps
             )
-    .col-4
+              q-icon(name="add" v-if="isSelect")
+              .label-mode-btn {{ labelModeSelectTransaction }}
+    .col-3
         q-input(
             :label="$t('pages.transactions.memo')"
             dense
             filled
             v-model="transaction.value.memo"
         )
-    .col-3
+    .col-2
       q-input(filled v-model="transaction.value.date" dense mask="date" :rules="['date']")
         template(v-slot:append)
          q-icon(name="event" class="cursor-pointer")
@@ -150,25 +151,12 @@ q-card.q-pa-sm.full-width
           q-btn.full-width(icon="add" size="sm" label="Add component" @click="onClickAddRow")
     //- Foot
     .row.q-col-gutter-sm.q-mt-xs
-        .col
-            //- q-input(
-            //-     :label="$t('pages.transactions.notes')"
-            //-     dense
-            //-     filled
-            //- )
-            q-btn.full-width(
-                :label="$t('pages.transactions.deleteTransaction')"
-                dense
-                size="md"
-                class="bg-red-6 text-white"
-                color="negative"
-            )
         .col.self-center
             q-btn.full-width(
                 :label="$t('pages.transactions.approve')"
                 dense
                 size="md"
-                class="bg-grey-6 text-white"
+                color="primary"
                 :disable="!transactionBalanced"
             )
         .col.self-center
@@ -176,9 +164,17 @@ q-card.q-pa-sm.full-width
                 :label="$t('pages.transactions.save')"
                 dense
                 size="md"
-                class="bg-grey-6 text-white"
+                color="secondary"
                 @click="storeTransaction()"
                 :disable="!readyToSave"
+            )
+        .col-3
+            q-btn.full-width(
+                :label="$t('pages.transactions.deleteTransaction')"
+                dense
+                size="md"
+                class="bg-red-20 text-white"
+                color="negative"
             )
 </template>
 
@@ -532,4 +528,8 @@ export default {
 .pop-edit
   max-width: 1500px !important
   min-width: 400px !important
+.mode-btn
+  width: 125px
+.label-mode-btn
+  font-size: 11px
 </style>
