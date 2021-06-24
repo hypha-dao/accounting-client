@@ -72,7 +72,7 @@ export default {
       transactions: 'Transactions',
       or: 'Or',
       memo: 'Memo',
-      date: 'Date',
+      date: 'Date Time (UTC)',
       approved: 'Approved',
       balanced: 'Balanced',
       account: 'Account',
