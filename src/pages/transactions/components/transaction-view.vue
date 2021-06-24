@@ -335,7 +335,6 @@ export default {
   },
   watch: {
     components (v) {
-      console.log('components changed', v)
       this.checkIsBalancedTransaction()
     },
     editingRow (v) {
@@ -411,10 +410,12 @@ export default {
           value: 0
         }
       })
-      console.log('listValues', listValues)
+      // console.log('listValues', listValues)
+
+      if (this.components.length === 0) return false
 
       this.components.forEach(component => {
-        console.log('a component', component)
+        // console.log('a component', component)
         if (component.account) {
           if (component.account.typeTag === 'DEBIT') {
             listValues.find(v => v.currency === component.currency).value += Number.parseFloat(component.quantity)
@@ -432,7 +433,7 @@ export default {
         }
       })
 
-      console.log('listValues After', listValues, allWithAccount, isBalanced)
+      // console.log('listValues After', listValues, allWithAccount, isBalanced)
       if (allWithAccount && isBalanced && this.components.length >= 2) {
         this.transactionBalanced = true
       } else {
@@ -440,7 +441,7 @@ export default {
       }
     },
     addEventToTransaction (event) {
-      console.log('addEventToTransaction', event)
+      // console.log('addEventToTransaction', event)
       if (this.components.length === 0) {
         this.isSelect = false
         const defaultName = `${event.from} to ${event.to} (${event.quantity} ${event.currency})`
@@ -536,8 +537,12 @@ export default {
       }
 
       // console.log(JSON.stringify(fullTrx, null, 2))
-
-      !this.isSelect ? await this.createTxn({ contentGroups: fullTrx }) : await this.updateTxn({ contentGroups: fullTrx, transactionHash: trxHash })
+      try {
+        !this.isSelect ? await this.createTxn({ contentGroups: fullTrx }) : await this.updateTxn({ contentGroups: fullTrx, transactionHash: trxHash })
+        this.showSuccessMsg('Transaction was saved successfully')
+      } catch (e) {
+        this.showErrorMsg(e)
+      }
 
       await this.cleanTrx()
     },
