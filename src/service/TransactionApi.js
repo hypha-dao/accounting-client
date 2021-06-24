@@ -65,6 +65,7 @@ class TransactionApi extends BaseEosApi {
         date: contents.find(el => el.label === 'trx_date').value,
         ledger: contents.find(el => el.label === 'trx_ledger').value,
         memo: contents.find(el => el.label === 'trx_memo').value,
+        name: contents.find(el => el.label === 'trx_name').value,
         approved: !(trans.transaction[0].unapproved)
       }
     })
@@ -101,6 +102,7 @@ class TransactionApi extends BaseEosApi {
         date: contents.find(el => el.label === 'trx_date').value,
         ledger: contents.find(el => el.label === 'trx_ledger').value,
         memo: contents.find(el => el.label === 'trx_memo').value,
+        name: contents.find(el => el.label === 'trx_name').value,
         approved: false
       }
     })
@@ -137,6 +139,7 @@ class TransactionApi extends BaseEosApi {
         date: contents.find(el => el.label === 'trx_date').value,
         ledger: contents.find(el => el.label === 'trx_ledger').value,
         memo: contents.find(el => el.label === 'trx_memo').value,
+        name: contents.find(el => el.label === 'trx_name').value,
         approved: true
       }
     })
@@ -289,6 +292,21 @@ class TransactionApi extends BaseEosApi {
         trx_hash: transactionHash
       }
     }]
+    return this.eosApi.signTransaction(actions)
+  }
+
+  async deteleTxn ({ deleter, transactionHash }) {
+    const actions = [{
+      account: Contracts.HYPHA,
+      name: 'deletetrx',
+      data: {
+        deleter,
+        trx_hash: transactionHash
+      }
+    }]
+
+    console.log('delete service')
+    console.log(actions)
     return this.eosApi.signTransaction(actions)
   }
 }
