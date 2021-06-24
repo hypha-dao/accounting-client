@@ -368,9 +368,10 @@ export default {
       this.requestRefreshEvents()
       // return
       // }
-      console.log('transaction changed', v.value)
+      // console.log('transaction changed', v.value)
+      if (!v) return
       const trx = await this.getTransactionById({ uid: v.value.uid })
-      console.log('transaction got', trx)
+      // console.log('transaction got', trx)
       if (trx) {
         this.transaction.value = {
           hash: trx.hash,
