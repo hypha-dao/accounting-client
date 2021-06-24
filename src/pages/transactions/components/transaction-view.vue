@@ -43,7 +43,6 @@ q-card.q-pa-sm.full-width
               filled
               dense
               v-model="selectedTransaction"
-              clearable
               fill-input
               :options="unapprovedTransactionsOptions"
               style="width: 350px"
@@ -179,8 +178,7 @@ q-card.q-pa-sm.full-width
                 :label="$t('pages.transactions.deleteTransaction')"
                 dense
                 size="md"
-                class="bg-red-20 text-white"
-                color="negative"
+                class="bg-grey-6 text-white"
                 @click="deleteTransaction()"
             )
 </template>

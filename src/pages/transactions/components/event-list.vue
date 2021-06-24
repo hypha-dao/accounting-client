@@ -164,7 +164,7 @@ export default {
   max-height: 350px;
 }
 .t-table {
-  height: 30vh
+  height: 33vh
 }
 .add-icon {
   padding: 0px !important;
