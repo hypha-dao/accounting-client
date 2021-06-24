@@ -12,8 +12,8 @@
       ref="table"
     )
       template(v-slot:body-cell-actions="props")
-        q-td.text-center
-          q-btn(icon="app:add" flat size="md" @click="onEventClick(props.row)")
+        q-td.text-center.add-icon
+          q-icon.add-icon.cursor-pointer.animated-icon(name="app:add" flat size="sm" @click="onEventClick(props.row)")
 </template>
 
 <script>
@@ -161,9 +161,13 @@ export default {
   // flex: 1;
 }
 .customTable {
-  max-height: 400px;
+  max-height: 350px;
 }
 .t-table {
-  height: 35vh
+  height: 30vh
+}
+.add-icon {
+  padding: 0px !important;
+  margin: 0px !important;
 }
 </style>
