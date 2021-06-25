@@ -382,7 +382,8 @@ export default {
         this.components = trx.components.map(v => {
           return {
             ...v,
-            isLinked: true
+            isLinked: true,
+            showEditAccount: false
           }
         })
       }
@@ -465,8 +466,8 @@ export default {
         this.components.push({
           hash: tempHash,
           isCustomComponent: true,
-          account: undefined
-
+          account: undefined,
+          showEditAccount: false
         })
         this.editingRow = tempHash
       }

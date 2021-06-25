@@ -1,5 +1,10 @@
 <template lang='pug'>
 #container-tree.full-width
+    q-input.full-width(
+      v-model="filter"
+      label="Filter"
+      autofocus
+    )
     vue-ads-table-tree.full-width(
       :columns='columns',
       :rows='treeAccountsTemp',
@@ -8,6 +13,7 @@
       :call-rows="loadChildren"
       @filter-change='filterChanged',
       @page-change='pageChanged',
+      :filter="filter"
     )
       template(slot="top")
         div
@@ -162,7 +168,7 @@ export default {
           property: 'accountName',
           title: 'Account Name',
           direction: null,
-          filterable: false
+          filterable: true
         },
         {
           property: 'accountCode',
