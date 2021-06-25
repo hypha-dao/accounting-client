@@ -152,10 +152,10 @@ q-card.q-pa-sm.full-width
           q-btn(v-if="editingRow === false" icon="delete" round size="xs" color="negative" @click="onClickRemoveRow(props.row)")
       template(v-slot:bottom v-if="!addingComponent")
         q-tr
-          q-btn.full-width(style="font-size: 12px" no-caps icon="add" size="sm" :label="$t('pages.transactions.addComponent')" @click="onClickAddRow")
+          q-btn.full-width(style="font-size: 12px !important" no-caps icon="add" :label="$t('pages.transactions.addComponent')" @click="onClickAddRow")
       template(v-slot:no-data v-if="!addingComponent")
         q-tr
-          q-btn.full-width(style="font-size: 12px" no-caps icon="add" size="sm" :label="$t('pages.transactions.addComponent')" @click="onClickAddRow")
+          q-btn.full-width(style="font-size: 12px !important" no-caps icon="add" :label="$t('pages.transactions.addComponent')" @click="onClickAddRow")
     //- Foot
     .row.q-col-gutter-sm.q-mt-xs
         .col.self-center
@@ -212,7 +212,7 @@ export default {
           label: this.$t('pages.transactions.account'),
           field: row => row.account,
           sortable: true,
-          headerClasses: 'bg-secondary text-white'
+          headerClasses: 'bg-secondary text-white header-table-c'
         },
         {
           name: 'type',
@@ -220,7 +220,7 @@ export default {
           label: this.$t('pages.transactions.type'),
           field: row => row.account,
           sortable: true,
-          headerClasses: 'bg-secondary text-white'
+          headerClasses: 'bg-secondary text-white header-table-c'
         },
         {
           name: 'from',
@@ -228,7 +228,7 @@ export default {
           label: this.$t('pages.transactions.from'),
           field: row => row.from,
           sortable: true,
-          headerClasses: 'bg-secondary text-white'
+          headerClasses: 'bg-secondary text-white header-table-c'
         },
         {
           name: 'to',
@@ -236,7 +236,7 @@ export default {
           label: this.$t('pages.transactions.to'),
           field: row => row.to,
           sortable: true,
-          headerClasses: 'bg-secondary text-white'
+          headerClasses: 'bg-secondary text-white header-table-c'
         },
         {
           name: 'amount',
@@ -244,7 +244,7 @@ export default {
           label: this.$t('pages.transactions.amount'),
           field: row => row.quantity,
           sortable: true,
-          headerClasses: 'bg-secondary text-white'
+          headerClasses: 'bg-secondary text-white header-table-c'
         },
         {
           name: 'currency',
@@ -252,7 +252,7 @@ export default {
           label: this.$t('pages.transactions.currency'),
           field: row => row.currency,
           sortable: true,
-          headerClasses: 'bg-secondary text-white'
+          headerClasses: 'bg-secondary text-white header-table-c'
         },
         {
           name: 'memo',
@@ -260,7 +260,7 @@ export default {
           label: this.$t('pages.transactions.memo'),
           field: row => row.memo,
           sortable: true,
-          headerClasses: 'bg-secondary text-white'
+          headerClasses: 'bg-secondary text-white header-table-c'
         },
         {
           name: 'date',
@@ -268,7 +268,7 @@ export default {
           label: this.$t('pages.transactions.date'),
           field: row => row.date,
           sortable: true,
-          headerClasses: 'bg-secondary text-white'
+          headerClasses: 'bg-secondary text-white header-table-c'
           // format: v => new Date(v).toUTCString()
         },
         {
@@ -277,7 +277,7 @@ export default {
           label: this.$t('pages.transactions.actions'),
           field: row => row.actions,
           sortable: true,
-          headerClasses: 'bg-secondary text-white'
+          headerClasses: 'bg-secondary text-white header-table-c'
         }
       ],
       isSelect: false,
@@ -389,11 +389,14 @@ export default {
       }
     }
   },
-  mounted () {
+  async mounted () {
     this.loadUnapprovedTransactions()
+    let account = await this.getAccountByCode({ code: '100100' })
+    console.log('account by code', account)
   },
   methods: {
     ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById', 'deteleTxn', 'balanceTxn']),
+    ...mapActions('contAccount', ['getAccountByCode']),
     ...mapMutations('general', ['setIsLoading']),
     editAccount (row) {
       // row.accunt
@@ -607,7 +610,10 @@ export default {
   max-width: 1500px !important
   min-width: 400px !important
 .mode-btn
-  width: 125px
+  width: 130px
 .label-mode-btn
-  font-size: 12px
+  font-size: 13px
+.header-table-c
+  font-size: 15px !important
+  font-weight: bold
 </style>

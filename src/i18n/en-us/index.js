@@ -99,7 +99,7 @@ export default {
       to: 'To',
       amount: 'Amount',
       memo: 'Memo',
-      date: 'Date',
+      date: 'Date Time (UTC)',
       actions: 'Actions'
     }
   }

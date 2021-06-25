@@ -1,19 +1,20 @@
 <template lang="pug">
   q-card.event-card.q-pa-sm
     .text-h6 {{ $t('pages.events.events') }}
-    q-table.sticky-virtscroll-table.t-table(
-      :columns="columns"
-      :data="events"
-      virtual-scroll
-      :rows-per-page-options="[0]"
-      :virtual-scroll-item-size="pageSize - 2"
-      :virtual-scroll-sticky-size-start="pageSize - 2"
-      dense
-      ref="table"
-    )
-      template(v-slot:body-cell-actions="props")
-        q-td.text-center.add-icon
-          q-icon.add-icon.cursor-pointer.animated-icon(name="app:add" flat size="sm" @click="onEventClick(props.row)")
+    #container
+      q-table.sticky-virtscroll-table.t-table(
+        :columns="columns"
+        :data="events"
+        virtual-scroll
+        :rows-per-page-options="[0]"
+        :virtual-scroll-item-size="pageSize - 2"
+        :virtual-scroll-sticky-size-start="pageSize - 2"
+        dense
+        ref="table"
+      )
+        template(v-slot:body-cell-actions="props")
+          q-td.text-center.add-icon
+            q-icon.add-icon.cursor-pointer.animated-icon(name="app:add" flat size="sm" @click="onEventClick(props.row)")
 </template>
 
 <script>
