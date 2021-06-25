@@ -1,6 +1,6 @@
 <template lang='pug'>
-#container-tree
-    vue-ads-table-tree(
+#container-tree.full-width
+    vue-ads-table-tree.full-width(
       :columns='columns',
       :rows='treeAccountsTemp',
       :page='page',
@@ -203,6 +203,6 @@ export default {
 .selectableRow
   cursor: pointer
 #container-tree
-  min-width: 400px
-  max-width: 1500px
+  min-width: 100px
+  max-width: 2000px
 </style>

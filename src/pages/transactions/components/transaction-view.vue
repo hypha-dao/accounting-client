@@ -96,12 +96,15 @@ q-card.q-pa-sm.full-width
         q-td
           .text-cell(v-if="props.row.account") {{ props.row.account.accountCode }} - {{ props.row.account.accountName }}
             span
-              q-icon.q-ml-xs(name="edit" color="positive")
+              q-icon.q-ml-xs.cursor-pointer(name="edit" color="positive" @click="props.row.showEditAccount = !props.row.showEditAccount")
           .text-cell(v-else) ---
             span
-              q-icon.q-ml-xs(name="edit" color="positive")
-          q-popup-edit.pop-edit(separate-close-popup v-model="props.row.account" auto-save)
-            custom-table-tree(v-model="props.row.account")
+              q-icon.q-ml-xs.cursor-pointer(name="edit" color="positive" @click="props.row.showEditAccount = !props.row.showEditAccount")
+          //- q-popup-edit.pop-edit(separate-close-popup v-model="props.row.account" auto-save)
+          //-   custom-table-tree(v-model="props.row.account")
+          q-dialog(v-model="props.row.showEditAccount" position="top")
+            q-card.q-pa-md(style="min-width: 800px")
+              custom-table-tree(v-model="props.row.account")
       template(v-slot:body-cell-from="props")
         q-td
           q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" autofocus v-model="props.row.from" dense :label="$t('pages.transactions.from')" color="secondary")
@@ -396,6 +399,9 @@ export default {
   methods: {
     ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById', 'deteleTxn', 'balanceTxn']),
     ...mapMutations('general', ['setIsLoading']),
+    editAccount (row) {
+      // row.accunt
+    },
     requestRefreshEvents () {
       this.$emit('requestRefreshEvents')
     },
@@ -445,7 +451,10 @@ export default {
         const defaultName = `${event.from} to ${event.to} (${event.quantity} ${event.currency})`
         this.transaction.value.name = defaultName
       }
-      this.components.push(event)
+      this.components.push({
+        ...event,
+        showEditAccount: false
+      })
     },
     async loadUnapprovedTransactions () {
       this.unapprovedTransactions = await this.getUnapprovedTransactions()
