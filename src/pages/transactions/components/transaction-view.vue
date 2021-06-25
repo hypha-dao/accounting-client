@@ -149,10 +149,10 @@ q-card.q-pa-sm.full-width
           q-btn(v-if="editingRow === false" icon="delete" round size="xs" color="negative" @click="onClickRemoveRow(props.row)")
       template(v-slot:bottom v-if="!addingComponent")
         q-tr
-          q-btn.full-width(style="font-size: 12px" no-caps icon="add" size="sm" :label="$t('pages.transactions.addComponent')" @click="onClickAddRow")
+          q-btn.full-width(style="font-size: 13px !important" no-caps icon="add" size="sm" :label="$t('pages.transactions.addComponent')" @click="onClickAddRow")
       template(v-slot:no-data v-if="!addingComponent")
         q-tr
-          q-btn.full-width(style="font-size: 12px" no-caps icon="add" size="sm" :label="$t('pages.transactions.addComponent')" @click="onClickAddRow")
+          q-btn.full-width(style="font-size: 13px !important" no-caps icon="add" size="sm" :label="$t('pages.transactions.addComponent')" @click="onClickAddRow")
     //- Foot
     .row.q-col-gutter-sm.q-mt-xs
         .col.self-center
@@ -597,7 +597,7 @@ export default {
   max-width: 1500px !important
   min-width: 400px !important
 .mode-btn
-  width: 125px
+  width: 130px
 .label-mode-btn
-  font-size: 12px
+  font-size: 13px
 </style>
