@@ -11,6 +11,7 @@
       :page='page',
       :call-children="loadChildren"
       :call-rows="loadChildren"
+      :call-temp-rows="callTempRows"
       @filter-change='filterChanged',
       @page-change='pageChanged',
       :filter="filter"
@@ -73,6 +74,17 @@ export default {
     ...mapActions('contAccount', ['getChartOfAccounts', 'getAccountById']),
     ...mapState('contAccount', ['components']),
     ...mapMutations('contAccount', ['setTreeAccounts']),
+    async callTempRows (e) {
+      console.log('callTempRows', e)
+      const children = await this.getAccountById({ uid: e })
+      const childrenFormatted = await this.setUpAccountChildren(children)
+      const tempRows = {
+        rows: childrenFormatted,
+        total: childrenFormatted.length
+      }
+      console.log('tempRows', tempRows)
+      return tempRows
+    },
     selectAccount (account) {
       if (account.account) {
         this.accountSelected = account
@@ -128,12 +140,14 @@ export default {
           _id: account.uid,
           isSelectable: !account.account,
           typeTag: content.find(v => v.label === 'account_tag_type').value,
-          accountCode: content.find(v => v.label === 'account_code').value
+          accountCode: content.find(v => v.label === 'account_code').value,
+          _meta: { visibleChildren: !!account.account }
         }
       })
     },
     async loadChildren (e) {
       const children = await this.getAccountById({ uid: e.uid })
+      console.log('loadChildren response', e.uid, children)
       const childrenFormatted = await this.setUpAccountChildren(children)
       console.log('loadChildren', childrenFormatted)
       return childrenFormatted
