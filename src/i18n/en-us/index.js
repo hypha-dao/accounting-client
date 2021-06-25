@@ -68,7 +68,7 @@ export default {
       newAccount: 'New Account'
     },
     transactions: {
-      transaction: 'Transaction',
+      transaction: 'New Transaction',
       transactions: 'Transactions',
       or: 'Or',
       memo: 'Memo',
@@ -88,9 +88,10 @@ export default {
       save: 'Save',
       chooseTransaction: 'Choose Transaction',
       newTransaction: 'New Transaction',
-      deleteTransaction: 'Delete transaction',
+      deleteTransaction: 'Delete',
       type: 'Type',
-      delete: 'Delete'
+      delete: 'Delete',
+      addComponent: 'Add component'
     },
     events: {
       events: 'Events',
