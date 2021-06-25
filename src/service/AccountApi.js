@@ -76,6 +76,12 @@ class AccountApi extends BaseEosApi {
     {
       account(func: uid($uid)) {
         uid
+        content_groups (orderasc: content_group_sequence, first: 1) {
+          contents {
+            label
+            value
+          }
+        }
         account (first:1) {
           uid
           hash
@@ -143,6 +149,29 @@ class AccountApi extends BaseEosApi {
     }))
 
     return mappedComponents
+  }
+
+  async getAccountByCode ({ code }) {
+    let query = `
+    query account($code:string)
+    {
+      account(func: has(hash)) @filter(has(content_groups)) {
+        uid
+        content_groups @filter(has(contents)) {
+          contents @filter(eq(value, $code)) {
+            label
+            value
+          }
+        }
+      }
+    }`
+
+    let vars = { $code: code }
+    let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
+
+    let account = data.account.find(el => el.content_groups)
+
+    return account.uid
   }
 }
 

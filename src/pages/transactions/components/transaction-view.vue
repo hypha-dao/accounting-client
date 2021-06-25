@@ -385,11 +385,14 @@ export default {
       }
     }
   },
-  mounted () {
+  async mounted () {
     this.loadUnapprovedTransactions()
+    let account = await this.getAccountByCode({ code: '100100' })
+    console.log('account by code', account)
   },
   methods: {
     ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById', 'deteleTxn', 'balanceTxn']),
+    ...mapActions('contAccount', ['getAccountByCode']),
     ...mapMutations('general', ['setIsLoading']),
     requestRefreshEvents () {
       this.$emit('requestRefreshEvents')
