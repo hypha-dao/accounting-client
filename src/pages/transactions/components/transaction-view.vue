@@ -1,30 +1,30 @@
 <template lang="pug">
 q-card.q-pa-sm.full-width
-  .row.justify-between
-    .text-h6 {{ $t('pages.transactions.transactions') }}
+  .row
+    .text-h6.q-mr-lg {{ $t('pages.transactions.transactions') }}
     #transaction-info
-        .row.q-gutter-md
-            //- .row.q-gutter-xs
-            //-     .text-secondary.text-bold Approved
-            //-     q-icon.self-center(
-            //-     name="app:unapproved"
-            //-     size="sm"
-            //-     )
-            #unbalanced(v-if="!transactionBalanced")
-              .row.q-gutter-xs
-                .text-secondary.text-bold Unbalanced
-                q-icon.self-center(
-                name="app:unbalanced"
+      .row.q-gutter-md
+          //- .row.q-gutter-xs
+          //-     .text-secondary.text-bold Approved
+          //-     q-icon.self-center(
+          //-     name="app:unapproved"
+          //-     size="sm"
+          //-     )
+          #unbalanced(v-if="!transactionBalanced")
+            .row.q-gutter-xs
+              .text-secondary.text-bold Unbalanced
+              q-icon.self-center(
+              name="app:unbalanced"
+              size="sm"
+              )
+          #unbalanced(v-else)
+            .row.q-gutter-xs
+              .text-secondary.text-bold Balanced
+              q-icon.self-center(
+                name="check_circle"
                 size="sm"
-                )
-            #unbalanced(v-else)
-              .row.q-gutter-xs
-                .text-secondary.text-bold Balanced
-                q-icon.self-center(
-                  name="check_circle"
-                  size="sm"
-                  color="positive"
-                )
+                color="positive"
+              )
   .row.q-col-gutter-sm
     .col
         .row.q-gutter-md
@@ -152,10 +152,10 @@ q-card.q-pa-sm.full-width
           q-btn(v-if="editingRow === false" icon="delete" round size="xs" color="negative" @click="onClickRemoveRow(props.row)")
       template(v-slot:bottom v-if="!addingComponent")
         q-tr
-          q-btn.full-width(icon="add" size="sm" label="Add component" @click="onClickAddRow")
+          q-btn.full-width(style="font-size: 12px" no-caps icon="add" size="sm" :label="$t('pages.transactions.addComponent')" @click="onClickAddRow")
       template(v-slot:no-data v-if="!addingComponent")
         q-tr
-          q-btn.full-width(icon="add" size="sm" label="Add component" @click="onClickAddRow")
+          q-btn.full-width(style="font-size: 12px" no-caps icon="add" size="sm" :label="$t('pages.transactions.addComponent')" @click="onClickAddRow")
     //- Foot
     .row.q-col-gutter-sm.q-mt-xs
         .col.self-center
@@ -609,5 +609,5 @@ export default {
 .mode-btn
   width: 125px
 .label-mode-btn
-  font-size: 11px
+  font-size: 12px
 </style>
