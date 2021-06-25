@@ -197,6 +197,7 @@ export default {
   components: { CustomTableTree },
   data () {
     return {
+      autoSelect: false,
       transactionBalanced: false,
       optionsCurrencies: [
         'BTC', 'ETH', 'TLOS', 'HUSD', 'HYPHA', 'SEEDS'
@@ -351,17 +352,16 @@ export default {
       }
       this.components = []
       this.requestRefreshEvents()
-      this.selectedTransaction = undefined
+      if (!this.autoSelect) this.selectedTransaction = undefined
 
       await this.$nextTick()
       if (v) {
-        this.$refs.chooseTrxSelect.showPopup()
+        if (!this.autoSelect) this.$refs.chooseTrxSelect.showPopup()
       } else {
         this.$refs.newTrxInput.focus()
       }
     },
     async selectedTransaction (v) {
-      // if (!v) {
       this.transaction.value = {
         memo: undefined,
         date: undefined,
@@ -369,12 +369,8 @@ export default {
       }
       this.components = []
       this.requestRefreshEvents()
-      // return
-      // }
-      // console.log('transaction changed', v.value)
       if (!v) return
       const trx = await this.getTransactionById({ uid: v.value.uid })
-      // console.log('transaction got', trx)
       if (trx) {
         this.transaction.value = {
           hash: trx.hash,
@@ -394,7 +390,6 @@ export default {
   },
   mounted () {
     this.loadUnapprovedTransactions()
-    // this.getTransactionById({ uid: '0x8359' })
   },
   methods: {
     ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById', 'deteleTxn', 'balanceTxn']),
@@ -414,12 +409,9 @@ export default {
           value: 0
         }
       })
-      // console.log('listValues', listValues)
-
       if (this.components.length === 0) return false
 
       this.components.forEach(component => {
-        // console.log('a component', component)
         if (component.account) {
           if (component.account.typeTag === 'DEBIT') {
             listValues.find(v => v.currency === component.currency).value += Number.parseFloat(component.quantity)
@@ -437,7 +429,6 @@ export default {
         }
       })
 
-      // console.log('listValues After', listValues, allWithAccount, isBalanced)
       if (allWithAccount && isBalanced && this.components.length >= 2) {
         this.transactionBalanced = true
       } else {
@@ -445,7 +436,6 @@ export default {
       }
     },
     addEventToTransaction (event) {
-      // console.log('addEventToTransaction', event)
       if (this.components.length === 0) {
         this.isSelect = false
         const defaultName = `${event.from} to ${event.to} (${event.quantity} ${event.currency})`
@@ -486,7 +476,6 @@ export default {
         this.showErrorMsg('Please review all fields are filled')
         return
       }
-      // row.date = new Date()
       this.editingRow = false
       this.addingComponent = false
     },
@@ -527,7 +516,6 @@ export default {
       let trxHash = ''
       if (this.isSelect) {
         trxHash = this.transaction.value.hash
-        console.log('TRXN', this.transaction)
 
         fullTrx[0].push({
           label: 'id',
@@ -545,13 +533,18 @@ export default {
 
       // console.log(JSON.stringify(fullTrx, null, 2))
       try {
-        !this.isSelect ? await this.createTxn({ contentGroups: fullTrx }) : await this.updateTxn({ contentGroups: fullTrx, transactionHash: trxHash })
+        if (!this.isSelect) {
+          await this.createTxn({ contentGroups: fullTrx })
+          let { name } = this.transaction.value
+          await this.cleanTrx(name)
+          this.autoSelect = false
+        } else {
+          await this.updateTxn({ contentGroups: fullTrx, transactionHash: trxHash })
+        }
         this.showSuccessMsg('Transaction was saved successfully')
       } catch (e) {
         this.showErrorMsg(e)
       }
-
-      // await this.cleanTrx()
     },
     formattedComponent ({ memo, account, quantity, currency, hash, isCustomComponent, isFromEvent }) {
       let component = JSON.parse(JSON.stringify(componentPayout))
@@ -579,16 +572,26 @@ export default {
 
       this.cleanTrx()
     },
-    async cleanTrx () {
+    async cleanTrx (name = undefined) {
       this.setIsLoading(true)
       this.transaction = { ...this.baseTrx }
       this.components = []
-      this.isSelect = true
       setTimeout(async () => {
         await this.loadUnapprovedTransactions()
-        this.selectedTransaction = undefined
+        if (name) {
+          this.autoSelect = true
+          this.isSelect = true
+          this.setIsLoading(true)
+          let trx = this.unapprovedTransactions.filter(el => el.name === name)
+          this.selectedTransaction = {
+            value: trx[trx.length - 1],
+            label: name
+          }
+        } else {
+          this.selectedTransaction = undefined
+        }
         this.setIsLoading(false)
-      }, 2000)
+      }, 2100)
     }
   }
 }
