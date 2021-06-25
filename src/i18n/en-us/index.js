@@ -91,7 +91,7 @@ export default {
       deleteTransaction: 'Delete',
       type: 'Type',
       delete: 'Delete',
-      addComponent: 'Add component'
+      addComponent: 'Add Component'
     },
     events: {
       events: 'Events',
