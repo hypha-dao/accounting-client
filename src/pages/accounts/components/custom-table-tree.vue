@@ -77,6 +77,7 @@ export default {
     async callTempRows (filter) {
       console.log('callTempRows', filter)
       const children = await this.getAccountByCode({ code: filter })
+      console.log('tempRowsGot', children)
       const childrenFormatted = await this.setUpAccountChildrenTemp(children)
       const tempRows = {
         rows: childrenFormatted,
