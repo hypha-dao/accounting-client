@@ -189,6 +189,7 @@ q-card.q-pa-sm.full-width
                 size="md"
                 class="bg-grey-6 text-white"
                 @click="deleteTransaction()"
+                :disable="!readyToSave"
             )
 </template>
 
@@ -519,7 +520,8 @@ export default {
     onClickRemoveRow (row) {
       const rowIndex = this.components.findIndex(v => row === v)
       this.components.splice(rowIndex, 1)
-      if (!row.isCustomComponent) {
+      if (row.isFromEvent) {
+        // if (this.components.length === 0) this.transaction = JSON.parse(JSON.stringify(this.baseTrx))
         this.$emit('eventRemoved', row)
       }
     },
@@ -561,7 +563,6 @@ export default {
         fullTrx.push(await this.formattedComponent(comp))
       }
 
-      // console.log(JSON.stringify(fullTrx, null, 2))
       try {
         if (!this.isSelect) {
           await this.createTxn({ contentGroups: fullTrx })
@@ -575,8 +576,9 @@ export default {
       } catch (e) {
         this.showErrorMsg(e)
       }
+      console.log(JSON.stringify(fullTrx, null, 2))
     },
-    formattedComponent ({ memo, account, quantity, currency, hash, isCustomComponent, isFromEvent }) {
+    formattedComponent ({ memo, account, quantity, currency, hash, isCustomComponent, isFromEvent, from, to, type }) {
       let component = JSON.parse(JSON.stringify(componentPayout))
 
       if (!isCustomComponent && isFromEvent) {
@@ -587,8 +589,11 @@ export default {
       }
 
       component[1].value[1] = memo
-      component[3].value[1] = `${quantity} ${currency}`
       component[2].value[1] = account.hash
+      component[3].value[1] = `${quantity} ${currency}`
+      component[4].value[1] = from
+      component[5].value[1] = to
+      component[6].value[1] = type
 
       return component
     },
@@ -597,14 +602,13 @@ export default {
       await this.cleanTrx()
     },
     async aproveTransaction () {
-      console.log('aprove!', this.transaction.value.hash)
       this.balanceTxn({ transactionHash: this.transaction.value.hash })
 
       this.cleanTrx()
     },
     async cleanTrx (name = undefined) {
       this.setIsLoading(true)
-      this.transaction = { ...this.baseTrx }
+      this.transaction = JSON.parse(JSON.stringify(this.baseTrx))
       this.components = []
       setTimeout(async () => {
         await this.loadUnapprovedTransactions()

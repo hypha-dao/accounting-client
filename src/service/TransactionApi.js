@@ -192,6 +192,8 @@ class TransactionApi extends BaseEosApi {
 
     let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
 
+    console.log('raw', data)
+
     let transaction = data.transaction.map((cont, idx) => {
       let trx = cont.content_groups[0].contents
       // let acc = cont.component
@@ -212,10 +214,10 @@ class TransactionApi extends BaseEosApi {
             },
             isFromEvent: !!comp.event,
             hash: comp.event ? comp.event[0].hash : '',
-            // from: compo.find(el => el.label === 'from').value,
-            // to: compo.find(el => el.label === 'to').value,
-            from: comp.event ? event.find(el => el.label === 'from').value : '',
-            to: comp.event ? event.find(el => el.label === 'to').value : '',
+            from: compo.find(el => el.label === 'from') ? compo.find(el => el.label === 'from').value : '',
+            to: compo.find(el => el.label === 'to') ? compo.find(el => el.label === 'to').value : '',
+            // from: comp.event ? event.find(el => el.label === 'from').value : '',
+            // to: comp.event ? event.find(el => el.label === 'to').value : '',
             currency: compo.find(el => el.label === 'amount').value.split(' ')[1],
             quantity: compo.find(el => el.label === 'amount').value.split(' ')[0],
             treasuryId: comp.event ? event.find(el => el.label === 'treasury_id').value : '',
@@ -238,7 +240,7 @@ class TransactionApi extends BaseEosApi {
       }
     })
 
-    console.log('trx', transaction[0])
+    // console.log('trx', transaction[0])
 
     return transaction[0]
   }
