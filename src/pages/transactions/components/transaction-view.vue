@@ -1,26 +1,20 @@
 <template lang="pug">
 q-card.q-pa-sm.full-width
-  .row
-    .text-h6.q-mr-lg {{ $t('pages.transactions.transactions') }}
-    #transaction-info
+  .row.border
+    .text-h6.q-mr-lg.border {{ $t('pages.transactions.transactions') }}
+    #transaction-info.border
       .row.q-gutter-md
-          //- .row.q-gutter-xs
-          //-     .text-secondary.text-bold Approved
-          //-     q-icon.self-center(
-          //-     name="app:unapproved"
-          //-     size="sm"
-          //-     )
           #unbalanced(v-if="!transactionBalanced")
             .row.q-gutter-xs
-              .text-secondary.text-bold Unbalanced
-              q-icon.self-center(
+              .text-secondary.text-bold.q-custom-mar Unbalanced
+              q-icon.q-custom-mar-icon(
               name="app:unbalanced"
               size="sm"
               )
           #unbalanced(v-else)
             .row.q-gutter-xs
               .text-secondary.text-bold Balanced
-              q-icon.self-center(
+              q-icon.q-custom-mar-icon(
                 name="check_circle"
                 size="sm"
                 color="positive"
@@ -650,4 +644,10 @@ export default {
   overflow: hidden
 .larger-input
   width: 250px
+// .border
+//   border: 1px solid black
+.q-custom-mar
+  margin-top: 12%
+.q-custom-mar-icon
+  margin-top: 10%
 </style>
