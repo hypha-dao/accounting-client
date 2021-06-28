@@ -75,16 +75,28 @@ export default {
     ...mapState('contAccount', ['components']),
     ...mapMutations('contAccount', ['setTreeAccounts']),
     async callTempRows (filter) {
-      console.log('callTempRows', filter)
-      const children = await this.getAccountByCode({ code: filter })
-      console.log('tempRowsGot', children)
-      const childrenFormatted = await this.setUpAccountChildrenTemp(children)
-      const tempRows = {
-        rows: childrenFormatted,
-        total: childrenFormatted.length
+      try {
+        console.log('callTempRows', filter)
+        const children = await this.getAccountByCode({ code: filter })
+        console.log('tempRowsGot', children)
+        if (!children) {
+          console.log('return callTempRows')
+          return undefined
+        }
+        const childrenFormatted = await this.setUpAccountChildrenTemp(children)
+
+        const tempRows = {
+          rows: childrenFormatted,
+          total: childrenFormatted.length
+        }
+        console.log('tempRows', tempRows)
+        return tempRows
+      } catch (e) {
+        return {
+          rows: [],
+          total: 0
+        }
       }
-      console.log('tempRows', tempRows)
-      return tempRows
     },
     selectAccount (account) {
       if (account.account) {
@@ -148,30 +160,57 @@ export default {
     },
     async setUpAccountChildrenTemp (children) {
       console.log('original children', children)
-      const accounts = children.data.account
-      console.log('children acc', accounts)
-      return accounts.map(account => {
-        const content = account.content_groups[0].contents
-        return {
-          accountName: content.find(v => v.label === 'account_name').value,
-          parentAccount: account.ownedby.hash,
-          hash: account.hash,
-          uid: account.uid,
+      const account = children.value
+      console.log('children acc', account)
+      // const content = account.content_groups[0].contents
+      return [
+        {
+          ...account,
           _id: account.uid,
+          typeTag: account.typeTag,
+          isSelectable: !account._hasChildren,
           _hasChildren: false,
-          isSelectable: !account.account,
-          typeTag: content.find(v => v.label === 'account_tag_type').value,
-          accountCode: content.find(v => v.label === 'account_code').value,
-          _meta: { visibleChildren: true, groupParent: 1 }
+          _meta: { groupParent: 1, visibleChildren: true }
         }
-      })
+      ]
+      // return {
+      //   accountName: account.accountName,
+      //   parentAccount: account.ownedby.hash,
+      //   hash: account.hash,
+      //   uid: account.uid,
+      //   _id: account.uid,
+      //   _hasChildren: false,
+      //   isSelectable: !account.account,
+      //   typeTag: content.find(v => v.label === 'account_tag_type').value,
+      //   accountCode: content.find(v => v.label === 'account_code').value,
+      //   _meta: { visibleChildren: true, groupParent: 1 }
+      // }
+      // return accounts.map(account => {
+      //   const content = account.content_groups[0].contents
+      //   return {
+      //     accountName: content.find(v => v.label === 'account_name').value,
+      //     parentAccount: account.ownedby.hash,
+      //     hash: account.hash,
+      //     uid: account.uid,
+      //     _id: account.uid,
+      //     _hasChildren: false,
+      //     isSelectable: !account.account,
+      //     typeTag: content.find(v => v.label === 'account_tag_type').value,
+      //     accountCode: content.find(v => v.label === 'account_code').value,
+      //     _meta: { visibleChildren: true, groupParent: 1 }
+      //   }
+      // })
     },
     async loadChildren (e) {
-      const children = await this.getAccountById({ uid: e.uid })
-      console.log('loadChildren response', e.uid, children)
-      const childrenFormatted = await this.setUpAccountChildren(children)
-      console.log('loadChildren', childrenFormatted)
-      return childrenFormatted
+      try {
+        const children = await this.getAccountById({ uid: e.uid })
+        console.log('loadChildren response', e.uid, children)
+        const childrenFormatted = await this.setUpAccountChildren(children)
+        console.log('loadChildren', childrenFormatted)
+        return childrenFormatted
+      } catch (e) {
+        console.warn('children not loaded')
+      }
     },
     filterChanged (filter) {
       this.filter = filter

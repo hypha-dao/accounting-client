@@ -162,6 +162,7 @@ class AccountApi extends BaseEosApi {
 
     let vars = { $code: code }
     let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
+    console.log('data account', data)
 
     let { uid } = data.account.find(el => el.content_groups)
 
