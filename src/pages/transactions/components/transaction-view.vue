@@ -387,8 +387,7 @@ export default {
   },
   async mounted () {
     this.loadUnapprovedTransactions()
-    let account = await this.getAccountByCode({ code: '100100' })
-    console.log('account by code', account)
+    // let account = await this.getAccountByCode({ code: '100100' })
   },
   methods: {
     ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById', 'deteleTxn', 'balanceTxn']),
