@@ -149,22 +149,23 @@ class AccountApi extends BaseEosApi {
     let query = `
     query account($code:string)
     {
-      account(func: has(hash)) @filter(has(content_groups)) {
+      account(func: has(hash)) @cascade @filter(has(content_groups)) {
         uid
         content_groups @filter(has(contents)) {
-          contents @filter(eq(value, $code)) {
+          contents @filter(eq(value, $code) AND eq(label, "account_code")) {
             label
             value
           }
         }
       }
-    }`
+    }
+      `
 
     let vars = { $code: code }
     let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
     console.log('data account', data)
 
-    let { uid } = data.account.find(el => el.content_groups)
+    let { uid } = data.account[0]
 
     query = `
     query account($uid:string)
