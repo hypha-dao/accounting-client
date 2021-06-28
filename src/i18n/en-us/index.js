@@ -28,7 +28,8 @@ export default {
       positiveInteger: 'The value must be greater than 0',
       required: 'This field is required',
       token: 'The field must contain between 2 and 6 characters',
-      tokenDecimals: 'The decimals must be between 2 and 9'
+      tokenDecimals: 'The decimals must be between 2 and 9',
+      allComponentFilled: 'All fields are required except To and From'
     }
   },
   menu: {
@@ -71,7 +72,7 @@ export default {
       transaction: 'New Transaction',
       transactions: 'Transactions',
       or: 'Or',
-      memo: 'Memo',
+      memo: 'memo',
       date: 'Date Time (UTC)',
       approved: 'Approved',
       balanced: 'Balanced',
