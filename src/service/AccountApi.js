@@ -76,12 +76,6 @@ class AccountApi extends BaseEosApi {
     {
       account(func: uid($uid)) {
         uid
-        content_groups (orderasc: content_group_sequence, first: 1) {
-          contents {
-            label
-            value
-          }
-        }
         account (first:1) {
           uid
           hash
@@ -169,9 +163,62 @@ class AccountApi extends BaseEosApi {
     let vars = { $code: code }
     let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
 
-    let account = data.account.find(el => el.content_groups)
+    let { uid } = data.account.find(el => el.content_groups)
 
-    return account.uid
+    query = `
+    query account($uid:string)
+    {
+      account(func: uid($uid)) {
+        uid
+        hash
+        account {
+          hash
+        }
+        content_groups (orderasc: content_group_sequence, first: 1) {
+          contents {
+            label
+            value
+          }
+        }
+        ownedby {
+          hash
+        }
+        balances {
+          content_groups (orderasc: content_group_sequence, first: 1) {
+            contents {
+              label
+              value
+            }
+          }
+        }
+      }
+    }
+    `
+    let vars2 = { $uid: uid }
+
+    let res = await this.dgraph.newTxn().queryWithVars(query, vars2)
+
+    let accData = res.data.account[0]
+    let balance = accData.balances[0].content_groups[0].contents
+    let balances = {
+      globalTLOS: balance.find(el => el.label === 'global_TLOS').value,
+      globalBTC: balance.find(el => el.label === 'global_BTC').value,
+      globalHYPHA: balance.find(el => el.label === 'global_HYPHA').value
+    }
+
+    let mappedAccount = {
+      _hasChildren: (!!accData.account && accData.account.length > 0),
+      _id: accData.uid,
+      hash: accData.hash,
+      accountName: accData.content_groups[0].contents.find(el => el.label === 'account_name').value,
+      accountCode: accData.content_groups[0].contents.find(el => el.label === 'account_code').value,
+      typeTag: accData.content_groups[0].contents.find(el => el.label === 'account_tag_type').value,
+      parentAccount: (accData.ownedby) ? accData.ownedby[0].hash : '',
+      uid: accData.uid,
+      balances
+    }
+
+    return { value: mappedAccount }
   }
 }
 

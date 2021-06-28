@@ -50,11 +50,7 @@ export const getAccountByCode = async function ({ commit }, { code }) {
   try {
     commit('general/setIsLoading', true, { root: true })
     const response = await this.$accountApi.getAccountByCode({ code })
-    console.log('UID', response)
-    const account = await this.$accountApi.getAccountById({ uid: response })
-    console.log('account', account)
-    // console.log('returned', response)
-    return account
+    return response
   } catch (e) {
     console.error('An error ocurred while trying to get my entries', e)
     commit('general/setErrorMsg', e.message || e, { root: true })
