@@ -62,7 +62,7 @@ q-card.q-pa-sm.full-width
               .label-mode-btn {{ labelModeSelectTransaction }}
     .col-3
         q-input(
-            :label="$t('pages.transactions.memo')"
+            :label="$t('pages.transactions.notes')"
             dense
             filled
             v-model="transaction.value.memo"
@@ -149,10 +149,10 @@ q-card.q-pa-sm.full-width
           q-btn(v-if="editingRow === false" icon="delete" round size="xs" color="negative" @click="onClickRemoveRow(props.row)")
       template(v-slot:bottom v-if="!addingComponent")
         q-tr
-          q-btn.full-width(style="font-size: 12px !important" no-caps icon="add" :label="$t('pages.transactions.addComponent')" @click="onClickAddRow")
+          q-btn.full-width(style="font-size: 12px" no-caps icon="add" size="sm" :label="$t('pages.transactions.addComponent')" @click="onClickAddRow")
       template(v-slot:no-data v-if="!addingComponent")
         q-tr
-          q-btn.full-width(style="font-size: 12px !important" no-caps icon="add" :label="$t('pages.transactions.addComponent')" @click="onClickAddRow")
+          q-btn.full-width(style="font-size: 12px" no-caps icon="add" size="sm" :label="$t('pages.transactions.addComponent')" @click="onClickAddRow")
     //- Foot
     .row.q-col-gutter-sm.q-mt-xs
         .col.self-center
@@ -209,7 +209,7 @@ export default {
           label: this.$t('pages.transactions.account'),
           field: row => row.account,
           sortable: true,
-          headerClasses: 'bg-secondary text-white header-table-c'
+          headerClasses: 'bg-secondary text-white'
         },
         {
           name: 'type',
@@ -217,7 +217,7 @@ export default {
           label: this.$t('pages.transactions.type'),
           field: row => row.account,
           sortable: true,
-          headerClasses: 'bg-secondary text-white header-table-c'
+          headerClasses: 'bg-secondary text-white'
         },
         {
           name: 'from',
@@ -225,7 +225,7 @@ export default {
           label: this.$t('pages.transactions.from'),
           field: row => row.from,
           sortable: true,
-          headerClasses: 'bg-secondary text-white header-table-c'
+          headerClasses: 'bg-secondary text-white'
         },
         {
           name: 'to',
@@ -233,7 +233,7 @@ export default {
           label: this.$t('pages.transactions.to'),
           field: row => row.to,
           sortable: true,
-          headerClasses: 'bg-secondary text-white header-table-c'
+          headerClasses: 'bg-secondary text-white'
         },
         {
           name: 'amount',
@@ -241,7 +241,7 @@ export default {
           label: this.$t('pages.transactions.amount'),
           field: row => row.quantity,
           sortable: true,
-          headerClasses: 'bg-secondary text-white header-table-c'
+          headerClasses: 'bg-secondary text-white'
         },
         {
           name: 'currency',
@@ -249,7 +249,7 @@ export default {
           label: this.$t('pages.transactions.currency'),
           field: row => row.currency,
           sortable: true,
-          headerClasses: 'bg-secondary text-white header-table-c'
+          headerClasses: 'bg-secondary text-white'
         },
         {
           name: 'memo',
@@ -257,7 +257,7 @@ export default {
           label: this.$t('pages.transactions.memo'),
           field: row => row.memo,
           sortable: true,
-          headerClasses: 'bg-secondary text-white header-table-c'
+          headerClasses: 'bg-secondary text-white'
         },
         {
           name: 'date',
@@ -265,7 +265,7 @@ export default {
           label: this.$t('pages.transactions.date'),
           field: row => row.date,
           sortable: true,
-          headerClasses: 'bg-secondary text-white header-table-c'
+          headerClasses: 'bg-secondary text-white'
           // format: v => new Date(v).toUTCString()
         },
         {
@@ -274,7 +274,7 @@ export default {
           label: this.$t('pages.transactions.actions'),
           field: row => row.actions,
           sortable: true,
-          headerClasses: 'bg-secondary text-white header-table-c'
+          headerClasses: 'bg-secondary text-white'
         }
       ],
       isSelect: false,
@@ -435,7 +435,8 @@ export default {
     addEventToTransaction (event) {
       if (this.components.length === 0) {
         this.isSelect = false
-        const defaultName = `${event.from} to ${event.to} (${event.quantity} ${event.currency})`
+        // const defaultName = `${event.from} to ${event.to} (${event.quantity} ${event.currency})`
+        const defaultName = `${event.memo} - ${event.quantity} ${event.currency}`
         this.transaction.value.name = defaultName
       }
       this.components.push(event)
@@ -456,18 +457,24 @@ export default {
         this.addingComponent = true
         const tempHash = [...Array(8)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')
         console.log('tempHash', tempHash)
+        let d = new Date()
+        let month = d.getUTCMonth() + 1
+        let day = d.getUTCDate()
+        let date = `${d.getUTCFullYear()}/${(month < 10 ? '0' + month : month)}/${(day < 10 ? '0' + day : day)}`
         this.components.push({
           hash: tempHash,
           isCustomComponent: true,
-          account: undefined
-
+          account: undefined,
+          from: '',
+          to: '',
+          date
         })
         this.editingRow = tempHash
       }
     },
     onClickSaveRow (row) {
       if (!this.validateRow(row)) {
-        this.showErrorMsg('Please review all fields are filled')
+        this.showErrorMsg(this.$t('forms.errors.allComponentFilled'))
         return
       }
       this.editingRow = false
@@ -488,10 +495,6 @@ export default {
     validateRow (row) {
       let isValidRow = true
       if (!row.account) {
-        isValidRow = false
-      } else if (!row.from) {
-        isValidRow = false
-      } else if (!row.to) {
         isValidRow = false
       } else if (!row.quantity) {
         isValidRow = false
@@ -600,10 +603,7 @@ export default {
   max-width: 1500px !important
   min-width: 400px !important
 .mode-btn
-  width: 130px
+  width: 125px
 .label-mode-btn
-  font-size: 13px
-.header-table-c
-  font-size: 15px !important
-  font-weight: bold
+  font-size: 12px
 </style>

@@ -200,12 +200,15 @@ class AccountApi extends BaseEosApi {
 
     let accData = res.data.account[0]
     let balance = accData.balances[0].content_groups[0].contents
-    let balances = {
-      globalTLOS: balance.find(el => el.label === 'global_TLOS').value,
-      globalBTC: balance.find(el => el.label === 'global_BTC').value,
-      globalHYPHA: balance.find(el => el.label === 'global_HYPHA').value
-    }
 
+    let balances = {}
+    if (balance) {
+      balances = {
+        globalTLOS: balance.find(el => el.label === 'global_TLOS').value,
+        globalBTC: balance.find(el => el.label === 'global_BTC').value,
+        globalHYPHA: balance.find(el => el.label === 'global_HYPHA').value
+      }
+    }
     let mappedAccount = {
       _hasChildren: (!!accData.account && accData.account.length > 0),
       _id: accData.uid,
