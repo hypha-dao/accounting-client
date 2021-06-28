@@ -426,7 +426,7 @@ export default {
       if (this.components.length === 0) return false
 
       this.components.forEach(component => {
-        if (component.account && component.currency) {
+        if (component.account && component.currency && component.type) {
           if (component.type === 'DEBIT') {
             listValues.find(v => v.currency === component.currency).value += Number.parseFloat(component.quantity)
           } else if (component.type === 'CREDIT') {
