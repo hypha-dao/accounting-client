@@ -91,7 +91,7 @@ export default {
       deleteTransaction: 'Delete',
       type: 'Type',
       delete: 'Delete',
-      addComponent: 'Add component'
+      addComponent: 'Add Component'
     },
     events: {
       events: 'Events',
@@ -99,7 +99,7 @@ export default {
       to: 'To',
       amount: 'Amount',
       memo: 'Memo',
-      date: 'Date',
+      date: 'Date Time (UTC)',
       actions: 'Actions'
     }
   }
