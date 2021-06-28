@@ -106,16 +106,21 @@ q-card.q-pa-sm.full-width
             q-card.q-pa-md(style="min-width: 800px")
               custom-table-tree(v-model="props.row.account")
       template(v-slot:body-cell-from="props")
-        q-td
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" autofocus v-model="props.row.from" dense :label="$t('pages.transactions.from')" color="secondary")
-          .text-cell(v-else) {{ props.row.from }}
+        q-td.short-input
+          q-input.short-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" autofocus v-model="props.row.from" dense :label="$t('pages.transactions.from')" color="secondary")
+          .text-cell.short-input(v-else) {{ props.row.from }}
       template(v-slot:body-cell-type="props")
-        q-td
-          //- q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" autofocus v-model="props.row.from" dense counter :label="$t('pages.transactions.from')" color="secondary")
-          .text-cell(v-if="props.row.account") {{ props.row.account.typeTag }}
+        q-select(
+          :options="optionTypeComponent"
+          v-model="props.row.type"
+          dense
+          @popup-hide="checkIsBalancedTransaction()"
+        )
+        //- q-td
+        //-   .text-cell(v-if="props.row.account") {{ props.row.account.typeTag }}
       template(v-slot:body-cell-to="props")
-        q-td
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.to" dense :label="$t('pages.transactions.to')" color="secondary")
+        q-td.short-input
+          q-input.short-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.to" dense :label="$t('pages.transactions.to')" color="secondary")
           .text-cell(v-else) {{ props.row.to }}
       template(v-slot:body-cell-amount="props")
         q-td.text-right
@@ -131,7 +136,7 @@ q-card.q-pa-sm.full-width
           .text-cell(v-else) {{ props.row.currency }}
       template(v-slot:body-cell-memo="props")
         q-td.responsive-cell
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.memo" dense :label="$t('pages.transactions.memo')" color="secondary")
+          q-input.larger-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.memo" dense :label="$t('pages.transactions.memo')" color="secondary")
           .text-memo(v-else) {{ props.row.memo }}
             q-tooltip {{ props.row.memo }}
       template(v-slot:body-cell-date="props")
@@ -202,6 +207,10 @@ export default {
       transactionBalanced: false,
       optionsCurrencies: [
         'BTC', 'ETH', 'TLOS', 'HUSD', 'HYPHA', 'SEEDS'
+      ],
+      optionTypeComponent: [
+        'DEBIT',
+        'CREDIT'
       ],
       pageSize: 20,
       nextPage: 2,
@@ -406,6 +415,7 @@ export default {
       this.$emit('requestRefreshEvents')
     },
     checkIsBalancedTransaction () {
+      console.log('checkIsBalancedTransaction')
       let isBalanced = true
       let allWithAccount = true
       const listValues = this.optionsCurrencies.map(v => {
@@ -418,9 +428,9 @@ export default {
 
       this.components.forEach(component => {
         if (component.account) {
-          if (component.account.typeTag === 'DEBIT') {
+          if (component.type === 'DEBIT') {
             listValues.find(v => v.currency === component.currency).value += Number.parseFloat(component.quantity)
-          } else if (component.account.typeTag === 'CREDIT') {
+          } else if (component.type === 'CREDIT') {
             listValues.find(v => v.currency === component.currency).value -= Number.parseFloat(component.quantity)
           }
         } else {
@@ -440,16 +450,25 @@ export default {
         this.transactionBalanced = false
       }
     },
-    addEventToTransaction (event) {
+    async addEventToTransaction (event) {
       if (this.components.length === 0) {
         this.isSelect = false
         // const defaultName = `${event.from} to ${event.to} (${event.quantity} ${event.currency})`
+        await this.$nextTick()
         const defaultName = `${event.memo} - ${event.quantity} ${event.currency}`
         this.transaction.value.name = defaultName
+
+        // date
+        let d = new Date()
+        let month = d.getUTCMonth() + 1
+        let day = d.getUTCDate()
+        let date = `${d.getUTCFullYear()}/${(month < 10 ? '0' + month : month)}/${(day < 10 ? '0' + day : day)}`
+        this.transaction.value.date = date
       }
       this.components.push({
         ...event,
-        showEditAccount: false
+        showEditAccount: false,
+        type: undefined
       })
     },
     async loadUnapprovedTransactions () {
@@ -479,6 +498,7 @@ export default {
           showEditAccount: false,
           from: '',
           to: '',
+          type: undefined,
           date
         })
         this.editingRow = tempHash
@@ -515,6 +535,8 @@ export default {
       } else if (!row.memo) {
         isValidRow = false
       } else if (!row.date) {
+        isValidRow = false
+      } else if (!row.type) {
         isValidRow = false
       }
       return isValidRow
@@ -618,4 +640,11 @@ export default {
   width: 125px
 .label-mode-btn
   font-size: 12px
+.short-input
+  width: 150px !important
+  white-space: nowrap
+  text-overflow: ellipsis
+  overflow: hidden
+.larger-input
+  width: 250px
 </style>
