@@ -15,6 +15,10 @@
         template(v-slot:body-cell-actions="props")
           q-td.text-center.add-icon
             q-icon.add-icon.cursor-pointer.animated-icon(name="app:add" flat size="sm" @click="onEventClick(props.row)")
+        template(v-slot:body-cell-memo="props")
+          q-td.responsive-cell
+            .text-memo {{ props.row.memo }}
+              q-tooltip {{ props.value }}
 </template>
 
 <script>

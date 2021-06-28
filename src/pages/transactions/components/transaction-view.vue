@@ -130,9 +130,10 @@ q-card.q-pa-sm.full-width
           //- q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense counter :label="$t('pages.transactions.currency')" color="secondary")
           .text-cell(v-else) {{ props.row.currency }}
       template(v-slot:body-cell-memo="props")
-        q-td
+        q-td.responsive-cell
           q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.memo" dense :label="$t('pages.transactions.memo')" color="secondary")
-          .text-cell(v-else) {{ props.row.memo }}
+          .text-memo(v-else) {{ props.row.memo }}
+            q-tooltip {{ props.row.memo }}
       template(v-slot:body-cell-date="props")
         q-td
           //- q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.date" dense mask="date" :rules="['date']" :label="$t('pages.transactions.date')" color="secondary")
