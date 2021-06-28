@@ -71,13 +71,13 @@ export default {
     ...mapState('contAccount', ['treeAccounts'])
   },
   methods: {
-    ...mapActions('contAccount', ['getChartOfAccounts', 'getAccountById']),
+    ...mapActions('contAccount', ['getChartOfAccounts', 'getAccountById', 'getAccountByCode']),
     ...mapState('contAccount', ['components']),
     ...mapMutations('contAccount', ['setTreeAccounts']),
-    async callTempRows (e) {
-      console.log('callTempRows', e)
-      const children = await this.getAccountById({ uid: e })
-      const childrenFormatted = await this.setUpAccountChildren(children)
+    async callTempRows (filter) {
+      console.log('callTempRows', filter)
+      const children = await this.getAccountByCode({ code: filter })
+      const childrenFormatted = await this.setUpAccountChildrenTemp(children)
       const tempRows = {
         rows: childrenFormatted,
         total: childrenFormatted.length
@@ -140,8 +140,28 @@ export default {
           _id: account.uid,
           isSelectable: !account.account,
           typeTag: content.find(v => v.label === 'account_tag_type').value,
+          accountCode: content.find(v => v.label === 'account_code').value
+          // _meta: { visibleChildren: !!account.account }
+        }
+      })
+    },
+    async setUpAccountChildrenTemp (children) {
+      console.log('original children', children)
+      const accounts = children.data.account
+      console.log('children acc', accounts)
+      return accounts.map(account => {
+        const content = account.content_groups[0].contents
+        return {
+          accountName: content.find(v => v.label === 'account_name').value,
+          parentAccount: account.ownedby.hash,
+          hash: account.hash,
+          uid: account.uid,
+          _id: account.uid,
+          _hasChildren: false,
+          isSelectable: !account.account,
+          typeTag: content.find(v => v.label === 'account_tag_type').value,
           accountCode: content.find(v => v.label === 'account_code').value,
-          _meta: { visibleChildren: !!account.account }
+          _meta: { visibleChildren: true, groupParent: 1 }
         }
       })
     },
