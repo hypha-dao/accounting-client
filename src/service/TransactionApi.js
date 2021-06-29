@@ -192,11 +192,8 @@ class TransactionApi extends BaseEosApi {
 
     let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
 
-    console.log('raw', data)
-
     let transaction = data.transaction.map((cont, idx) => {
       let trx = cont.content_groups[0].contents
-      // let acc = cont.component
       var comps = []
       if (cont.component) {
         comps = cont.component.map(comp => {
@@ -216,15 +213,14 @@ class TransactionApi extends BaseEosApi {
             hash: comp.event ? comp.event[0].hash : '',
             from: compo.find(el => el.label === 'from') ? compo.find(el => el.label === 'from').value : '',
             to: compo.find(el => el.label === 'to') ? compo.find(el => el.label === 'to').value : '',
-            // from: comp.event ? event.find(el => el.label === 'from').value : '',
-            // to: comp.event ? event.find(el => el.label === 'to').value : '',
             currency: compo.find(el => el.label === 'amount').value.split(' ')[1],
-            quantity: compo.find(el => el.label === 'amount').value.split(' ')[0],
+            quantity: Math.abs(compo.find(el => el.label === 'amount').value.split(' ')[0]),
             treasuryId: comp.event ? event.find(el => el.label === 'treasury_id').value : '',
             source: comp.event ? event.find(el => el.label === 'source').value : '',
             usdValue: comp.event ? event.find(el => el.label === 'usd_value').value : '',
             date: compo.find(el => el.label === 'create_date').value,
-            memo: compo.find(el => el.label === 'memo').value
+            memo: compo.find(el => el.label === 'memo').value,
+            type: compo.find(el => el.label === 'type') ? compo.find(el => el.label === 'type').value : ''
           }
         })
       }
@@ -239,14 +235,10 @@ class TransactionApi extends BaseEosApi {
         components: comps
       }
     })
-
-    // console.log('trx', transaction[0])
-
     return transaction[0]
   }
 
   async createTxn ({ accountName, contentGroups }) {
-    console.log('api create', accountName, contentGroups)
     const actions = [{
       account: Contracts.HYPHA,
       name: 'createtrx',
@@ -259,7 +251,6 @@ class TransactionApi extends BaseEosApi {
   }
 
   async createTxnWithEvent ({ accountName, contentGroups }) {
-    // console.log('api', accountName, contentGroups)
     const actions = [{
       account: Contracts.HYPHA,
       name: 'createtrxwe',
@@ -271,7 +262,6 @@ class TransactionApi extends BaseEosApi {
     return this.eosApi.signTransaction(actions)
   }
   async updateTxn ({ updater, transactionHash, contentGroups }) {
-    console.log('api update', updater, contentGroups)
     const actions = [{
       account: Contracts.HYPHA,
       name: 'updatetrx',
@@ -281,7 +271,6 @@ class TransactionApi extends BaseEosApi {
         trx_info: contentGroups
       }
     }]
-    console.log('actions', actions)
     return this.eosApi.signTransaction(actions)
   }
 
@@ -294,8 +283,6 @@ class TransactionApi extends BaseEosApi {
         trx_hash: transactionHash
       }
     }]
-
-    console.log('balance', actions)
     return this.eosApi.signTransaction(actions)
   }
 
@@ -308,9 +295,6 @@ class TransactionApi extends BaseEosApi {
         trx_hash: transactionHash
       }
     }]
-
-    console.log('delete service')
-    console.log(actions)
     return this.eosApi.signTransaction(actions)
   }
 }

@@ -54,8 +54,6 @@ class EventApi extends BaseEosApi {
     let vars = { $first: first.toString(), $offset: offset.toString() }
     let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
 
-    // console.log('data', data.event)
-
     let mappedEvents = data.event.map((ev, i) => {
       const contents = ev.content_groups[0].contents
       return {
@@ -79,7 +77,6 @@ class EventApi extends BaseEosApi {
   }
 
   async createEvent ({ accountName, contentGroups }) {
-    console.log('api', accountName, contentGroups)
     const actions = [{
       account: Contracts.HYPHA,
       name: 'newevent',

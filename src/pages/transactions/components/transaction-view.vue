@@ -381,8 +381,9 @@ export default {
           hash: trx.hash,
           memo: trx.memo,
           date: trx.date,
-          name: trx.memo,
-          id: trx.id
+          name: trx.name,
+          id: trx.id,
+          type: trx.type
         }
         this.components = trx.components.map(v => {
           return {
@@ -409,7 +410,6 @@ export default {
       this.$emit('requestRefreshEvents')
     },
     checkIsBalancedTransaction () {
-      console.log('checkIsBalancedTransaction')
       let isBalanced = true
       let allWithAccount = true
       const listValues = this.optionsCurrencies.map(v => {
@@ -480,7 +480,6 @@ export default {
       if (!this.addingComponent) {
         this.addingComponent = true
         const tempHash = [...Array(8)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')
-        console.log('tempHash', tempHash)
         let d = new Date()
         let month = d.getUTCMonth() + 1
         let day = d.getUTCDate()
@@ -549,13 +548,15 @@ export default {
         })
       }
 
-      fullTrx[0][1].value[1] = `${(this.transaction.value.date).replaceAll('/', '-')}T00:00:00` // Need to have this formmat
-      fullTrx[0][2].value[1] = this.transaction.value.name
-      fullTrx[0][4].value[1] = this.transaction.value.memo
+      fullTrx[0].find(el => el.label === 'trx_date').value[1] = `${(this.transaction.value.date).replaceAll('/', '-')}T00:00:00` // Need to have this formmat
+      fullTrx[0].find(el => el.label === 'trx_name').value[1] = this.transaction.value.name
+      fullTrx[0].find(el => el.label === 'trx_memo').value[1] = this.transaction.value.memo
 
       for (let comp of this.components) {
         fullTrx.push(await this.formattedComponent(comp))
       }
+
+      // console.log(JSON.stringify(fullTrx, null, 2))
 
       try {
         if (!this.isSelect) {
@@ -570,7 +571,6 @@ export default {
       } catch (e) {
         this.showErrorMsg(e)
       }
-      console.log(JSON.stringify(fullTrx, null, 2))
     },
     formattedComponent ({ memo, account, quantity, currency, hash, isCustomComponent, isFromEvent, from, to, type }) {
       let component = JSON.parse(JSON.stringify(componentPayout))
