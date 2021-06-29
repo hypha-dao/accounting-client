@@ -214,7 +214,7 @@ class TransactionApi extends BaseEosApi {
             from: compo.find(el => el.label === 'from') ? compo.find(el => el.label === 'from').value : '',
             to: compo.find(el => el.label === 'to') ? compo.find(el => el.label === 'to').value : '',
             currency: compo.find(el => el.label === 'amount').value.split(' ')[1],
-            quantity: Math.abs(compo.find(el => el.label === 'amount').value.split(' ')[0]),
+            quantity: compo.find(el => el.label === 'amount').value.split(' ')[0],
             treasuryId: comp.event ? event.find(el => el.label === 'treasury_id').value : '',
             source: comp.event ? event.find(el => el.label === 'source').value : '',
             usdValue: comp.event ? event.find(el => el.label === 'usd_value').value : '',
