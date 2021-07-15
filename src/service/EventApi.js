@@ -60,16 +60,16 @@ class EventApi extends BaseEosApi {
         id: i,
         uid: ev.uid,
         hash: ev.hash,
-        chainId: contents.find(el => el.label === 'chainId').value,
-        currency: contents.find(el => el.label === 'currency').value,
-        quantity: contents.find(el => el.label === 'quantity').value,
-        from: contents.find(el => el.label === 'from').value,
-        to: contents.find(el => el.label === 'to').value,
-        source: contents.find(el => el.label === 'source').value,
-        memo: contents.find(el => el.label === 'memo').value,
-        date: contents.find(el => el.label === 'timestamp').value,
-        usdValue: contents.find(el => el.label === 'usd_value').value,
-        treasuryId: contents.find(el => el.label === 'treasury_id').value
+        chainId: contents.find(el => el.label === 'chainId') ? contents.find(el => el.label === 'chainId').value : '',
+        currency: contents.find(el => el.label === 'currency') ? contents.find(el => el.label === 'currency').value : '',
+        quantity: contents.find(el => el.label === 'quantity') ? contents.find(el => el.label === 'quantity').value : '',
+        from: contents.find(el => el.label === 'from') ? contents.find(el => el.label === 'from').value : '',
+        to: contents.find(el => el.label === 'to') ? contents.find(el => el.label === 'to').value : '',
+        source: contents.find(el => el.label === 'source') ? contents.find(el => el.label === 'source').value : '',
+        memo: contents.find(el => el.label === 'memo') ? contents.find(el => el.label === 'memo').value : '',
+        date: contents.find(el => el.label === 'timestamp') ? contents.find(el => el.label === 'timestamp').value : '',
+        usdValue: contents.find(el => el.label === 'usd_value') ? contents.find(el => el.label === 'usd_value').value : '',
+        treasuryId: contents.find(el => el.label === 'treasury_id') ? contents.find(el => el.label === 'treasury_id').value : ''
       }
     })
 
