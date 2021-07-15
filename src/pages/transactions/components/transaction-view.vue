@@ -559,14 +559,15 @@ export default {
       // console.log(JSON.stringify(fullTrx, null, 2))
 
       try {
+        let { name } = this.transaction.value
         if (!this.isSelect) {
           await this.createTxn({ contentGroups: fullTrx })
-          let { name } = this.transaction.value
-          await this.cleanTrx(name)
-          this.autoSelect = false
         } else {
           await this.updateTxn({ contentGroups: fullTrx, transactionHash: trxHash })
+          // await this.loadUnapprovedTransactions()
         }
+        await this.cleanTrx(name)
+        this.autoSelect = false
         this.showSuccessMsg('Transaction was saved successfully')
       } catch (e) {
         this.showErrorMsg(e)

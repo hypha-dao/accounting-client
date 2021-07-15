@@ -22,7 +22,6 @@ class BaseEosApi {
   }
 
   async getAccount () {
-    console.log('account', this.eosApi)
     return this.eosApi.getAccount()
   }
 
@@ -37,13 +36,9 @@ class BaseEosApi {
       this.notifier && this.notifier.success(actions, transaction)
       return transaction
     } catch (err) {
-      console.log('IMPORTANT!')
-      console.log(err)
       let error = err
       const { cause } = err
       if (cause) {
-        console.log('CAUSE!')
-        console.log(cause)
         if (cause.cause) console.log(cause.cause)
         if (cause.cause && cause.cause.couse) console.log(cause.cause.cause)
         error = new Error(cause.message)

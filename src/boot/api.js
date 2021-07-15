@@ -29,7 +29,7 @@ const signTransaction = async function (actions) {
       })
     }
   } catch (e) {
-    console.log(actions, e.cause.message)
+    // console.log(actions, e.cause.message)
     // this.$sentry.captureException(e)
     throw new Error(e.cause.message)
   }
