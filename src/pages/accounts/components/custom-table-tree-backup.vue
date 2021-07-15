@@ -83,7 +83,7 @@ export default {
   mounted (v) {
     this.loadAccounts()
     // this.loadRows()
-    console.log('accounts by project', this.accountList)
+    // console.log('accounts by project', this.accountList)
 
     // this.$store.$EventBus.$on('accounts-updated', () => {
     //   console.log('Event bus listened')
@@ -127,7 +127,7 @@ export default {
       }
     },
     async loadAccounts () {
-      console.log('loadAccounts')
+      // console.log('loadAccounts')
       this.accounts = await this.getChartOfAccounts()
       if (!this.accounts || !this.accounts.accounts) return undefined
       this.accountsTree = this.accounts.accounts.map(account => {
@@ -176,7 +176,7 @@ export default {
     async loadChildren (e) {
       const children = await this.getAccountById({ uid: e.uid })
       const childrenFormatted = await this.setUpAccountChildren(children)
-      console.log('loadChildren', childrenFormatted)
+      // console.log('loadChildren', childrenFormatted)
       return childrenFormatted
     },
     filterChanged (filter) {
@@ -186,7 +186,7 @@ export default {
       this.page = page
     },
     openRow (row) {
-      console.log('row selected')
+      // console.log('row selected')
       this.$emit('rowSelected', row)
     },
     async getComponentsOfAccount (hash) {

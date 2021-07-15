@@ -9,7 +9,7 @@ export default {
   methods: {
     ...mapMutations('accounts', ['setRequestAccount']),
     async onContinue (account) {
-      console.log(account)
+      // console.log(account)
       this.setRequestAccount(false)
       this.$emit('accountEntered', account)
     }

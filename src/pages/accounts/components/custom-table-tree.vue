@@ -42,14 +42,14 @@ export default {
     value: {}
   },
   mounted (v) {
-    console.log('account on mounted', this.value)
+    // console.log('account on mounted', this.value)
     if (this.treeAccounts.length === 0) {
       this.loadAccounts()
     } else {
       this.treeAccountsTemp = Array.from(this.treeAccounts)
     }
     // this.loadRows()
-    console.log('accounts by project', this.accountList)
+    // console.log('accounts by project', this.accountList)
 
     // this.$store.$EventBus.$on('accounts-updated', () => {
     //   console.log('Event bus listened')
@@ -76,11 +76,11 @@ export default {
     ...mapMutations('contAccount', ['setTreeAccounts']),
     async callTempRows (filter) {
       try {
-        console.log('callTempRows', filter)
+        // console.log('callTempRows', filter)
         const children = await this.getAccountByCode({ code: filter })
-        console.log('tempRowsGot', children)
+        // console.log('tempRowsGot', children)
         if (!children) {
-          console.log('return callTempRows')
+          // console.log('return callTempRows')
           return undefined
         }
         const childrenFormatted = await this.setUpAccountChildrenTemp(children)
@@ -89,7 +89,7 @@ export default {
           rows: childrenFormatted,
           total: childrenFormatted.length
         }
-        console.log('tempRows', tempRows)
+        // console.log('tempRows', tempRows)
         return tempRows
       } catch (e) {
         return {
@@ -104,7 +104,7 @@ export default {
       }
     },
     async loadAccounts () {
-      console.log('loadAccounts')
+      // console.log('loadAccounts')
       this.accounts = await this.getChartOfAccounts()
       if (!this.accounts || !this.accounts.accounts) return undefined
       const result = this.accounts.accounts.map(account => {
@@ -138,7 +138,7 @@ export default {
       return new Promise(resolve => setTimeout(resolve, ms))
     },
     async setUpAccountChildren (children) {
-      console.log('original children', children)
+      // console.log('original children', children)
       const accounts = children.data.account[0].account
       // console.log('children acc', accounts)
       return accounts.map(account => {
@@ -159,9 +159,9 @@ export default {
       })
     },
     async setUpAccountChildrenTemp (children) {
-      console.log('original children', children)
+      // console.log('original children', children)
       const account = children.value
-      console.log('children acc', account)
+      // console.log('children acc', account)
       // const content = account.content_groups[0].contents
       return [
         {
@@ -204,9 +204,9 @@ export default {
     async loadChildren (e) {
       try {
         const children = await this.getAccountById({ uid: e.uid })
-        console.log('loadChildren response', e.uid, children)
+        // console.log('loadChildren response', e.uid, children)
         const childrenFormatted = await this.setUpAccountChildren(children)
-        console.log('loadChildren', childrenFormatted)
+        // console.log('loadChildren', childrenFormatted)
         return childrenFormatted
       } catch (e) {
         console.warn('children not loaded')
@@ -219,7 +219,7 @@ export default {
       this.page = page
     },
     openRow (row) {
-      console.log('row selected')
+      // console.log('row selected')
       this.$emit('rowSelected', row)
     },
     async getComponentsOfAccount (hash) {

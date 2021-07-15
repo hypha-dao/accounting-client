@@ -37,7 +37,6 @@ export const getApprovedTransactions = async function ({ commit }) {
 
 export const getTransactionById = async function ({ commit }, { uid }) {
   try {
-    console.log('uid', uid)
     commit('general/setIsLoading', true, { root: true })
     const transactions = await this.$transactionApi.getTransactionById({ uid })
     return transactions
@@ -53,7 +52,6 @@ export const createTxn = async function ({ commit }, { contentGroups }) {
   try {
     commit('general/setIsLoading', true, { root: true })
     const accountName = await this.getters['accounts/account']
-    console.log('store', contentGroups)
     const transaction = await this.$transactionApi.createTxn({ contentGroups, accountName })
     return transaction
   } catch (e) {
@@ -68,7 +66,6 @@ export const createTxnWithEvent = async function ({ commit }, { contentGroups })
   try {
     commit('general/setIsLoading', true, { root: true })
     const accountName = await this.getters['accounts/account']
-    console.log('store', contentGroups)
     const transaction = await this.$transactionApi.createTxnWithEvent({ contentGroups, accountName })
     return transaction
   } catch (e) {

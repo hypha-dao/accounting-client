@@ -13,7 +13,7 @@ export default {
   },
   watch: {
     errorMsg (msg) {
-      console.log('error', msg)
+      // console.log('error', msg)
       if (msg) {
         this.showNotification(msg, 'error')
         this.showErrorMsg(null)

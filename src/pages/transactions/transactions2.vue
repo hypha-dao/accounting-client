@@ -21,7 +21,7 @@ export default {
   components: { EventList, TransactionView },
   methods: {
     onEventAdded (event) {
-      console.log('onEventAdded', event)
+      // console.log('onEventAdded', event)
       this.$refs.transactionView.addEventToTransaction(event)
     },
     onEventRemovedFromTransaction (event) {

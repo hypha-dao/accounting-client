@@ -31,8 +31,8 @@ export const login = async function ({ commit, dispatch }, { idx, account, retur
       localStorage.setItem('autoLogin', authenticator.constructor.name)
       localStorage.setItem('account', accountName)
       localStorage.setItem('returning', true)
-      console.log('returnUrl', returnUrl)
-      console.log('defaultReturnUrl', defaultReturnUrl)
+      // console.log('returnUrl', returnUrl)
+      // console.log('defaultReturnUrl', defaultReturnUrl)
       // this.$router.push({ path: '/home' })
       this.$router.push({ path: returnUrl || defaultReturnUrl })
       return this.$ualUser
@@ -40,7 +40,7 @@ export const login = async function ({ commit, dispatch }, { idx, account, retur
   } catch (e) {
     const error = (authenticator.getError() && authenticator.getError().message) || e.message || e.reason
     commit('general/setErrorMsg', error, { root: true })
-    console.log('Login error: ', error)
+    // console.log('Login error: ', error)
     return null
   } finally {
     commit('setLoadingWallet')
@@ -52,7 +52,7 @@ export const loginToBackend = async function ({ commit }) {
     await this.dispatch('profiles/getProfile', { root: true })
     return true
   } catch (e) {
-    console.log('Failed to login to backend: ', e)
+    // console.log('Failed to login to backend: ', e)
     commit('general/setErrorMsg', e.message || e, { root: true })
     return false
   }

@@ -49,7 +49,6 @@ class BaseEosApi {
   }
 
   async transact ({ name, data }) {
-    console.log('base', name, data)
     return this.transactFull([{ name, data }])
   }
 

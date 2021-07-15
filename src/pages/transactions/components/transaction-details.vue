@@ -51,7 +51,7 @@
 <script>
 import { mapActions } from 'vuex'
 import ComponentForm from './component-form'
-import { transactionPayout } from '~/const/payouts/transaction-payout'
+// import { transactionPayout } from '~/const/payouts/transaction-payout'
 
 export default {
   name: 'transaction-list',
@@ -145,7 +145,7 @@ export default {
   methods: {
     ...mapActions('transaction', ['getTransactionById', 'createTxn']),
     printTrans (idx) {
-      console.log(this.txnComponents[idx])
+      // console.log(this.txnComponents[idx])
     },
     formattedDate (date) {
       var options = { year: 'numeric', month: 'numeric', day: 'numeric' }
@@ -155,7 +155,7 @@ export default {
     async getTransactionComponents () {
       let response = await this.getTransactionById({ uid: this.transaction.uid })
       this.txnComponents = response
-      console.log('txn components', this.txnComponents)
+      // console.log('txn components', this.txnComponents)
     },
     pushComponent (component) {
       this.componentForm = false
@@ -165,7 +165,7 @@ export default {
       this.txnComponents.push(component)
     },
     componentPercent (compAmount) {
-      console.log('comp amount', compAmount)
+      // console.log('comp amount', compAmount)
       let compAmountWOCurrency = compAmount.split(' ')[0]
       let totalAmount = (this.transaction.amount).split(' ')[0]
       let percent = (100 / totalAmount) * Math.abs(compAmountWOCurrency)
@@ -173,7 +173,7 @@ export default {
       return percent + '%'
     },
     editComponent (props) {
-      console.log(props)
+      // console.log(props)
       this.txnComponent = props
       this.componentForm = true
     },
@@ -185,7 +185,7 @@ export default {
       this.txnComponents.splice(id, 1)
     },
     storeTransaction () {
-      console.log('pay', transactionPayout)
+      // console.log('pay', transactionPayout)
 
       let fullTransact = [
         [
@@ -213,7 +213,7 @@ export default {
         fullTransact.push(this.formattedComponent(comp))
       })
 
-      console.log('fullTransact', fullTransact)
+      // console.log('fullTransact', fullTransact)
 
       this.createTxn({ contentGroups: fullTransact })
     },
