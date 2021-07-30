@@ -35,11 +35,11 @@ export default {
   data () {
     return {
       pagination: {
-        rowsPerPage: 20
+        rowsPerPage: 10
       },
       offset: 0,
       limit: 10,
-      pageSize: 20,
+      pageSize: 10,
       entryStatus: undefined,
       nextKey: 2,
       events: {
@@ -112,7 +112,7 @@ export default {
   },
   computed: {
     eventsFreeze () {
-      return Object.freeze(this.events.rows.slice(0, this.pageSize * (this.nextKey - 1)))
+      return Object.freeze(this.events.rows.slice(0, this.pageSize * (this.nextKey - 2)))
     }
   },
   methods: {
@@ -137,14 +137,11 @@ export default {
           this.pagination.rowsPerPage = this.pagination.rowsPerPage + this.pageSize
           this.loading = true
           let newRows = await this.loadEvents()
-          if (this.nextKey > 2) {
-            newRows.rows.shift()
-          }
           this.events.rows = this.events.rows.concat(newRows.rows)
           this.events.more = newRows.more
           this.nextKey = this.nextKey + 1
           this.loading = false
-          this.offset = this.offset + this.pageSize + 1
+          this.offset = this.offset + this.pageSize
           this.limit = this.offset + this.pageSize
           await this.$nextTick()
         }
