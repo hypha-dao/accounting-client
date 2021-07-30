@@ -125,11 +125,11 @@ export default {
       this.tempRemoveEvent(event)
     },
     tempRemoveEvent (event) {
-      const indexEvent = this.events.findIndex(v => event === v)
-      this.events.splice(indexEvent, 1)
+      const indexEvent = this.events.rows.findIndex(v => event === v)
+      this.events.rows.splice(indexEvent, 1)
     },
     returnEventRemoved (event) {
-      this.events.push(event)
+      this.events.rows.push(event)
     },
     async onScroll ({ to, ref, index, direction }) {
       try {
