@@ -52,12 +52,14 @@ class EventApi extends BaseEosApi {
     `
 
     let vars = { $first: first.toString(), $offset: offset.toString() }
-    let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
+
+    let data = {}
+    let res = await this.dgraph.newTxn().queryWithVars(query, vars)
+    data = JSON.parse(JSON.stringify(res.data))
 
     let mappedEvents = data.event.map((ev, i) => {
       const contents = ev.content_groups[0].contents
       return {
-        id: i,
         uid: ev.uid,
         hash: ev.hash,
         chainId: contents.find(el => el.label === 'chainId') ? contents.find(el => el.label === 'chainId').value : '',
@@ -73,7 +75,7 @@ class EventApi extends BaseEosApi {
       }
     })
 
-    return mappedEvents
+    return { rows: mappedEvents, more: mappedEvents.length !== 0 }
   }
 
   async createEvent ({ accountName, contentGroups }) {
