@@ -3,6 +3,17 @@
 h1, h2, h3, h4, h5, h6, .text-h1, .text-h2, .text-h3, .text-h4, .text-h5, .text-h6
   font-family: "neue-haas-grotesk-text", sans-serif
 
+.responsive-modal
+  min-width: 400px
+
+@media (max-width: $breakpoint-mobile)
+  .responsive-modal
+    min-width: 50%
+
+@media (min-width: $breakpoint-tablet)
+  .responsive-modal
+    min-width: 500px
+
 // Column Table Responsive
 .column-responsive
   white-space: nowrap

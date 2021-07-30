@@ -102,6 +102,15 @@ export default {
       memo: 'Memo',
       date: 'Date Time (UTC)',
       actions: 'Actions'
+    },
+    coa: {
+      parent: 'Parent Account',
+      accountName: 'Account Name',
+      accountCode: 'Account Code',
+      actions: 'Actions',
+      addAccount: 'Add an account',
+      chooseParent: 'Choose parent account',
+      saveAccount: 'Save Account'
     }
   }
 }
