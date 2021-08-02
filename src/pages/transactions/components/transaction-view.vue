@@ -147,8 +147,7 @@ q-card.q-pa-sm.full-width
       template(v-slot:body-cell-actions="props")
         q-td.q-gutter-xs.text-right
           q-btn(v-if="editingRow !== props.row.hash && !addingComponent && !props.row.isFromEvent" icon="edit" round size="xs" color="positive" @click="onClickEditRow(props.row)")
-          q-btn(v-if="editingRow === props.row.hash" icon="save" round size="xs" color="primary" @click="onClickSaveRow(props.row)")
-          //- q-btn(v-if="editingRow === props.row.hash || props.row.isEditable.from || props.row.isEditable.to || props.row.isEditable.memo" icon="save" round size="xs" color="primary" @click="onClickSaveRow(props.row)")
+          q-btn(v-if="editingRow === props.row.hash || props.row.isEditable.from || props.row.isEditable.to || props.row.isEditable.memo" icon="save" round size="xs" color="primary" @click="onClickSaveRow(props.row)")
           q-btn(v-if="addingComponent && editingRow === props.row.hash" icon="close" round size="xs" color="negative" @click="onClickCancelAdding(props.row)")
           q-btn(v-if="editingRow === false" icon="delete" round size="xs" color="negative" @click="onClickRemoveRow(props.row)")
       template(v-slot:bottom v-if="!addingComponent")
@@ -518,7 +517,7 @@ export default {
         this.showErrorMsg(this.$t('forms.errors.allComponentFilled'))
         return
       }
-      // row.isEditable = {}
+      row.isEditable = {}
       this.editingRow = false
       this.addingComponent = false
     },
