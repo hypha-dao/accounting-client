@@ -101,7 +101,7 @@ q-card.q-pa-sm.full-width
               custom-table-tree(v-model="props.row.account")
       template(v-slot:body-cell-from="props")
         q-td.short-input
-          q-input.short-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" autofocus v-model="props.row.from" dense :label="$t('pages.transactions.from')" color="secondary")
+          q-input.short-input(v-if="(editingRow === props.row.hash && props.row.isCustomComponent) || props.row.isEditable.from" autofocus v-model="props.row.from" dense :label="$t('pages.transactions.from')" color="secondary")
           .text-cell.short-input(v-else) {{ props.row.from }}
       template(v-slot:body-cell-type="props")
         q-select(
@@ -114,7 +114,7 @@ q-card.q-pa-sm.full-width
         //-   .text-cell(v-if="props.row.account") {{ props.row.account.typeTag }}
       template(v-slot:body-cell-to="props")
         q-td.short-input
-          q-input.short-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.to" dense :label="$t('pages.transactions.to')" color="secondary")
+          q-input.short-input(v-if="(editingRow === props.row.hash && props.row.isCustomComponent) || props.row.isEditable.to" v-model="props.row.to" dense :label="$t('pages.transactions.to')" color="secondary")
           .text-cell(v-else) {{ props.row.to }}
       template(v-slot:body-cell-amount="props")
         q-td.text-right
@@ -130,7 +130,7 @@ q-card.q-pa-sm.full-width
           .text-cell(v-else) {{ props.row.currency }}
       template(v-slot:body-cell-memo="props")
         q-td.responsive-cell
-          q-input.larger-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.memo" dense :label="$t('pages.transactions.memo')" color="secondary")
+          q-input.larger-input(v-if="(editingRow === props.row.hash && props.row.isCustomComponent) || props.row.isEditable.memo" v-model="props.row.memo" dense :label="$t('pages.transactions.memo')" color="secondary")
           .text-memo(v-else) {{ props.row.memo }}
             q-tooltip {{ props.row.memo }}
       template(v-slot:body-cell-date="props")
@@ -148,6 +148,7 @@ q-card.q-pa-sm.full-width
         q-td.q-gutter-xs.text-right
           q-btn(v-if="editingRow !== props.row.hash && !addingComponent && !props.row.isFromEvent" icon="edit" round size="xs" color="positive" @click="onClickEditRow(props.row)")
           q-btn(v-if="editingRow === props.row.hash" icon="save" round size="xs" color="primary" @click="onClickSaveRow(props.row)")
+          //- q-btn(v-if="editingRow === props.row.hash || props.row.isEditable.from || props.row.isEditable.to || props.row.isEditable.memo" icon="save" round size="xs" color="primary" @click="onClickSaveRow(props.row)")
           q-btn(v-if="addingComponent && editingRow === props.row.hash" icon="close" round size="xs" color="negative" @click="onClickCancelAdding(props.row)")
           q-btn(v-if="editingRow === false" icon="delete" round size="xs" color="negative" @click="onClickRemoveRow(props.row)")
       template(v-slot:bottom v-if="!addingComponent")
@@ -406,6 +407,11 @@ export default {
     editAccount (row) {
       // row.accunt
     },
+    // isEmptyField (field) {
+    //   console.log('Field to check emptyness', field)
+    //   // return false
+    //   return false
+    // },
     requestRefreshEvents () {
       this.$emit('requestRefreshEvents')
     },
@@ -459,8 +465,18 @@ export default {
         let date = `${d.getUTCFullYear()}/${(month < 10 ? '0' + month : month)}/${(day < 10 ? '0' + day : day)}`
         this.transaction.value.date = date
       }
+
+      // let isEditable = (!event.from || !event.to || !event.memo)
+      let isEditable = {
+        memo: !event.memo,
+        from: !event.from,
+        to: !event.to
+      }
+      // event.isE
+      // console.log('IS EDITABLE', isEditable)
       this.components.push({
         ...event,
+        isEditable,
         showEditAccount: false,
         type: undefined
       })
@@ -502,6 +518,7 @@ export default {
         this.showErrorMsg(this.$t('forms.errors.allComponentFilled'))
         return
       }
+      // row.isEditable = {}
       this.editingRow = false
       this.addingComponent = false
     },
@@ -514,7 +531,6 @@ export default {
       const rowIndex = this.components.findIndex(v => row === v)
       this.components.splice(rowIndex, 1)
       if (row.isFromEvent) {
-        // if (this.components.length === 0) this.transaction = JSON.parse(JSON.stringify(this.baseTrx))
         this.$emit('eventRemoved', row)
       }
     },
@@ -526,8 +542,8 @@ export default {
         isValidRow = false
       } else if (!row.currency) {
         isValidRow = false
-      } else if (!row.memo) {
-        isValidRow = false
+      // } else if (!row.memo) {
+      //   isValidRow = false
       } else if (!row.date) {
         isValidRow = false
       } else if (!row.type) {
