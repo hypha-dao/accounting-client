@@ -26,13 +26,14 @@
 
 <script>
 import AddAccountForm from './addAccountForm.vue'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'chartOfAccounts',
   components: { AddAccountForm },
   data () {
     return {
-      pageSize: 20,
+      pageSize: 200,
       nextPage: 2,
       coa: [],
       columns: [
@@ -61,6 +62,14 @@ export default {
           headerClasses: 'bg-secondary text-white'
         },
         {
+          name: 'balance',
+          align: 'right',
+          label: this.$t('pages.coa.balance'),
+          field: row => `${row.balance}`,
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        },
+        {
           name: 'actions',
           align: 'center',
           label: this.$t('pages.coa.actions'),
@@ -73,6 +82,26 @@ export default {
         addingAccount: false
       }
     }
+  },
+  methods: {
+    ...mapActions('contAccount', ['getAllAccounts', 'getAccountById', 'getAccountByCode']),
+    async getAccounts () {
+      let accs = await this.getAllAccounts({ first: 10, offset: 0 })
+      // console.log(accs)
+      this.coa = accs.rows
+      // accs = accs.map((acc, i) => {
+      //   const contents = acc.content_groups[0].contents
+      //   return {
+      //     parentAccount: '000000',
+      //     accountName: contents.find(el => el.label === 'account_name').value,
+      //     accountCode: contents.find(el => el.label === 'account_code').value
+      //   }
+      // })
+      // console.log(accs)
+    }
+  },
+  created () {
+    this.getAccounts()
   }
 }
 </script>

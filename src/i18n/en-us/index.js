@@ -110,7 +110,8 @@ export default {
       actions: 'Actions',
       addAccount: 'Add an account',
       chooseParent: 'Choose parent account',
-      saveAccount: 'Save Account'
+      saveAccount: 'Save Account',
+      balance: 'Balance'
     }
   }
 }

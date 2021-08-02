@@ -2,6 +2,8 @@ export const createAccount = async function ({ commit }, { accountInfo }) {
   try {
     commit('general/setIsLoading', true, { root: true })
     const creator = this.getters['accounts/account']
+
+    // console.log('ACTION', creator, accountInfo)
     const account = await this.$accountApi.createAccount({ creator, accountInfo })
     return account
   } catch (e) {
@@ -19,6 +21,23 @@ export const getChartOfAccounts = async function ({ commit }) {
     const components = await this.$accountApi.getAllTransactionComponents({ })
     await commit('setComponents', components)
     const response = await this.$accountApi.getChartOfAccount({ })
+    // await commit('setEdges', response)
+    return response
+  } catch (e) {
+    console.error('An error ocurred while trying to get my entries', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+    throw new Error(e)
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
+
+export const getAllAccounts = async function ({ commit }, { first, offset }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const response = await this.$accountApi.getAllAccounts({ first, offset })
+    // await commit('setComponents', components)
+    // const response = await this.$accountApi.getChartOfAccount({ })
     // await commit('setEdges', response)
     return response
   } catch (e) {

@@ -20,10 +20,14 @@
         div
       template.container-btn.cursor-pointer.flex(slot='accountName' slot-scope='props' @click="selectAccount(props.row)")
         .main-column(@click="selectAccount(props.row)")
-          .row(:class="(props.row.isSelectable) ? 'selectableRow' : undefined")
+          .row(:class="(props.row.isSelectable || allSelecteable) ? 'selectableRow' : undefined")
             q-icon.q-mr-sm(name="account_balance", size="20px")
-            q-radio.q-mr-sm( v-if="props.row.isSelectable" dense v-model="accountSelected" :val="props.row")
+            q-radio.q-mr-sm(v-if="props.row.isSelectable || allSelecteable" dense v-model="accountSelected" :val="props.row")
             p {{ props.row.accountName }}
+          //- .row
+          //-   q-icon.q-mr-sm(name="account_balance", size="20px")
+          //-   q-radio.q-mr-sm(dense v-model="accountSelected" :val="props.row")
+          //-   p {{ props.row.accountName }}
 </template>
 
 <script>
@@ -39,7 +43,8 @@ export default {
     // VueAdsPageButton
   },
   props: {
-    value: {}
+    value: {},
+    allSelecteable: Boolean
   },
   mounted (v) {
     // console.log('account on mounted', this.value)

@@ -108,15 +108,67 @@ class AccountApi extends BaseEosApi {
     return this.dgraph.newTxn().queryWithVars(query, vars)
   }
 
-  async createAccount ({ accountName, accountInfo }) {
+  async getAllAccounts () {
+    const query = `
+    query accounts() {
+      var(func: has(account)) {
+        accounts as account
+      }
+      account(func: uid(accounts))
+      @filter(NOT has(component))
+      {
+        uid
+        hash
+        content_groups(orderasc:content_group_sequence, first:1) {
+          contents(orderasc:label) {
+            label
+            value
+          }
+        }
+        balances {
+          content_groups (orderasc:content_group_sequence, first:1) {
+            contents {
+              label
+              value
+            }
+          }
+        }
+      }
+    }
+    `
+    let { data } = await this.dgraph.newTxn().query(query)
+
+    // console.log(data)
+
+    let mappedAccounts = data.account.map(acc => {
+      const contents = acc.content_groups[0].contents
+      const path = contents.find(el => el.label === 'path').value
+      let balances = acc.balances[0].content_groups[0].contents
+      balances = balances.filter(el => el.label.startsWith('global'))
+      balances = balances.map(bal => bal.value)
+      // console.log(contents.find(el => el.label === 'account_name').value, balMap)
+      return {
+        parent: path.split(' > ').reverse()[1] || '--',
+        accountName: contents.find(el => el.label === 'account_name').value,
+        accountCode: contents.find(el => el.label === 'account_code').value,
+        balance: balances.join('  ||  ')
+      }
+    })
+
+    return { rows: mappedAccounts, more: data.length !== 0 }
+  }
+
+  async createAccount ({ creator, accountInfo }) {
     const actions = [{
-      account: Contracts.BENNYFI,
+      account: Contracts.HYPHA,
       name: 'createacc',
       data: {
-        creator: accountName,
+        creator,
         account_info: accountInfo
       }
     }]
+
+    console.log('ACTIONS SERVICE', actions)
     return this.eosApi.signTransaction(actions)
   }
 

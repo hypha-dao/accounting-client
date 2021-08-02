@@ -34,13 +34,15 @@
     #modals
       q-dialog(v-model="modals.showAllAccounts" position="top")
           q-card.q-pa-md(style="min-width: 800px")
-              custom-table-tree(v-model="params.parentAccount")
+              custom-table-tree(v-model="params.parentAccount" :allSelecteable="true")
 </template>
 
 <script>
 import CustomTableTree from '~/pages/accounts/components/custom-table-tree'
 import { validation } from '~/mixins/validation'
 import { mapActions } from 'vuex'
+import { accountPayout } from '~/const/payouts/account-payout.js'
+
 export default {
   name: 'add-account-form',
   components: { CustomTableTree },
@@ -65,8 +67,15 @@ export default {
   methods: {
     ...mapActions('contAccount', ['createAccount']),
     async onSubmit () {
+      let accountPayload = JSON.parse(JSON.stringify(accountPayout))
+      accountPayload[0].find(el => el.label === 'parent_account').value[1] = this.params.parentAccount.hash
+      accountPayload[0].find(el => el.label === 'account_name').value[1] = this.params.accountName
+      accountPayload[0].find(el => el.label === 'account_code').value[1] = this.params.accountCode
+
+      console.log(accountPayload)
       try {
-        const r = await this.createAccount({ })
+        // console.log(accountPayout)
+        const r = await this.createAccount({ accountInfo: accountPayload })
         console.log('response r', r)
       } catch (e) {
 
