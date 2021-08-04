@@ -38,6 +38,14 @@ export default {
       coa: [],
       columns: [
         {
+          name: 'accountCode',
+          align: 'center',
+          label: this.$t('pages.coa.accountCode'),
+          field: row => `${row.accountCode}`,
+          sortable: true,
+          headerClasses: 'bg-secondary text-white'
+        },
+        {
           name: 'parent',
           align: 'left',
           label: this.$t('pages.coa.parent'),
@@ -50,14 +58,6 @@ export default {
           align: 'left',
           label: this.$t('pages.coa.accountName'),
           field: row => row.accountName,
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        },
-        {
-          name: 'accountCode',
-          align: 'right',
-          label: this.$t('pages.coa.accountCode'),
-          field: row => `${row.accountCode}`,
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         },

@@ -61,7 +61,7 @@ export default {
   },
   computed: {
     labelParentAccount () {
-      return this.params.parentAccount ? this.params.parentAccount.accountName : undefined
+      return this.params.parentAccount ? `${this.params.parentAccount.accountCode.toString().slice(0, 1)}-${this.params.parentAccount.accountCode}  ${this.params.parentAccount.accountName}` : undefined
     }
   },
   methods: {
