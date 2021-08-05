@@ -47,6 +47,16 @@ export default {
   name: 'add-account-form',
   components: { CustomTableTree },
   mixins: [validation],
+  props: {
+    account: Object
+  },
+  beforeMount () {
+    if (!this.isNew) {
+      this.params.accountName = this.account.accountName
+      this.params.accountCode = this.account.accountCode
+      // this.params.parentAccount = this.account.parent
+    }
+  },
   data () {
     return {
       params: {
@@ -62,6 +72,9 @@ export default {
   computed: {
     labelParentAccount () {
       return this.params.parentAccount ? `${this.params.parentAccount.accountCode.toString().slice(0, 1)}-${this.params.parentAccount.accountCode}  ${this.params.parentAccount.accountName}` : undefined
+    },
+    isNew () {
+      return !this.account
     }
   },
   methods: {
@@ -81,6 +94,8 @@ export default {
 
       }
       console.log('OnSubmit!')
+      this.showSuccessMsg('Account added successfully')
+      this.$emit('success')
     }
   }
 }

@@ -151,7 +151,7 @@ class AccountApi extends BaseEosApi {
         parent: path.split(' > ').reverse()[1] || '--',
         accountName: contents.find(el => el.label === 'account_name').value,
         accountCode: contents.find(el => el.label === 'account_code').value,
-        balance: balances.join('  ||  ')
+        balance: balances
       }
     })
 
