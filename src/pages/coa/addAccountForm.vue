@@ -26,6 +26,7 @@
           :label="$t('pages.coa.accountCode')"
           :rules="[rules.required]"
       )
+      p {{baseChildrenAccount}}
       q-btn.full-width(
         :label="$t('pages.coa.saveAccount')"
         type="submit"
@@ -71,10 +72,28 @@ export default {
   },
   computed: {
     labelParentAccount () {
-      return this.params.parentAccount ? `${this.params.parentAccount.accountCode.toString().slice(0, 1)}-${this.params.parentAccount.accountCode}  ${this.params.parentAccount.accountName}` : undefined
+      return this.params.parentAccount ? `${this.params.parentAccount.accountCode}  ${this.params.parentAccount.accountName}` : undefined
     },
     isNew () {
       return !this.account
+    },
+    baseChildrenAccount () {
+      let newBase = ''
+      let isEditable = true
+      if (!this.params.parentAccount) return newBase
+      const parentAccountCode = this.params.parentAccount.accountCode.split('')
+      for (let i = parentAccountCode.length; i--; i !== 0) {
+        if (Number.parseInt(parentAccountCode[i]) !== 0) {
+          // debugger
+          isEditable = false
+        }
+        if (!isEditable) {
+          // console.log(i, parentAccountCode[i])
+          newBase += parentAccountCode[i]
+        }
+      }
+
+      return newBase.split('').reverse().join('')
     }
   },
   methods: {

@@ -147,8 +147,10 @@ export default {
 .accountTable
   height: 70vh
 .balanceLabel
-  background: #9e9e9e
-  // min-width: 200px
-  border-radius: 10px !important
-  padding: 3px !important
+  background: #e2f1f8
+  min-width: 70px
+  border-radius: 3px
+  padding: 3px
+  padding-left: 10px
+  padding-right: 10px
 </style>
