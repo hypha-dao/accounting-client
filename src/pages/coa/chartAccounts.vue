@@ -88,15 +88,15 @@ export default {
           field: row => row.balance,
           // sortable: true,
           headerClasses: 'bg-secondary text-white'
-        },
-        {
-          name: 'actions',
-          align: 'center',
-          label: this.$t('pages.coa.actions'),
-          field: row => row.action,
-          // sortable: true,
-          headerClasses: 'bg-secondary text-white'
         }
+        // {
+        //   name: 'actions',
+        //   align: 'center',
+        //   label: this.$t('pages.coa.actions'),
+        //   field: row => row.action,
+        //   // sortable: true,
+        //   headerClasses: 'bg-secondary text-white'
+        // }
       ],
       modals: {
         openedAccountForm: false

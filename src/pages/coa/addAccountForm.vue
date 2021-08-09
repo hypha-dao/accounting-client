@@ -2,12 +2,6 @@
  #container.q-pa-md.q-gutter-sm
     .text-title1 {{$t('pages.coa.addAccount')}}
     q-form(@submit="onSubmit")
-      //- q-btn(
-      //-     :label="$t('pages.coa.chooseParent')"
-      //-     @click="modals.showAllAccounts = true"
-      //-     type="button"
-      //- )
-      //- p {{ labelParentAccount }}
       div.cursor-pointer
         q-input.cursor-pointer(
             v-model="labelParentAccount"
@@ -24,9 +18,11 @@
       q-input(
           v-model="params.accountCode"
           :label="$t('pages.coa.accountCode')"
-          :rules="[rules.required]"
+          :rules="[rules.required, customRules.accountCode]"
+          :prefix="baseChildrenAccount"
+          type="number"
       )
-      p {{baseChildrenAccount}}
+      //- p {{baseChildrenAccount}}
       q-btn.full-width(
         :label="$t('pages.coa.saveAccount')"
         type="submit"
@@ -67,12 +63,26 @@ export default {
       },
       modals: {
         showAllAccounts: false
+      },
+      customRules: {
+        accountCode: val => {
+          const realCode = this.baseChildrenAccount + val
+          if (realCode.length !== 8) {
+            return 'The account code must have 8 digits'
+          }
+
+          if (!this.params.parentAccount) return
+          if (Number.parseInt(realCode) <= Number.parseInt(this.params.parentAccount.accountCode)) {
+            return "The children's account code must be bigger than parent's account code."
+          }
+          return true
+        }
       }
     }
   },
   computed: {
     labelParentAccount () {
-      return this.params.parentAccount ? `${this.params.parentAccount.accountCode}  ${this.params.parentAccount.accountName}` : undefined
+      return this.params.parentAccount ? `${this.params.parentAccount.accountCode} - ${this.params.parentAccount.accountName}` : undefined
     },
     isNew () {
       return !this.account
@@ -99,22 +109,22 @@ export default {
   methods: {
     ...mapActions('contAccount', ['createAccount']),
     async onSubmit () {
-      let accountPayload = JSON.parse(JSON.stringify(accountPayout))
-      accountPayload[0].find(el => el.label === 'parent_account').value[1] = this.params.parentAccount.hash
-      accountPayload[0].find(el => el.label === 'account_name').value[1] = this.params.accountName
-      accountPayload[0].find(el => el.label === 'account_code').value[1] = this.params.accountCode
-
-      console.log(accountPayload)
       try {
+        let accountPayload = JSON.parse(JSON.stringify(accountPayout))
+        accountPayload[0].find(el => el.label === 'parent_account').value[1] = this.params.parentAccount.hash
+        accountPayload[0].find(el => el.label === 'account_name').value[1] = this.params.accountName
+        accountPayload[0].find(el => el.label === 'account_code').value[1] = this.params.accountCode
+
+        console.log(accountPayload)
         // console.log(accountPayout)
         const r = await this.createAccount({ accountInfo: accountPayload })
         console.log('response r', r)
+        console.log('OnSubmit!')
+        this.showSuccessMsg('Account added successfully')
+        this.$emit('success')
       } catch (e) {
 
       }
-      console.log('OnSubmit!')
-      this.showSuccessMsg('Account added successfully')
-      this.$emit('success')
     }
   }
 }
