@@ -119,6 +119,14 @@ class AccountApi extends BaseEosApi {
       {
         uid
         hash
+        ownedby {
+          content_groups(orderasc:content_group_sequence, first:1) {
+            contents(orderasc:label) {
+              label
+              value
+            }
+          }
+        }
         content_groups(orderasc:content_group_sequence, first:1) {
           contents(orderasc:label) {
             label
@@ -138,17 +146,14 @@ class AccountApi extends BaseEosApi {
     `
     let { data } = await this.dgraph.newTxn().query(query)
 
-    // console.log(data)
-
     let mappedAccounts = data.account.map(acc => {
       const contents = acc.content_groups[0].contents
-      const path = contents.find(el => el.label === 'path').value
+      const parent = acc.ownedby[0].content_groups[0].contents.find(el => el.label === 'name' || el.label === 'account_name').value
       let balances = acc.balances[0].content_groups[0].contents
       balances = balances.filter(el => el.label.startsWith('global'))
       balances = balances.map(bal => bal.value)
-      // console.log(contents.find(el => el.label === 'account_name').value, balMap)
       return {
-        parent: path.split(' > ').reverse()[1] || '--',
+        parent,
         accountName: contents.find(el => el.label === 'account_name').value,
         accountCode: contents.find(el => el.label === 'account_code').value,
         balance: balances.join('  ||  ')
