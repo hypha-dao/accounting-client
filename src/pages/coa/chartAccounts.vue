@@ -1,27 +1,45 @@
 <template lang="pug">
 #main-container.main.q-pa-sm
-  .row.q-my-sm.justify-end
-      q-btn(
-        :label="this.$t('pages.coa.addAccount')"
-        color="primary"
-        @click="modals.addingAccount = true"
+  q-card.q-pa-sm.full-width
+    #container.q-pa-sm
+      q-table.sticky-virtscroll-table.accountTable.t-table(
+          :columns="columns"
+          :data="coa"
+          virtual-scroll
+          :rows-per-page-options="[0]"
+          :virtual-scroll-item-size="pageSize - 2"
+          :virtual-scroll-sticky-size-start="pageSize - 2"
+          dense
+          ref="table"
+          :filter="search"
       )
-  q-table.sticky-virtscroll-table.t-table(
-      :columns="columns"
-      :data="coa"
-      virtual-scroll
-      :rows-per-page-options="[0]"
-      :virtual-scroll-item-size="pageSize - 2"
-      :virtual-scroll-sticky-size-start="pageSize - 2"
-      dense
-      ref="table"
-  )
-  #modals
-    q-dialog(
-      v-model="modals.addingAccount"
-    )
-      q-card.responsive-modal
-        add-account-form
+        template(v-slot:top-right)
+          q-input(
+            v-model="search"
+            label="Search"
+          )
+            template(v-slot:append)
+              q-icon(name="search")
+        template(v-slot:body-cell-balance="props")
+          q-td(:props="props")
+            .row.q-gutter-sm
+              div(v-for="b in props.row.balance")
+                .balanceLabel {{b}}
+        template(v-slot:body-cell-actions="props")
+          q-td(:props="props")
+            q-btn(icon="edit" round size="xs" color="positive" @click="onClickEditAccount(props.row)")
+      .row.q-my-sm.justify-start
+          q-btn(
+            :label="this.$t('pages.coa.addAccount')"
+            color="primary"
+            @click="onClickAddAccount"
+          )
+      #modals
+        q-dialog(
+          v-model="modals.openedAccountForm"
+        )
+          q-card.responsive-modal
+            add-account-form(:account="selectedAccount" @success="onSuccessAdded")
 </template>
 
 <script>
@@ -36,15 +54,25 @@ export default {
       pageSize: 200,
       nextPage: 2,
       coa: [],
+      search: undefined,
+      selectedAccount: undefined,
       columns: [
         {
-          name: 'parent',
-          align: 'left',
-          label: this.$t('pages.coa.parent'),
-          field: row => row.parent,
+          name: 'accountCode',
+          align: 'center',
+          label: this.$t('pages.coa.accountCode'),
+          field: row => `${row.accountCode}`,
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         },
+        // {
+        //   name: 'parent',
+        //   align: 'left',
+        //   label: this.$t('pages.coa.parent'),
+        //   field: row => row.parent,
+        //   sortable: true,
+        //   headerClasses: 'bg-secondary text-white'
+        // },
         {
           name: 'accountName',
           align: 'left',
@@ -54,32 +82,24 @@ export default {
           headerClasses: 'bg-secondary text-white'
         },
         {
-          name: 'accountCode',
-          align: 'right',
-          label: this.$t('pages.coa.accountCode'),
-          field: row => `${row.accountCode}`,
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        },
-        {
           name: 'balance',
-          align: 'right',
-          label: this.$t('pages.coa.balance'),
-          field: row => `${row.balance}`,
-          sortable: true,
-          headerClasses: 'bg-secondary text-white'
-        },
-        {
-          name: 'actions',
           align: 'center',
-          label: this.$t('pages.coa.actions'),
-          field: row => row.action,
-          sortable: true,
+          label: this.$t('pages.coa.balance'),
+          field: row => row.balance,
+          // sortable: true,
           headerClasses: 'bg-secondary text-white'
         }
+        // {
+        //   name: 'actions',
+        //   align: 'center',
+        //   label: this.$t('pages.coa.actions'),
+        //   field: row => row.action,
+        //   // sortable: true,
+        //   headerClasses: 'bg-secondary text-white'
+        // }
       ],
       modals: {
-        addingAccount: false
+        openedAccountForm: false
       }
     }
   },
@@ -98,6 +118,19 @@ export default {
       //   }
       // })
       // console.log(accs)
+    },
+    onClickEditAccount (account) {
+      this.selectedAccount = account
+      this.modals.openedAccountForm = true
+    },
+    onClickAddAccount () {
+      this.selectedAccount = undefined
+      this.modals.openedAccountForm = true
+    },
+    onSuccessAdded () {
+      this.selectedAccount = undefined
+      this.modals.openedAccountForm = false
+      this.getAccounts()
     }
   },
   created () {
@@ -111,4 +144,13 @@ export default {
   min-height: 94vh
   display: flex
   flex-direction: column
+.accountTable
+  height: 70vh
+.balanceLabel
+  background: #e2f1f8
+  min-width: 70px
+  border-radius: 3px
+  padding: 3px
+  padding-left: 10px
+  padding-right: 10px
 </style>

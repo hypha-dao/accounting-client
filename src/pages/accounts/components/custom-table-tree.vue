@@ -2,7 +2,7 @@
 #container-tree.full-width
     q-input.full-width(
       v-model="filter"
-      label="Filter"
+      label="Filter by Account Code"
       autofocus
     )
     vue-ads-table-tree.full-width(
@@ -255,14 +255,14 @@ export default {
           direction: null,
           filterable: true,
           collapseIcon: false
-        },
-        {
-          property: 'typeTag',
-          title: 'Type',
-          direction: null,
-          filterable: true,
-          collapseIcon: false
         }
+        // {
+        //   property: 'typeTag',
+        //   title: 'Type',
+        //   direction: null,
+        //   filterable: true,
+        //   collapseIcon: false
+        // }
       ],
       rows: [],
       accounts: undefined,

@@ -25,22 +25,6 @@
               q-icon(:name="props.row.approved ? 'check' : 'remove_circle'" size="25px")
             q-td(key="balanced" :props="props").flex.justify-center {{ props.row.balanced }}
       //- End of table
-
-      //- Data table
-      //- q-table.q-mt-xl(
-      //-   :columns="columnsUnbalanced"
-      //-   :data="unbalancedTransactions"
-      //-   :selected.sync="selected"
-      //-   v-if="filter === 'Unbalanced transactions'"
-      //- )
-      //-   template(v-slot:body="props")
-      //-     q-tr(:props="props" @click="selectUnbalancedTxn(props.row.id)" :class="(selectedIndex == props.row.id) ? 'bg-dark-accent': ''").styled-row.cursor-pointer
-      //-       q-td(key="date" :props="props") {{ formattedDate(props.row.date) }}
-      //-       q-td(key="amount" :props="props") {{ props.row.amount }}
-      //-       q-td(key="memo" :props="props") {{ props.row.memo }}
-      //-       q-td(key="from" :props="props") {{ props.row.from }}
-      //-       q-td(key="to" :props="props") {{ props.row.to }}
-      //- End of table
       .q-mt-xl.flex.column
         .row.self-center.q-my-md
           q-btn.q-px-xl.btn-md(color="primary" @click="create = !create")
