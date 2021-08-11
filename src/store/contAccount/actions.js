@@ -52,9 +52,7 @@ export const getAllAccounts = async function ({ commit }, { first, offset }) {
 export const getAccountById = async function ({ commit }, { uid }) {
   try {
     commit('general/setIsLoading', true, { root: true })
-    // const accountName = this.getters['accounts/account']
     const response = await this.$accountApi.getAccountById({ uid })
-    // await commit('setEdges', response)
     return response
   } catch (e) {
     console.error('An error ocurred while trying to get my entries', e)

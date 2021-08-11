@@ -71,12 +71,13 @@ class AccountApi extends BaseEosApi {
   }
 
   async getAccountById ({ uid }) {
+    console.log('UUID TO SEARCH ITS CHILDREN', uid)
     const query = `
     query account($uid:string)
     {
       account(func: uid($uid)) {
         uid
-        account (first:1) {
+        account {
           uid
           hash
           account {
