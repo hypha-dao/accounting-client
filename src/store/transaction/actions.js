@@ -53,6 +53,8 @@ export const createTxn = async function ({ commit }, { contentGroups }) {
     commit('general/setIsLoading', true, { root: true })
     const accountName = await this.getters['accounts/account']
     const transaction = await this.$transactionApi.createTxn({ contentGroups, accountName })
+
+    console.log('response transaction', transaction)
     return transaction
   } catch (e) {
     console.error('An error ocurred while trying to create txn', e)

@@ -375,6 +375,7 @@ export default {
       this.components = []
       this.requestRefreshEvents()
       if (!v) return
+      console.log('selected transxct', v, v.value)
       const trx = await this.getTransactionById({ uid: v.value.uid })
       if (trx) {
         this.transaction.value = {
@@ -385,13 +386,20 @@ export default {
           id: trx.id,
           type: trx.type
         }
+
         this.components = trx.components.map(v => {
           return {
             ...v,
+            isEditable: {
+              memo: false,
+              from: false,
+              to: false
+            },
             isLinked: true,
             showEditAccount: false
           }
         })
+        console.log('this comps', this.components)
       }
     }
   },
@@ -425,23 +433,16 @@ export default {
       })
       if (this.components.length === 0) return false
 
-      this.components.forEach(component => {
-        if (component.account && component.currency && component.type) {
-          if (component.type === 'DEBIT') {
-            listValues.find(v => v.currency === component.currency).value += Number.parseFloat(component.quantity)
-          } else if (component.type === 'CREDIT') {
-            listValues.find(v => v.currency === component.currency).value -= Number.parseFloat(component.quantity)
-          }
-        } else {
-          allWithAccount = false
-        }
-      })
+      allWithAccount = this.components.every(com => com.account && com.currency && com.type)
 
       listValues.forEach(v => {
+        console.log('VALUES', v.value)
         if (v.value !== 0) {
           isBalanced = false
         }
       })
+
+      console.log('is balanced', isBalanced)
 
       if (allWithAccount && isBalanced && this.components.length >= 2) {
         this.transactionBalanced = true
@@ -575,15 +576,17 @@ export default {
 
       try {
         let { name } = this.transaction.value
+        let response
         if (!this.isSelect) {
-          await this.createTxn({ contentGroups: fullTrx })
+          response = await this.createTxn({ contentGroups: fullTrx })
         } else {
-          await this.updateTxn({ contentGroups: fullTrx, transactionHash: trxHash })
-          // await this.loadUnapprovedTransactions()
+          response = await this.updateTxn({ contentGroups: fullTrx, transactionHash: trxHash })
         }
-        await this.cleanTrx(name)
-        this.autoSelect = false
-        this.showSuccessMsg('Transaction was saved successfully')
+        if (response) {
+          await this.cleanTrx(name)
+          this.autoSelect = false
+          this.showSuccessMsg('Transaction was saved successfully')
+        }
       } catch (e) {
         this.showErrorMsg(e)
       }
@@ -600,7 +603,7 @@ export default {
 
       component[1].value[1] = memo
       component[2].value[1] = account.hash
-      component[3].value[1] = `${quantity} ${currency}`
+      component[3].value[1] = currency === 'BTC' ? `${parseInt(quantity).toFixed(4)} ${currency}` : `${quantity} ${currency}`
       component[4].value[1] = from
       component[5].value[1] = to
       component[6].value[1] = type
