@@ -19,7 +19,7 @@ export default {
         v-ripple
       )
         q-item-section(avatar)
-          q-icon(name="app:my-profile")
+          q-icon(name="app:transaction")
         q-item-section {{ $t('menu.transactions') }}
       //- q-item(
       //-   v-if="isAuthenticated"
@@ -37,7 +37,7 @@ export default {
         v-ripple
       )
         q-item-section(avatar)
-          q-icon(name="app:chats")
+          q-icon(name="app:coa")
         q-item-section {{ $t('menu.chartOfAccounts') }}
 </template>
 

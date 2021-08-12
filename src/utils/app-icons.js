@@ -8,5 +8,8 @@ export default {
   'app:my-profile': 'img:statics/app-icons/my-profile.png',
   'app:unapproved': 'img:statics/app-icons/unapproved.svg',
   'app:unbalanced': 'img:statics/app-icons/unbalanced.svg',
-  'app:add': 'img:statics/app-icons/add.svg'
+  'app:add': 'img:statics/app-icons/add.svg',
+  'app:coa': 'img:statics/app-icons/chart_of_account.svg',
+  'app:transaction': 'img:statics/app-icons/transaction.svg',
+  'app:transaction2': 'img:statics/app-icons/transaction2.svg'
 }
