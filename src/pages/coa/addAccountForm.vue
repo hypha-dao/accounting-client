@@ -113,7 +113,7 @@ export default {
         let accountPayload = JSON.parse(JSON.stringify(accountPayout))
         accountPayload[0].find(el => el.label === 'parent_account').value[1] = this.params.parentAccount.hash
         accountPayload[0].find(el => el.label === 'account_name').value[1] = this.params.accountName
-        accountPayload[0].find(el => el.label === 'account_code').value[1] = this.params.accountCode
+        accountPayload[0].find(el => el.label === 'account_code').value[1] = `${this.baseChildrenAccount}${this.params.accountCode}`
 
         console.log(accountPayload)
         // console.log(accountPayout)
