@@ -111,7 +111,7 @@ export default {
         let accountPayload = JSON.parse(JSON.stringify(accountPayout))
         accountPayload[0].find(el => el.label === 'parent_account').value[1] = this.params.parentAccount.hash
         accountPayload[0].find(el => el.label === 'account_name').value[1] = this.params.accountName
-        accountPayload[0].find(el => el.label === 'account_code').value[1] = this.params.accountCode
+        accountPayload[0].find(el => el.label === 'account_code').value[1] = `${this.baseChildrenAccount}${this.params.accountCode}`
 
         const response = (this.isNew) ? await this.createAccount({ accountInfo: accountPayload }) : await this.updateAccount({ accountInfo: accountPayload, accountHash: this.account.hash })
 

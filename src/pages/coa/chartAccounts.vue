@@ -1,6 +1,7 @@
 <template lang="pug">
 #main-container.main.q-pa-sm
   q-card.q-pa-sm.full-width
+    //- p Hola2!
     #container.q-pa-sm
       q-table.sticky-virtscroll-table.accountTable.t-table(
           :columns="columns"
