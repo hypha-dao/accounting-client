@@ -23,31 +23,10 @@ export const accountPayout = [
     {
       label: 'account_code',
       value: ['string', '']
+    },
+    {
+      label: 'account_tag_type',
+      value: ['string', '']
     }
   ]
 ]
-
-// let arraystezx = [
-//   [
-//     {
-//       label: 'content_group_label',
-//       value: ['string', 'details']
-//     },
-//     {
-//       label: 'account_name',
-//       value: ['string', 'Salary']
-//     },
-//     {
-//       label: 'account_type',
-//       value: ['int64', 1]
-//     },
-//     {
-//       label: 'account_tag_type',
-//       value: ['string', 'DEBIT']
-//     },
-//     {
-//       label: 'account_code',
-//       value: ['string', '000115']
-//     }
-//   ]
-// ]

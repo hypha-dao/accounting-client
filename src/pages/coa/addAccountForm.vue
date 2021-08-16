@@ -47,11 +47,11 @@ export default {
   props: {
     account: Object
   },
-  beforeMount () {
+  async beforeMount () {
     if (!this.isNew) {
       this.params.accountName = this.account.accountName
       this.params.accountCode = this.account.accountCode
-      // this.params.parentAccount = this.account.parent
+      this.params.parentAccount = await this.getAccountByHash({ hash: this.account.parentHash })
     }
   },
   data () {
@@ -94,11 +94,9 @@ export default {
       const parentAccountCode = this.params.parentAccount.accountCode.split('')
       for (let i = parentAccountCode.length; i--; i !== 0) {
         if (Number.parseInt(parentAccountCode[i]) !== 0) {
-          // debugger
           isEditable = false
         }
         if (!isEditable) {
-          // console.log(i, parentAccountCode[i])
           newBase += parentAccountCode[i]
         }
       }
@@ -107,7 +105,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('contAccount', ['createAccount']),
+    ...mapActions('contAccount', ['createAccount', 'updateAccount', 'getAccountByHash']),
     async onSubmit () {
       try {
         let accountPayload = JSON.parse(JSON.stringify(accountPayout))
@@ -115,13 +113,12 @@ export default {
         accountPayload[0].find(el => el.label === 'account_name').value[1] = this.params.accountName
         accountPayload[0].find(el => el.label === 'account_code').value[1] = this.params.accountCode
 
-        console.log(accountPayload)
-        // console.log(accountPayout)
-        const r = await this.createAccount({ accountInfo: accountPayload })
-        console.log('response r', r)
-        console.log('OnSubmit!')
-        this.showSuccessMsg('Account added successfully')
-        this.$emit('success')
+        const response = (this.isNew) ? await this.createAccount({ accountInfo: accountPayload }) : await this.updateAccount({ accountInfo: accountPayload, accountHash: this.account.hash })
+
+        if (response) {
+          this.showSuccessMsg('Account saved successfully')
+          this.$emit('success')
+        }
       } catch (e) {
 
       }

@@ -14,6 +14,22 @@ export const createAccount = async function ({ commit }, { accountInfo }) {
     commit('general/setIsLoading', false, { root: true })
   }
 }
+
+export const updateAccount = async function ({ commit }, { accountInfo, accountHash }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const updater = this.getters['accounts/account']
+    const account = await this.$accountApi.updateAccount({ updater, accountInfo, accountHash })
+    return account
+  } catch (e) {
+    console.error('An error ocurred while trying to create account', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+    throw new Error(e)
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
+
 export const getChartOfAccounts = async function ({ commit }) {
   try {
     commit('general/setIsLoading', true, { root: true })
@@ -67,6 +83,20 @@ export const getAccountByCode = async function ({ commit }, { code }) {
   try {
     commit('general/setIsLoading', true, { root: true })
     const response = await this.$accountApi.getAccountByCode({ code })
+    return response
+  } catch (e) {
+    console.error('An error ocurred while trying to get accountByCode', e)
+    // commit('general/setErrorMsg', e.message || e, { root: true })
+    throw new Error(e)
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
+
+export const getAccountByHash = async function ({ commit }, { hash }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const response = await this.$accountApi.getAccountByHash({ hash })
     return response
   } catch (e) {
     console.error('An error ocurred while trying to get accountByCode', e)

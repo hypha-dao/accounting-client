@@ -71,7 +71,6 @@ class AccountApi extends BaseEosApi {
   }
 
   async getAccountById ({ uid }) {
-    console.log('UUID TO SEARCH ITS CHILDREN', uid)
     const query = `
     query account($uid:string)
     {
@@ -107,6 +106,36 @@ class AccountApi extends BaseEosApi {
     const vars = { $uid: uid }
 
     return this.dgraph.newTxn().queryWithVars(query, vars)
+  }
+
+  async getAccountByHash ({ hash }) {
+    const query = `
+    query account($hash:string)
+    {
+      account(func: eq(hash, $hash)) {
+        uid
+        hash
+        content_groups (orderasc: content_group_sequence, first: 1) {
+          contents {
+            label
+            value
+          }
+        }
+      }
+    }
+    `
+    const vars = { $hash: hash }
+
+    const { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
+
+    const accontInfo = data.account[0].content_groups[0].contents
+    const mappedAccount = {
+      uid: data.account[0].uid,
+      hash: data.account[0].hash,
+      accountCode: accontInfo.find(el => el.label === 'account_code') ? accontInfo.find(el => el.label === 'account_code').value : '0000',
+      accountName: accontInfo.find(el => el.label === 'account_name' || el.label === 'name') ? accontInfo.find(el => el.label === 'account_name' || el.label === 'name').value : ''
+    }
+    return mappedAccount
   }
 
   async getAllAccounts () {
@@ -156,10 +185,11 @@ class AccountApi extends BaseEosApi {
       balances = balances.filter(el => el.label.startsWith('global'))
       balances = balances.map(bal => bal.value)
       return {
+        hash: acc.hash,
         parent,
         parentHash,
-        accountName: contents.find(el => el.label === 'account_name').value,
-        accountCode: contents.find(el => el.label === 'account_code').value,
+        accountName: contents.find(el => el.label === 'account_name' || el.label === 'name') ? contents.find(el => el.label === 'account_name' || el.label === 'name').value : '',
+        accountCode: contents.find(el => el.label === 'account_code') ? contents.find(el => el.label === 'account_code').value : '',
         balance: balances
       }
     })
@@ -177,7 +207,20 @@ class AccountApi extends BaseEosApi {
       }
     }]
 
-    console.log('ACTIONS SERVICE', actions)
+    return this.eosApi.signTransaction(actions)
+  }
+
+  async updateAccount ({ updater, accountHash, accountInfo }) {
+    const actions = [{
+      account: Contracts.HYPHA,
+      name: 'updateacc',
+      data: {
+        updater,
+        account_hash: accountHash,
+        account_info: accountInfo
+      }
+    }]
+
     return this.eosApi.signTransaction(actions)
   }
 
@@ -224,7 +267,6 @@ class AccountApi extends BaseEosApi {
 
     let vars = { $code: code }
     let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
-    console.log('data account', data)
 
     let { uid } = data.account[0]
 
@@ -273,7 +315,7 @@ class AccountApi extends BaseEosApi {
       _hasChildren: (!!accData.account && accData.account.length > 0),
       _id: accData.uid,
       hash: accData.hash,
-      accountName: accData.content_groups[0].contents.find(el => el.label === 'account_name').value,
+      accountName: accData.content_groups[0].contents.find(el => el.label === 'account_name' || el.label === 'name').value,
       accountCode: accData.content_groups[0].contents.find(el => el.label === 'account_code').value,
       typeTag: accData.content_groups[0].contents.find(el => el.label === 'account_tag_type').value,
       parentAccount: (accData.ownedby) ? accData.ownedby[0].hash : '',

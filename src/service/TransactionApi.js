@@ -247,7 +247,6 @@ class TransactionApi extends BaseEosApi {
         trx_info: contentGroups
       }
     }]
-    console.log('actions serrv', actions)
     return this.eosApi.signTransaction(actions)
   }
 
