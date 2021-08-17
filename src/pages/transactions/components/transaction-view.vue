@@ -377,6 +377,8 @@ export default {
       if (!v) return
       console.log('selected transxct', v, v.value)
       const trx = await this.getTransactionById({ uid: v.value.uid })
+
+      console.log('trx components', trx)
       if (trx) {
         this.transaction.value = {
           hash: trx.hash,
@@ -412,13 +414,7 @@ export default {
     ...mapActions('contAccount', ['getAccountByCode']),
     ...mapMutations('general', ['setIsLoading']),
     editAccount (row) {
-      // row.accunt
     },
-    // isEmptyField (field) {
-    //   console.log('Field to check emptyness', field)
-    //   // return false
-    //   return false
-    // },
     requestRefreshEvents () {
       this.$emit('requestRefreshEvents')
     },
@@ -436,13 +432,10 @@ export default {
       allWithAccount = this.components.every(com => com.account && com.currency && com.type)
 
       listValues.forEach(v => {
-        console.log('VALUES', v.value)
         if (v.value !== 0) {
           isBalanced = false
         }
       })
-
-      console.log('is balanced', isBalanced)
 
       if (allWithAccount && isBalanced && this.components.length >= 2) {
         this.transactionBalanced = true
@@ -572,7 +565,7 @@ export default {
         fullTrx.push(await this.formattedComponent(comp))
       }
 
-      // console.log(JSON.stringify(fullTrx, null, 2))
+      console.log(JSON.stringify(fullTrx, null, 2))
 
       try {
         let { name } = this.transaction.value
@@ -603,7 +596,7 @@ export default {
 
       component[1].value[1] = memo
       component[2].value[1] = account.hash
-      component[3].value[1] = currency === 'BTC' ? `${parseInt(quantity).toFixed(4)} ${currency}` : `${quantity} ${currency}`
+      component[3].value[1] = `${parseInt(quantity).toFixed(1)} ${currency}`
       component[4].value[1] = from
       component[5].value[1] = to
       component[6].value[1] = type
