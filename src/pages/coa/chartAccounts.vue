@@ -131,7 +131,9 @@ export default {
     onSuccessAdded () {
       this.selectedAccount = undefined
       this.modals.openedAccountForm = false
-      this.getAccounts()
+      setTimeout(() => {
+        this.getAccounts()
+      }, 2000)
     }
   },
   created () {

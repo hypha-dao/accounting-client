@@ -431,6 +431,15 @@ export default {
 
       allWithAccount = this.components.every(com => com.account && com.currency && com.type)
 
+      this.components.forEach(v => {
+        // debugger
+        if (v.type === 'DEBIT') {
+          listValues.find(lv => v.currency === lv.currency).value += Number.parseFloat(v.quantity)
+        } else if (v.type === 'CREDIT') {
+          listValues.find(lv => v.currency === lv.currency).value -= Number.parseFloat(v.quantity)
+        }
+      })
+
       listValues.forEach(v => {
         if (v.value !== 0) {
           isBalanced = false
