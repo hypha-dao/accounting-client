@@ -92,7 +92,8 @@ export default {
       deleteTransaction: 'Delete',
       type: 'Type',
       delete: 'Delete',
-      addComponent: 'Add Component'
+      addComponent: 'Add Component',
+      unbalanced: 'Unbalanced'
     },
     events: {
       events: 'Events',
