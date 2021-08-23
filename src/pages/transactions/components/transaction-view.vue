@@ -6,14 +6,14 @@ q-card.q-pa-sm.full-width
       .row.q-gutter-md
           #unbalanced(v-if="!transactionBalanced")
             .row.q-gutter-xs
-              .text-secondary.text-bold.q-custom-mar Unbalanced
+              .text-secondary.text-bold.q-custom-mar {{  $t('pages.transactions.unbalanced') }}
               q-icon.q-custom-mar-icon(
               name="app:unbalanced"
               size="sm"
               )
           #unbalanced(v-else)
             .row.q-gutter-xs
-              .text-secondary.text-bold Balanced
+              .text-secondary.text-bold {{ $t('pages.transactions.balanced') }}
               q-icon.q-custom-mar-icon(
                 name="check_circle"
                 size="sm"
@@ -70,12 +70,6 @@ q-card.q-pa-sm.full-width
             q-date(v-model="transaction.value.date")
               div(class="row items-center justify-end")
                 q-btn(v-close-popup label="Close" color="primary" flat)
-        //- q-input(
-        //-     :label="$t('pages.transactions.date')"
-        //-     dense
-        //-     filled
-        //-     v-model="transaction.value.date"
-        //- )
   #container
     q-table.sticky-virtscroll-table.q-mt-sm.t-table(
         :columns="columns"
@@ -94,8 +88,6 @@ q-card.q-pa-sm.full-width
           .text-cell(v-else) ---
             span
               q-icon.q-ml-xs.cursor-pointer(name="edit" color="positive" @click="props.row.showEditAccount = !props.row.showEditAccount")
-          //- q-popup-edit.pop-edit(separate-close-popup v-model="props.row.account" auto-save)
-          //-   custom-table-tree(v-model="props.row.account")
           q-dialog(v-model="props.row.showEditAccount" position="top")
             q-card.q-pa-md(style="min-width: 800px")
               custom-table-tree(v-model="props.row.account")
@@ -110,8 +102,6 @@ q-card.q-pa-sm.full-width
           dense
           @popup-hide="checkIsBalancedTransaction()"
         )
-        //- q-td
-        //-   .text-cell(v-if="props.row.account") {{ props.row.account.typeTag }}
       template(v-slot:body-cell-to="props")
         q-td.short-input
           q-input.short-input(v-if="(editingRow === props.row.hash && props.row.isCustomComponent) || props.row.isEditable.to" v-model="props.row.to" dense :label="$t('pages.transactions.to')" color="secondary")
@@ -126,7 +116,6 @@ q-card.q-pa-sm.full-width
             :options="optionsCurrencies"
             v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense :label="$t('pages.transactions.currency')" color="secondary"
           )
-          //- q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense counter :label="$t('pages.transactions.currency')" color="secondary")
           .text-cell(v-else) {{ props.row.currency }}
       template(v-slot:body-cell-memo="props")
         q-td.responsive-cell
@@ -135,7 +124,6 @@ q-card.q-pa-sm.full-width
             q-tooltip {{ props.row.memo }}
       template(v-slot:body-cell-date="props")
         q-td
-          //- q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.date" dense mask="date" :rules="['date']" :label="$t('pages.transactions.date')" color="secondary")
           q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.date" dense :label="$t('pages.transactions.date')" mask="date" color="secondary")
             template(v-slot:append)
               q-icon(name="event" class="cursor-pointer")
@@ -355,6 +343,13 @@ export default {
         date: undefined,
         name: undefined
       }
+
+      const returnComps = [...this.components]
+
+      for (const comp of returnComps) {
+        this.onClickRemoveRow(comp)
+      }
+
       this.components = []
       this.requestRefreshEvents()
       if (!this.autoSelect) this.selectedTransaction = undefined
@@ -375,10 +370,8 @@ export default {
       this.components = []
       this.requestRefreshEvents()
       if (!v) return
-      console.log('selected transxct', v, v.value)
       const trx = await this.getTransactionById({ uid: v.value.uid })
 
-      console.log('trx components', trx)
       if (trx) {
         this.transaction.value = {
           hash: trx.hash,
@@ -401,13 +394,11 @@ export default {
             showEditAccount: false
           }
         })
-        console.log('this comps', this.components)
       }
     }
   },
   async mounted () {
     this.loadUnapprovedTransactions()
-    // let account = await this.getAccountByCode({ code: '100100' })
   },
   methods: {
     ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById', 'deteleTxn', 'balanceTxn']),
@@ -468,14 +459,12 @@ export default {
         this.transaction.value.date = date
       }
 
-      // let isEditable = (!event.from || !event.to || !event.memo)
       let isEditable = {
         memo: !event.memo,
         from: !event.from,
         to: !event.to
       }
-      // event.isE
-      // console.log('IS EDITABLE', isEditable)
+
       this.components.push({
         ...event,
         isEditable,
@@ -568,13 +557,13 @@ export default {
 
       fullTrx[0].find(el => el.label === 'trx_date').value[1] = `${(this.transaction.value.date).replaceAll('/', '-')}T00:00:00` // Need to have this formmat
       fullTrx[0].find(el => el.label === 'trx_name').value[1] = this.transaction.value.name
-      fullTrx[0].find(el => el.label === 'trx_memo').value[1] = this.transaction.value.memo
+      fullTrx[0].find(el => el.label === 'trx_memo').value[1] = this.transaction.value.memo || ''
 
       for (let comp of this.components) {
         fullTrx.push(await this.formattedComponent(comp))
       }
 
-      console.log(JSON.stringify(fullTrx, null, 2))
+      // console.log(JSON.stringify(fullTrx, null, 2))
 
       try {
         let { name } = this.transaction.value
@@ -605,7 +594,7 @@ export default {
 
       component[1].value[1] = memo
       component[2].value[1] = account.hash
-      component[3].value[1] = `${parseInt(quantity).toFixed(1)} ${currency}`
+      component[3].value[1] = (currency === 'BTC') ? `${parseInt(quantity).toFixed(1)} ${currency}` : `${quantity} ${currency}`
       component[4].value[1] = from
       component[5].value[1] = to
       component[6].value[1] = type
