@@ -50,8 +50,20 @@ export default {
   async beforeMount () {
     if (!this.isNew) {
       this.params.accountName = this.account.accountName
-      this.params.accountCode = this.account.accountCode
       this.params.parentAccount = await this.getAccountByHash({ hash: this.account.parentHash })
+    }
+  },
+  mounted () {
+
+  },
+  watch: {
+    baseChildrenAccount () {
+      if (!this.isNew) {
+        console.log('children account', this.account.accountCode, this.baseChildrenAccount)
+        const childrenAccountCode = this.account.accountCode.replace(this.baseChildrenAccount, '')
+        console.log('children account post', childrenAccountCode)
+        this.params.accountCode = childrenAccountCode
+      }
     }
   },
   data () {
