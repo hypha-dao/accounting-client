@@ -37,7 +37,7 @@
 <script>
 import CustomTableTree from '~/pages/accounts/components/custom-table-tree'
 import { validation } from '~/mixins/validation'
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import { accountPayout } from '~/const/payouts/account-payout.js'
 
 export default {
@@ -118,6 +118,7 @@ export default {
   },
   methods: {
     ...mapActions('contAccount', ['createAccount', 'updateAccount', 'getAccountByHash']),
+    ...mapMutations('contAccount', ['setTreeAccounts']),
     async onSubmit () {
       try {
         let accountPayload = JSON.parse(JSON.stringify(accountPayout))
@@ -129,6 +130,7 @@ export default {
 
         if (response) {
           this.showSuccessMsg('Account saved successfully')
+          this.setTreeAccounts([])
           this.$emit('success')
         }
       } catch (e) {
