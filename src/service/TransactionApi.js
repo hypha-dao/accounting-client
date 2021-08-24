@@ -203,7 +203,7 @@ class TransactionApi extends BaseEosApi {
           let account = (comp.account) ? comp.account[0].content_groups[0].contents : ''
           let compo = comp.content_groups[0].contents
 
-          console.log(event, account, compo)
+          console.log(compo)
 
           return {
             account: {
@@ -275,6 +275,8 @@ class TransactionApi extends BaseEosApi {
         trx_info: contentGroups
       }
     }]
+
+    console.log(JSON.stringify(actions, null, 2))
     return this.eosApi.signTransaction(actions)
   }
 
@@ -287,6 +289,8 @@ class TransactionApi extends BaseEosApi {
         trx_hash: transactionHash
       }
     }]
+
+    console.log(JSON.stringify(actions, null, 2))
     return this.eosApi.signTransaction(actions)
   }
 

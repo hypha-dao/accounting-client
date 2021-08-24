@@ -100,8 +100,13 @@ q-card.q-pa-sm.full-width
           :options="optionTypeComponent"
           v-model="props.row.type"
           dense
-          @popup-hide="checkIsBalancedTransaction()"
         )
+        //- q-select(
+        //-   :options="optionTypeComponent"
+        //-   v-model="props.row.type"
+        //-   dense
+        //-   @popup-hide="checkIsBalancedTransaction()"
+        //- )
       template(v-slot:body-cell-to="props")
         q-td.short-input
           q-input.short-input(v-if="(editingRow === props.row.hash && props.row.isCustomComponent) || props.row.isEditable.to" v-model="props.row.to" dense :label="$t('pages.transactions.to')" color="secondary")
@@ -152,7 +157,7 @@ q-card.q-pa-sm.full-width
                 dense
                 size="md"
                 color="primary"
-                :disable="!transactionBalanced"
+                :disable="!transactionBalanced || !transaction.value.hash"
                 @click="aproveTransaction()"
             )
         .col.self-center
@@ -187,7 +192,7 @@ export default {
   data () {
     return {
       autoSelect: false,
-      transactionBalanced: false,
+      // transactionBalanced: false,
       optionsCurrencies: [
         'BTC', 'ETH', 'TLOS', 'HUSD', 'HYPHA', 'SEEDS'
       ],
@@ -325,18 +330,46 @@ export default {
         ready = false
       }
       return ready
+    },
+    transactionBalanced () {
+      let currencies = this.optionsCurrencies.map(val => {
+        return {
+          currency: val,
+          balanced: false
+        }
+      })
+
+      currencies.forEach(curr => {
+        const compsOfCurr = this.components.filter(comp => comp.currency === curr.currency) // Filters all components of the current currency
+
+        var balance = compsOfCurr.reduce((accumulated, current) => {
+          // eslint-disable-next-line no-return-assign
+          if (current.type === 'DEBIT') return accumulated += parseFloat(current.quantity)
+          // eslint-disable-next-line no-return-assign
+          if (current.type === 'CREDIT') return accumulated -= parseFloat(current.quantity)
+        }, 0) // Sums all components of the current currency
+
+        curr.balanced = balance === 0 // Is balanced if balance is 0
+        console.log('is balanced', curr.balanced)
+      })
+
+      const everyCompWithAccount = this.components.every(com => com.account && com.currency && com.type)
+      const everyCurrencyBalanced = currencies.every(curr => curr.balanced)
+      const moreThanOneComponent = this.components.length > 0
+
+      return moreThanOneComponent && everyCurrencyBalanced && everyCompWithAccount
     }
   },
   watch: {
-    components (v) {
-      this.checkIsBalancedTransaction()
-    },
-    editingRow (v) {
-      this.checkIsBalancedTransaction()
-    },
-    addingComponent (v) {
-      this.checkIsBalancedTransaction()
-    },
+    // components (v) {
+    //   this.checkIsBalancedTransaction()
+    // },
+    // editingRow (v) {
+    //   this.checkIsBalancedTransaction()
+    // },
+    // addingComponent (v) {
+    //   this.checkIsBalancedTransaction()
+    // },
     async isSelect (v) {
       this.transaction.value = {
         memo: undefined,
@@ -344,10 +377,19 @@ export default {
         name: undefined
       }
 
+      // Returns components to events
       const returnComps = [...this.components]
 
       for (const comp of returnComps) {
-        this.onClickRemoveRow(comp)
+        if (!comp.isLinked) {
+          if (comp.isEditable) {
+            if (comp.isEditable.memo) delete comp.memo
+            if (comp.isEditable.from) delete comp.from
+            if (comp.isEditable.to) delete comp.to
+          }
+
+          this.onClickRemoveRow(comp)
+        }
       }
 
       this.components = []
@@ -424,11 +466,13 @@ export default {
 
       this.components.forEach(v => {
         // debugger
+        // if (v.currency && v.amount) {
         if (v.type === 'DEBIT') {
           listValues.find(lv => v.currency === lv.currency).value += Number.parseFloat(v.quantity)
         } else if (v.type === 'CREDIT') {
           listValues.find(lv => v.currency === lv.currency).value -= Number.parseFloat(v.quantity)
         }
+        // }
       })
 
       listValues.forEach(v => {
@@ -436,6 +480,8 @@ export default {
           isBalanced = false
         }
       })
+
+      console.log('all with account', allWithAccount, 'is balanced', isBalanced, this.components.length)
 
       if (allWithAccount && isBalanced && this.components.length >= 2) {
         this.transactionBalanced = true
@@ -576,7 +622,7 @@ export default {
         if (response) {
           await this.cleanTrx(name)
           this.autoSelect = false
-          this.showSuccessMsg('Transaction was saved successfully')
+          this.showSuccessMsg(this.$t('pages.transactions.saved'))
         }
       } catch (e) {
         this.showErrorMsg(e)
@@ -594,7 +640,8 @@ export default {
 
       component[1].value[1] = memo
       component[2].value[1] = account.hash
-      component[3].value[1] = (currency === 'BTC') ? `${parseInt(quantity).toFixed(1)} ${currency}` : `${quantity} ${currency}`
+      component[3].value[1] = (currency === 'BTC') ? `${parseFloat(quantity).toFixed(1)} ${currency}` : `${quantity} ${currency}`
+      // component[3].value[1] = (currency === 'BTC') ? `${parseInt(quantity).toFixed(1)} ${currency}` : `${quantity} ${currency}`
       component[4].value[1] = from
       component[5].value[1] = to
       component[6].value[1] = type
@@ -602,13 +649,18 @@ export default {
       return component
     },
     async deleteTransaction () {
-      await this.deteleTxn({ transactionHash: this.transaction.value.hash })
+      const res = await this.deteleTxn({ transactionHash: this.transaction.value.hash })
+
+      if (res) this.showSuccessMsg(this.$t('pages.transactions.deleted'))
       await this.cleanTrx()
     },
     async aproveTransaction () {
-      this.balanceTxn({ transactionHash: this.transaction.value.hash })
+      const res = await this.balanceTxn({ transactionHash: this.transaction.value.hash })
 
-      this.cleanTrx()
+      if (res) {
+        this.showSuccessMsg(this.$t('pages.transactions.approved'))
+        this.cleanTrx()
+      }
     },
     async cleanTrx (name = undefined) {
       this.setIsLoading(true)
@@ -654,8 +706,6 @@ export default {
   overflow: hidden
 .larger-input
   width: 250px
-// .border
-//   border: 1px solid black
 .q-custom-mar
   margin-top: 12%
 .q-custom-mar-icon

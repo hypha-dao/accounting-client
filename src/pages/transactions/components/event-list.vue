@@ -129,6 +129,7 @@ export default {
       this.events.rows.splice(indexEvent, 1)
     },
     returnEventRemoved (event) {
+      console.log('return event in evs', event)
       this.events.rows.push(event)
     },
     async onScroll ({ to, ref, index, direction }) {

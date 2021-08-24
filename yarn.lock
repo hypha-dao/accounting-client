@@ -5288,9 +5288,9 @@ electron-osx-sign@^0.4.11:
     plist "^3.0.1"
 
 electron-to-chromium@^1.3.811:
-  version "1.3.814"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.814.tgz#418fad80c3276a46103ca72a21a8290620d83c4a"
-  integrity sha512-0mH03cyjh6OzMlmjauGg0TLd87ErIJqWiYxMcOLKf5w6p0YEOl7DJAj7BDlXEFmCguY5CQaKVOiMjAMODO2XDw==
+  version "1.3.816"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.816.tgz#ab6488b126de92670a6459fe3e746050e0c6276f"
+  integrity sha512-/AvJPIJldO0NkwkfpUD7u1e4YEGRFBQpFuvl9oGCcVgWOObsZB1loxVGeVUJB9kmvfsBUUChPYdgRzx6+AKNyg==
 
 elegant-spinner@^1.0.1:
   version "1.0.1"
@@ -12728,9 +12728,9 @@ ual-ledger@^0.1.3:
     uuid "3.3.2"
 
 ual-metamask@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/ual-metamask/-/ual-metamask-1.0.1.tgz#a4c297ae3c23dbed1d313165b69a996dea25868f"
-  integrity sha512-+Wscmk0Mqzp4HP9y/y71HqjI2O2HvYv/lyFlRrp4OZjb0ETg8wsJx3VC5yiy+oYTtB+mcid7QN/G21m5Yx9r9A==
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/ual-metamask/-/ual-metamask-1.0.2.tgz#63ee1e9b3f48dc1fc4b64e0560f99dcf92e7c6c1"
+  integrity sha512-xzjm7rKtfkJ5CiMwl4KIWmzqUh4cpjCTnFQUXBvSlg4civE70iK034kwu08x/2BAqBnM9riCRO9k9LKkVdvsAQ==
   dependencies:
     "@greymass/eosio" "^0.2.5"
     "@metamask/detect-provider" "^1.2.0"

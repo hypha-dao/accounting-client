@@ -74,7 +74,7 @@ export default {
       or: 'Or',
       memo: 'memo',
       date: 'Date Time (UTC)',
-      approved: 'Approved',
+      approved: 'Transaction approved successfully',
       balanced: 'Balanced',
       account: 'Account',
       from: 'From',
@@ -93,7 +93,9 @@ export default {
       type: 'Type',
       delete: 'Delete',
       addComponent: 'Add Component',
-      unbalanced: 'Unbalanced'
+      unbalanced: 'Unbalanced',
+      deleted: 'Transaction deleted successfully',
+      saved: 'Transaction saved successfully'
     },
     events: {
       events: 'Events',
