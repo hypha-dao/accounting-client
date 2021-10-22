@@ -9,6 +9,7 @@ import contAccount from './contAccount'
 import transaction from './transaction'
 import event from './event'
 import exRate from './exRate'
+import tokens from './tokens'
 
 Vue.use(Vuex)
 
@@ -27,7 +28,8 @@ export default function (/* { ssrContext } */) {
       transaction,
       event,
       contAccount,
-      exRate
+      exRate,
+      tokens
     },
 
     // enable strict mode (adds overhead!)

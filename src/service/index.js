@@ -5,6 +5,7 @@ import ExRateApi from './ExRateApi'
 import EventApi from './EventApi'
 import TransactionApi from './TransactionApi'
 import AccountApi from './AccountApi'
+import TokensApi from './TokensApi'
 
 export {
   BaseEosApi,
@@ -13,5 +14,6 @@ export {
   EventApi,
   TransactionApi,
   AccountApi,
-  ExRateApi
+  ExRateApi,
+  TokensApi
 }

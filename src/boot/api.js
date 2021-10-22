@@ -6,7 +6,8 @@ import {
   AccountApi,
   TransactionApi,
   EventApi,
-  ExRateApi
+  ExRateApi,
+  TokensApi
 } from '~/service'
 
 const signTransaction = async function (actions) {
@@ -88,6 +89,11 @@ export default ({ store }) => {
     dgraph
   })
 
+  const tokensApi = new TokensApi({
+    eosApi: api,
+    dgraph
+  })
+
   store['$api'] = api
   store['$concurrencyApi'] = concurrencyApi
   store['$cursorApi'] = cursorApi
@@ -95,4 +101,5 @@ export default ({ store }) => {
   store['$transactionApi'] = transactionApi
   store['$eventApi'] = eventApi
   store['$exRateApi'] = exRateApi
+  store['$tokensApi'] = tokensApi
 }
