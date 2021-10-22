@@ -5,7 +5,8 @@ const routes = [
   // { path: '/dashboard', component: () => import('pages/home/dashboard.vue'), name: 'dashboard' },
   // { path: '/transactions', component: () => import('pages/transactions/transactions.vue'), name: 'transactions' },
   { path: '/transactions', component: () => import('pages/transactions/transactions2.vue'), name: 'transactions2' },
-  { path: '/chart-accounts', component: () => import('pages/coa/chartAccounts.vue'), name: 'chartAccounts' }
+  { path: '/chart-accounts', component: () => import('pages/coa/chartAccounts.vue'), name: 'chartAccounts' },
+  { path: '/tokens-catalog', component: () => import('pages/tokens/tokensCatalog'), name: 'tokensCatalog' }
 ]
 
 // Always leave this as last one

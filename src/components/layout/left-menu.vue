@@ -39,6 +39,15 @@ export default {
         q-item-section(avatar)
           q-icon(name="app:coa")
         q-item-section {{ $t('menu.chartOfAccounts') }}
+      q-item(
+        v-if="isAuthenticated"
+        to="/tokens-catalog"
+        clickable
+        v-ripple
+      )
+        q-item-section(avatar)
+          q-icon(name="generating_tokens")
+        q-item-section {{ $t('menu.tokens') }}
 </template>
 
 <style lang="stylus">

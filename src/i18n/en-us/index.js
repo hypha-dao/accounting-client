@@ -36,7 +36,8 @@ export default {
     transfer: 'Transfer',
     example: 'Example Dashboard',
     transactions: 'Transactions',
-    chartOfAccounts: 'Chart of Accounts'
+    chartOfAccounts: 'Chart of Accounts',
+    tokens: 'Tokens'
   },
   pages: {
     index: {
@@ -115,6 +116,12 @@ export default {
       chooseParent: 'Choose parent account',
       saveAccount: 'Save Account',
       balance: 'Balance'
+    },
+    tokens: {
+      symbol: 'Symbol',
+      tokens: 'Tokens',
+      precision: 'Precisions',
+      addToken: 'Add Token'
     }
   }
 }
