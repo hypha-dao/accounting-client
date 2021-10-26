@@ -10,7 +10,7 @@
     "dev": "quasar dev -m spa",
     "lint": "eslint --ext .js,.vue src",
     "lint:fix": "eslint --fix --ext .js,.vue src",
-    "test": "quasar test --unit jest --dev",
+    "test": "echo \"No test specified\" && exit 0",
     "build": "quasar build -m spa"
   },
   "husky": {
