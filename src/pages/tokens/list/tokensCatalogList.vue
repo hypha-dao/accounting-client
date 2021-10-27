@@ -104,6 +104,7 @@ export default {
       }
       try {
         const transaction = await this.addToken({ symbol: `${row.precision},${row.symbol}` })
+        if (!transaction) return
         console.log(transaction)
         this.editingRow = false
         this.addingToken = false
@@ -115,7 +116,7 @@ export default {
     onClickCancelAdding (row) {
       this.editingRow = false
       this.addingToken = false
-      this.onClickRemoveRow(row)
+      this.tokens = this.tokens.filter(v => row !== v)
     },
     async onClickRemoveRow (row) {
       try {
