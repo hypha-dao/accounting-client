@@ -92,7 +92,7 @@ class TransactionApi extends BaseEosApi {
     }
     `
     let { data } = await this.dgraph.newTxn().query(query)
-
+    if (!data.node[0]) return []
     let mappedTransactions = data.node[0].trxbucket[0].unapproved.map((trans, i) => {
       let contents = trans.content_groups[0].contents
       return {

@@ -65,6 +65,7 @@ class AccountApi extends BaseEosApi {
     `
     const queryResult = await this.dgraph.newTxn().query(query)
     const data = {}
+    if (!queryResult.data.chartOfAccounts[0].ledger) return data
     data.accounts = queryResult.data.chartOfAccounts[0].ledger[0].account
     data.ledger_hash = queryResult.data.chartOfAccounts[0].ledger[0].hash
     return data
