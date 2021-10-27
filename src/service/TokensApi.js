@@ -63,7 +63,7 @@ class TokensApi extends BaseEosApi {
       account: Contracts.HYPHA,
       name: 'addcurrency',
       data: {
-        issuer: accountName,
+        updater: accountName,
         currency_symbol: symbol
       }
     }]
@@ -75,7 +75,7 @@ class TokensApi extends BaseEosApi {
       account: Contracts.HYPHA,
       name: 'remcurrency',
       data: {
-        issuer: accountName,
+        authorizer: accountName,
         currency_symbol: symbol
       }
     }]
