@@ -46,6 +46,7 @@ class TokensApi extends BaseEosApi {
     `
     let { data } = await this.dgraph.newTxn().query(query)
     console.log(data)
+    if (!data.settings[0]) return []
     const currencies = data.settings[0].content_groups[0].contents.filter(t => t.label === 'allowed_currency')
     const mappedTransactions = currencies.map(t => {
       const [amount, symbol] = t.value.split(' ')
