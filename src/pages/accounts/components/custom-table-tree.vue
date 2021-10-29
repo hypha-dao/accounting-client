@@ -148,10 +148,11 @@ export default {
       // console.log('children acc', accounts)
       return accounts.map(account => {
         const content = account.content_groups[0].contents
+        const accountv = account.accountv[0].content_groups[0].contents
         return {
-          accountName: content.find(v => v.label === 'account_name').value,
+          accountName: accountv.find(v => v.label === 'account_name').value,
           // parentAccount: content.find(v => v.label === 'parent_account').value,
-          parentAccount: account.ownedby.hash,
+          parentAccount: account.ownedby[0].hash,
           hash: account.hash,
           uid: account.uid,
           _hasChildren: !!account.account,
