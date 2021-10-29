@@ -117,7 +117,7 @@ export default {
         let amount = this.getComponentsOfAccount(account.hash)
         // console.log('loadAccounts', con)
         return {
-          accountName: content.find(v => v.label === 'account_name').value,
+          accountName: content.find(v => v.label === 'account_name')?.value,
           // parentAccount: content.find(v => v.label === 'parent_account').value,
           hash: account.hash,
           uid: account.uid,
