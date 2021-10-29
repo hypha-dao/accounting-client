@@ -75,7 +75,7 @@ class TransactionApi extends BaseEosApi {
   async getUnapprovedTransactions () {
     const query = `
     {
-      node(func: uid(0x75c6)) {
+      node(func: uid(0x18933)) {
         trxbucket {
           unapproved {
             hash
@@ -112,7 +112,7 @@ class TransactionApi extends BaseEosApi {
   async getApprovedTransactions () {
     const query = `
     {
-      node(func: uid(0x75c6)) {
+      node(func: uid(0x18933)) {
         trxbucket {
           approved {
             hash
