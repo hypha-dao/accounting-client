@@ -262,10 +262,12 @@ class TransactionApi extends BaseEosApi {
   async createTxn ({ accountName, contentGroups }) {
     const actions = [{
       account: Contracts.HYPHA,
-      name: 'createtrx',
+      name: 'upserttrx',
       data: {
-        creator: accountName,
-        trx_info: contentGroups
+        trx_hash: '0000000000000000000000000000000000000000000000000000000000000000',
+        issuer: accountName,
+        trx_info: contentGroups,
+        approve: false
       }
     }]
     return this.eosApi.signTransaction(actions)
@@ -285,11 +287,12 @@ class TransactionApi extends BaseEosApi {
   async updateTxn ({ updater, transactionHash, contentGroups }) {
     const actions = [{
       account: Contracts.HYPHA,
-      name: 'updatetrx',
+      name: 'upserttrx',
       data: {
-        updater,
+        issuer: updater,
         trx_hash: transactionHash,
-        trx_info: contentGroups
+        trx_info: contentGroups,
+        approve: false
       }
     }]
 
@@ -300,7 +303,7 @@ class TransactionApi extends BaseEosApi {
   async balanceTxn ({ issuer, transactionHash }) {
     const actions = [{
       account: Contracts.HYPHA,
-      name: 'balancetrx',
+      name: 'upserttrx',
       data: {
         issuer,
         trx_hash: transactionHash
