@@ -181,23 +181,32 @@ class AccountApi extends BaseEosApi {
             }
           }
         }
+        accountv(orderasc:creator){
+          content_groups(orderasc:content_group_sequence, first:1){
+            contents(orderasc:label) {
+              label
+              value
+            }
+          }
+        }
       }
     }
     `
     let { data } = await this.dgraph.newTxn().query(query)
-
     let mappedAccounts = data.account.map(acc => {
       const contents = acc.content_groups[0].contents
-      const parent = acc.ownedby[0].content_groups[0].contents.find(el => el.label === 'name' || el.label === 'account_name').value
+      const parent = acc.ownedby[0].content_groups[0].contents.find(el => el.label === 'name' || el.label === 'account_name')?.value
       const parentHash = acc.ownedby[0].hash
       let balances = acc.balances[0].content_groups[0].contents
       balances = balances.filter(el => el.label.startsWith('global'))
       balances = balances.map(bal => bal.value)
+      const accountName = acc.accountv[0].content_groups[0].contents.find(el => el.label === 'account_name').value
       return {
         hash: acc.hash,
         parent,
         parentHash,
-        accountName: contents.find(el => el.label === 'account_name' || el.label === 'name') ? contents.find(el => el.label === 'account_name' || el.label === 'name').value : '',
+        accountName,
+        // accountName: contents.find(el => el.label === 'account_name' || el.label === 'name') ? contents.find(el => el.label === 'account_name' || el.label === 'name').value : '',
         accountCode: contents.find(el => el.label === 'account_code') ? contents.find(el => el.label === 'account_code').value : '',
         balance: balances
       }
