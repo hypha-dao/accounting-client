@@ -168,6 +168,22 @@ class TransactionApi extends BaseEosApi {
                }
              }
           }
+          cmpacct {
+            accountv(orderasc:creator){
+              content_groups(orderasc:content_group_sequence, first:1){
+                contents(orderasc:label) {
+                  label
+                  value
+                }
+              }
+            }
+            content_groups(orderasc:content_group_sequence, first:1) {
+              contents(orderasc:label)  {
+                label
+                value
+              }
+            }
+          }
           account {
             hash
             content_groups(orderasc:content_group_sequence, first:1) {
@@ -200,7 +216,8 @@ class TransactionApi extends BaseEosApi {
       if (cont.component) {
         comps = cont.component.map(comp => {
           let event = (comp.event) ? comp.event[0].content_groups[0].contents : ''
-          let account = (comp.account) ? comp.account[0].content_groups[0].contents : ''
+          let cmpacct = comp.cmpacct[0].content_groups[0].contents
+          let account = comp.cmpacct[0].accountv[0].content_groups[0].contents
           let compo = comp.content_groups[0].contents
 
           console.log(compo)
@@ -208,15 +225,15 @@ class TransactionApi extends BaseEosApi {
           return {
             account: {
               _hasChildren: false,
-              hash: comp.account ? comp.account[0].hash : '',
-              accountName: account.find(el => el.label === 'account_name').value,
-              accountCode: account.find(el => el.label === 'account_code').value,
-              typeTag: account.find(el => el.label === 'account_tag_type').value
+              hash: compo.find(el => el.label === 'account') ? compo.find(el => el.label === 'account').value : '',
+              accountName: account.find(el => el.label === 'account_name')?.value || '',
+              accountCode: cmpacct.find(el => el.label === 'account_code')?.value || '',
+              typeTag: cmpacct.find(el => el.label === 'account_tag_type')?.value || ''
             },
             isFromEvent: !!comp.event,
             hash: comp.event ? comp.event[0].hash : '',
-            from: compo.find(el => el.label === 'from') ? compo.find(el => el.label === 'from').value : '',
-            to: compo.find(el => el.label === 'to') ? compo.find(el => el.label === 'to').value : '',
+            from: compo.find(el => el.label === 'from')?.value || '',
+            to: compo.find(el => el.label === 'to')?.value || '',
             currency: compo.find(el => el.label === 'amount').value.split(' ')[1],
             quantity: compo.find(el => el.label === 'amount').value.split(' ')[0],
             treasuryId: comp.event ? event.find(el => el.label === 'treasury_id').value : '',
