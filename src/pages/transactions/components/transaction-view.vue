@@ -443,10 +443,12 @@ export default {
   },
   async mounted () {
     this.loadUnapprovedTransactions()
+    this.loadTokens()
   },
   methods: {
     ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById', 'deteleTxn', 'balanceTxn']),
     ...mapActions('contAccount', ['getAccountByCode']),
+    ...mapActions('tokens', ['getTokens']),
     ...mapMutations('general', ['setIsLoading']),
     editAccount (row) {
     },
@@ -692,6 +694,10 @@ export default {
         }
         this.setIsLoading(false)
       }, 2100)
+    },
+    async loadTokens () {
+      const tokens = await this.getTokens()
+      this.optionsCurrencies = tokens.map(token => token.symbol)
     }
   }
 }
