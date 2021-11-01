@@ -121,7 +121,10 @@ export default {
       symbol: 'Symbol',
       tokens: 'Tokens',
       precision: 'Precisions',
-      addToken: 'Add Token'
+      addToken: 'Add Token',
+      saved: 'Token saved successfully',
+      deleted: 'Token deleted successfully',
+      fields_required: 'All fields are required'
     }
   }
 }

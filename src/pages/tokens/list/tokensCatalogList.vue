@@ -99,7 +99,7 @@ export default {
     },
     async onClickSaveRow (row) {
       if (!this.validateRow(row)) {
-        this.showErrorMsg(this.$t('forms.errors.allComponentFilled'))
+        this.showErrorMsg(this.$t('pages.tokens.fields_required'))
         return
       }
       try {
@@ -108,9 +108,10 @@ export default {
         console.log(transaction)
         this.editingRow = false
         this.addingToken = false
+        this.showSuccessMsg(this.$t('pages.tokens.saved'))
       } catch (error) {
         this.onClickRemoveRow(row)
-        this.showErrorMsg('Error to add token')
+        this.showErrorMsg(error)
       }
     },
     onClickCancelAdding (row) {
@@ -122,9 +123,10 @@ export default {
       try {
         const transaction = await this.removeToken({ symbol: `${row.precision},${row.symbol}` })
         console.log(transaction)
+        if (transaction) this.showSuccessMsg(this.$t('pages.tokens.deleted'))
         this.tokens = this.tokens.filter(v => row !== v)
       } catch (error) {
-        this.showErrorMsg('Error to remove token')
+        this.showErrorMsg(error)
       }
     },
     validateRow (row) {
