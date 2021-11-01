@@ -404,6 +404,8 @@ export default {
       }
     },
     async selectedTransaction (v) {
+      this.addingComponent = false
+      this.editingRow = false
       this.transaction.value = {
         memo: undefined,
         date: undefined,
