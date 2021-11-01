@@ -549,7 +549,8 @@ export default {
           from: '',
           to: '',
           type: undefined,
-          date
+          date,
+          memo: undefined
         })
         this.editingRow = tempHash
       }
@@ -583,8 +584,8 @@ export default {
         isValidRow = false
       } else if (!row.currency) {
         isValidRow = false
-      // } else if (!row.memo) {
-      //   isValidRow = false
+      } else if (!row.memo) {
+        isValidRow = false
       } else if (!row.date) {
         isValidRow = false
       } else if (!row.type) {
