@@ -92,11 +92,11 @@ export const updateTxn = async function ({ commit }, { transactionHash, contentG
   }
 }
 
-export const balanceTxn = async function ({ commit }, { transactionHash }) {
+export const balanceTxn = async function ({ commit }, { transactionHash, contentGroups }) {
   try {
     commit('general/setIsLoading', true, { root: true })
     const issuer = await this.getters['accounts/account']
-    const transaction = await this.$transactionApi.balanceTxn({ issuer, transactionHash })
+    const transaction = await this.$transactionApi.balanceTxn({ issuer, transactionHash, contentGroups })
     return transaction
   } catch (e) {
     console.error('An error ocurred while trying to crerate txn with event', e)

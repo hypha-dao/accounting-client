@@ -300,13 +300,15 @@ class TransactionApi extends BaseEosApi {
     return this.eosApi.signTransaction(actions)
   }
 
-  async balanceTxn ({ issuer, transactionHash }) {
+  async balanceTxn ({ issuer, transactionHash, contentGroups }) {
     const actions = [{
       account: Contracts.HYPHA,
       name: 'upserttrx',
       data: {
         issuer,
-        trx_hash: transactionHash
+        trx_hash: transactionHash,
+        trx_info: contentGroups,
+        approve: true
       }
     }]
 

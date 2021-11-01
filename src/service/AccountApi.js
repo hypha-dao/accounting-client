@@ -193,6 +193,7 @@ class AccountApi extends BaseEosApi {
     }
     `
     let { data } = await this.dgraph.newTxn().query(query)
+    console.log(data)
     let mappedAccounts = data.account.map(acc => {
       const contents = acc.content_groups[0].contents
       const parent = acc.ownedby[0].content_groups[0].contents.find(el => el.label === 'name' || el.label === 'account_name')?.value

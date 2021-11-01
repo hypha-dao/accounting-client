@@ -655,7 +655,15 @@ export default {
       await this.cleanTrx()
     },
     async aproveTransaction () {
-      const res = await this.balanceTxn({ transactionHash: this.transaction.value.hash })
+      let fullTrx = JSON.parse(JSON.stringify(transactionPayout))
+      fullTrx[0].find(el => el.label === 'trx_date').value[1] = `${(this.transaction.value.date).replaceAll('/', '-')}T00:00:00` // Need to have this formmat
+      fullTrx[0].find(el => el.label === 'trx_name').value[1] = this.transaction.value.name
+      fullTrx[0].find(el => el.label === 'trx_memo').value[1] = this.transaction.value.memo || ''
+
+      for (let comp of this.components) {
+        fullTrx.push(await this.formattedComponent(comp))
+      }
+      const res = await this.balanceTxn({ transactionHash: this.transaction.value.hash, contentGroups: fullTrx })
 
       if (res) {
         this.showSuccessMsg(this.$t('pages.transactions.approved'))
