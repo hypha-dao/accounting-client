@@ -14,6 +14,13 @@
         ref="table"
         @virtual-scroll="onScroll"
       )
+        //- template(v-slot:body="props")
+        //-   q-tr(:props="props")
+        //-     q-td(
+        //-       v-for="col in props.cols"
+        //-       :key="col.name"
+        //-       :props="props"
+        //-     ) {{ col.value }}
         template(v-slot:body-cell-actions="props")
           q-td.text-center.add-icon
             q-icon.add-icon.cursor-pointer.animated-icon(name="app:add" flat size="sm" @click="onEventClick(props.row)")
@@ -34,12 +41,13 @@ export default {
   },
   data () {
     return {
+      tokens: [],
       pagination: {
-        rowsPerPage: 10
+        rowsPerPage: 50
       },
       offset: 0,
-      limit: 10,
-      pageSize: 10,
+      limit: 50,
+      pageSize: 50,
       entryStatus: undefined,
       nextKey: 2,
       events: {
@@ -107,16 +115,27 @@ export default {
       ]
     }
   },
-  mounted () {
+  async mounted () {
     this.loadEvents()
+    this.tokens = await this.getTokens()
   },
   computed: {
     eventsFreeze () {
-      return Object.freeze(this.events.rows.slice(0, this.pageSize * (this.nextKey - 2)))
+      const events = this.events.rows.slice(0, this.pageSize * (this.nextKey - 2))
+      const eventsFiltered = events.filter(e => {
+        const tokens = this.tokens.map(v => v.symbol)
+        const includes = tokens.includes(e.currency)
+        console.log('includes', includes, e.currency, tokens)
+        if (tokens.includes(e.currency)) {
+          return e
+        }
+      })
+      return Object.freeze(eventsFiltered)
     }
   },
   methods: {
     ...mapActions('event', ['getEvents']),
+    ...mapActions('tokens', ['getTokens']),
     onEventClick (event) {
       this.$emit('eventClick', {
         ...event,
