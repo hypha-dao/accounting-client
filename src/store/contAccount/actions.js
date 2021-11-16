@@ -37,6 +37,7 @@ export const getChartOfAccounts = async function ({ commit }) {
     const components = await this.$accountApi.getAllTransactionComponents({ })
     await commit('setComponents', components)
     const response = await this.$accountApi.getChartOfAccount({ })
+    console.log('')
     // await commit('setEdges', response)
     return response
   } catch (e) {

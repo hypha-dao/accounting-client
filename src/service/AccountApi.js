@@ -58,6 +58,14 @@ class AccountApi extends BaseEosApi {
                 value
               }
             }
+            accountv(orderasc:creator){
+              content_groups(orderasc:content_group_sequence, first:1){
+                contents(orderasc:label) {
+                  label
+                  value
+                }
+              }
+            }
           }
         }
       }
