@@ -1,12 +1,13 @@
 <template lang="pug">
  #container.q-pa-md.q-gutter-sm
     .text-title1 {{$t('pages.coa.addAccount')}}
-    q-form(@submit="onSubmit")
+    q-form(@submit="onSubmit" ref="form")
+      q-checkbox(v-model="params.rootAccount" label="Do you want create a root account?")
       div.cursor-pointer
         q-input.cursor-pointer(
             v-model="labelParentAccount"
             :label="$t('pages.coa.parent')"
-            :rules="[rules.required]"
+            :rules="!params.rootAccount ? [rules.required] : []"
             readonly
             @click="modals.showAllAccounts = true"
         )
@@ -64,6 +65,19 @@ export default {
         console.log('children account post', childrenAccountCode)
         this.params.accountCode = childrenAccountCode
       }
+    },
+    'params.parentAccount' (v) {
+      console.log('v', v)
+      if (v) {
+        this.params.rootAccount = false
+      }
+    },
+    async 'params.rootAccount' (v) {
+      if (v) {
+        this.params.parentAccount = undefined
+        await this.$nextTick()
+        await this.$refs.form.resetValidation()
+      }
     }
   },
   data () {
@@ -71,7 +85,8 @@ export default {
       params: {
         parentAccount: undefined,
         accountName: undefined,
-        accountCode: undefined
+        accountCode: undefined,
+        rootAccount: true
       },
       modals: {
         showAllAccounts: false
@@ -122,7 +137,11 @@ export default {
     async onSubmit () {
       try {
         let accountPayload = JSON.parse(JSON.stringify(accountPayout))
-        accountPayload[0].find(el => el.label === 'parent_account').value[1] = this.params.parentAccount.hash
+        if (this.params.rootAccount) {
+          accountPayload[0].find(el => el.label === 'parent_account').value[1] = process.env.DGRAPH_TRX_LEDGER
+        } else {
+          accountPayload[0].find(el => el.label === 'parent_account').value[1] = this.params.parentAccount.hash
+        }
         accountPayload[0].find(el => el.label === 'account_name').value[1] = this.params.accountName
         accountPayload[0].find(el => el.label === 'account_code').value[1] = `${this.baseChildrenAccount}${this.params.accountCode}`
 
@@ -134,7 +153,7 @@ export default {
           this.$emit('success')
         }
       } catch (e) {
-
+        console.error(e)
       }
     }
   }
