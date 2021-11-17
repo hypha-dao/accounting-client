@@ -147,6 +147,7 @@ export default {
       // console.log('original children', children)
       const accounts = children.data.account[0].account
       // console.log('children acc', accounts)
+      if (!accounts) return
       return accounts.map(account => {
         const content = account.content_groups[0].contents
         const accountv = account.accountv[0].content_groups[0].contents
@@ -212,6 +213,7 @@ export default {
       try {
         const children = await this.getAccountById({ uid: e.uid })
         // console.log('loadChildren response', e.uid, children)
+        console.log(children)
         const childrenFormatted = await this.setUpAccountChildren(children)
         // console.log('loadChildren', childrenFormatted)
         return childrenFormatted
