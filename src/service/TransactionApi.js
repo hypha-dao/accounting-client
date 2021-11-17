@@ -306,12 +306,13 @@ class TransactionApi extends BaseEosApi {
       name: 'upserttrx',
       data: {
         issuer,
-        trx_hash: transactionHash,
+        trx_hash: transactionHash | `'0000000000000000000000000000000000000000000000000000000000000000'`,
         trx_info: contentGroups,
         approve: true
       }
     }]
 
+    console.log(actions)
     console.log(JSON.stringify(actions, null, 2))
     return this.eosApi.signTransaction(actions)
   }

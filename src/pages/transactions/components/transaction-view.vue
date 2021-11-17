@@ -157,7 +157,7 @@ q-card.q-pa-sm.full-width
                 dense
                 size="md"
                 color="primary"
-                :disable="!transactionBalanced || !transaction.value.hash"
+                :disable="!transactionBalanced || (!transaction.value.hash && !transactionBalanced)"
                 @click="aproveTransaction()"
             )
         .col.self-center
@@ -619,6 +619,7 @@ export default {
       try {
         let { name } = this.transaction.value
         let response
+        console.log('trxUpsert', this.isSelect, fullTrx)
         if (!this.isSelect) {
           response = await this.createTxn({ contentGroups: fullTrx })
         } else {
@@ -660,19 +661,25 @@ export default {
       await this.cleanTrx()
     },
     async aproveTransaction () {
-      let fullTrx = JSON.parse(JSON.stringify(transactionPayout))
-      fullTrx[0].find(el => el.label === 'trx_date').value[1] = `${(this.transaction.value.date).replaceAll('/', '-')}T00:00:00` // Need to have this formmat
-      fullTrx[0].find(el => el.label === 'trx_name').value[1] = this.transaction.value.name
-      fullTrx[0].find(el => el.label === 'trx_memo').value[1] = this.transaction.value.memo || ''
+      try {
+        let fullTrx = JSON.parse(JSON.stringify(transactionPayout))
+        fullTrx[0].find(el => el.label === 'trx_date').value[1] = `${(this.transaction.value.date).replaceAll('/', '-')}T00:00:00` // Need to have this formmat
+        fullTrx[0].find(el => el.label === 'trx_name').value[1] = this.transaction.value.name
+        fullTrx[0].find(el => el.label === 'trx_memo').value[1] = this.transaction.value.memo || ''
 
-      for (let comp of this.components) {
-        fullTrx.push(await this.formattedComponent(comp))
-      }
-      const res = await this.balanceTxn({ transactionHash: this.transaction.value.hash, contentGroups: fullTrx })
+        for (let comp of this.components) {
+          fullTrx.push(await this.formattedComponent(comp))
+        }
+        console.log('Update Trx', fullTrx)
+        const res = await this.balanceTxn({ transactionHash: this.transaction.value.hash, contentGroups: fullTrx })
+        console.log('Update Trx res', res)
 
-      if (res) {
-        this.showSuccessMsg(this.$t('pages.transactions.approved'))
-        this.cleanTrx()
+        if (res) {
+          this.showSuccessMsg(this.$t('pages.transactions.approved'))
+          this.cleanTrx()
+        }
+      } catch (e) {
+        console.error(e)
       }
     },
     async cleanTrx (name = undefined) {
