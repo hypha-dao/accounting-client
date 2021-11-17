@@ -123,7 +123,7 @@ export default {
           hash: account.hash,
           uid: account.uid,
           _id: account.uid,
-          _hasChildren: true,
+          _hasChildren: !!account.account,
           accountCode: content.find(v => v.label === 'account_code').value,
           typeTag: content.find(v => v.label === 'account_tag_type').value,
           amount
