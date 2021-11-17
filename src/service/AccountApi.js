@@ -44,6 +44,10 @@ class AccountApi extends BaseEosApi {
           account {
             hash
             uid
+            account {
+              id
+              hash
+            }
             balances {
               content_groups (orderasc: content_group_sequence, first: 1) {
                 contents {
