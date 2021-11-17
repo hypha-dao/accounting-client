@@ -306,7 +306,7 @@ class TransactionApi extends BaseEosApi {
       name: 'upserttrx',
       data: {
         issuer,
-        trx_hash: transactionHash | `'0000000000000000000000000000000000000000000000000000000000000000'`,
+        trx_hash: transactionHash || '0000000000000000000000000000000000000000000000000000000000000000',
         trx_info: contentGroups,
         approve: true
       }
