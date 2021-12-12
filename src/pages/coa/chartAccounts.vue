@@ -3,32 +3,36 @@
   q-card.q-pa-sm.full-width
     //- p Hola2!
     #container.q-pa-sm
-      q-table.sticky-virtscroll-table.accountTable.t-table(
-          :columns="columns"
-          :data="coa"
-          virtual-scroll
-          :rows-per-page-options="[0]"
-          :virtual-scroll-item-size="pageSize - 2"
-          :virtual-scroll-sticky-size-start="pageSize - 2"
-          dense
-          ref="table"
-          :filter="search"
-      )
-        template(v-slot:top-right)
-          q-input(
-            v-model="search"
-            label="Search"
-          )
-            template(v-slot:append)
-              q-icon(name="search")
-        template(v-slot:body-cell-balance="props")
-          q-td(:props="props")
-            .row.q-gutter-sm
-              div(v-for="b in props.row.balance")
-                .balanceLabel {{b}}
-        template(v-slot:body-cell-actions="props")
-          q-td(:props="props")
-            q-btn(icon="edit" round size="xs" color="positive" @click="onClickEditAccount(props.row)")
+      //- q-table.sticky-virtscroll-table.accountTable.t-table(
+      //-     :columns="columns"
+      //-     :data="coa"
+      //-     virtual-scroll
+      //-     :rows-per-page-options="[0]"
+      //-     :virtual-scroll-item-size="pageSize - 2"
+      //-     :virtual-scroll-sticky-size-start="pageSize - 2"
+      //-     dense
+      //-     ref="table"
+      //-     :filter="search"
+      //- )
+      //-   template(v-slot:top-right)
+      //-     q-input(
+      //-       v-model="search"
+      //-       label="Search"
+      //-     )
+      //-       template(v-slot:append)
+      //-         q-icon(name="search")
+      //-   template(v-slot:body-cell-balance="props")
+      //-     q-td(:props="props")
+      //-       .row.q-gutter-sm
+      //-         div(v-for="b in props.row.balance")
+      //-           .balanceLabel {{b}}
+      //-   template(v-slot:body-cell-actions="props")
+      //-     q-td(:props="props")
+      //-       q-btn(icon="edit" round size="xs" color="positive" @click="onClickEditAccount(props.row)")
+      coa-table-tree(@onClickEditAccount="v => onClickEditAccount(v)" @selectedAccount="onSelectedAccount")
+      #transaction-components
+        p {{ selectedDetailsAccount }}
+        p {{ detailsAccountSelected }}
       .row.q-my-sm.justify-start
           q-btn(
             :label="this.$t('pages.coa.addAccount')"
@@ -45,11 +49,13 @@
 
 <script>
 import AddAccountForm from './addAccountForm.vue'
+import CoaTableTree from './components/COATableTree'
+
 import { mapActions } from 'vuex'
 
 export default {
   name: 'chartOfAccounts',
-  components: { AddAccountForm },
+  components: { AddAccountForm, CoaTableTree },
   data () {
     return {
       pageSize: 200,
@@ -57,6 +63,8 @@ export default {
       coa: [],
       search: undefined,
       selectedAccount: undefined,
+      selectedDetailsAccount: undefined,
+      detailsAccountSelected: undefined,
       columns: [
         {
           name: 'accountCode',
@@ -106,6 +114,11 @@ export default {
   },
   methods: {
     ...mapActions('contAccount', ['getAllAccounts', 'getAccountById', 'getAccountByCode']),
+    ...mapActions('transaction', ['getTransactionById', 'getComponentsByAccountId']),
+    async onSelectedAccount (account) {
+      this.selectedDetailsAccount = account
+      this.detailsAccountSelected = await this.getComponentsByAccountId({ uid: this.selectedDetailsAccount.uid })
+    },
     async getAccounts () {
       let accs = await this.getAllAccounts({ first: 10, offset: 0 })
       // console.log(accs)
@@ -121,6 +134,7 @@ export default {
       // console.log(accs)
     },
     onClickEditAccount (account) {
+      console.log('onClickEditAccount', account)
       this.selectedAccount = account
       this.modals.openedAccountForm = true
     },
