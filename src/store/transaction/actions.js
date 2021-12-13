@@ -48,6 +48,19 @@ export const getTransactionById = async function ({ commit }, { uid }) {
   }
 }
 
+export const getComponentsByAccountId = async function ({ commit }, { uid }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const transactions = await this.$transactionApi.getComponentsByAccountId({ uid })
+    return transactions
+  } catch (e) {
+    console.error('An error ocurred while trying to get transactions', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
+
 export const createTxn = async function ({ commit }, { contentGroups }) {
   try {
     commit('general/setIsLoading', true, { root: true })

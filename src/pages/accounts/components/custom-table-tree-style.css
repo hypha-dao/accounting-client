@@ -7,6 +7,14 @@ body {
 main {
     display: block;
 }
+th, amounts {
+    background-color: #7CA1FF;
+    border: none;
+    color: white;
+}
+.amount td {
+    text-align: right;
+}
 a {
     background-color: transparent;
 }

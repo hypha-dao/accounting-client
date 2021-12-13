@@ -48,6 +48,15 @@ class AccountApi extends BaseEosApi {
               id
               hash
             }
+            ownedby {
+              hash
+              content_groups(orderasc:content_group_sequence, first:1) {
+                contents(orderasc:label) {
+                  label
+                  value
+                }
+              }
+            }
             balances {
               content_groups (orderasc: content_group_sequence, first: 1) {
                 contents {

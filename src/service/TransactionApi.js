@@ -259,6 +259,103 @@ class TransactionApi extends BaseEosApi {
     return transaction[0]
   }
 
+  async getComponentsByAccountId ({ uid }) {
+    const query = `
+    query transactions($uid:string)
+    {
+      transaction(func: uid($uid)) {
+        hash
+        content_groups(orderasc:content_group_sequence, first:1) {
+          contents(orderasc:label)  {
+            label
+            value
+          }
+        }
+        component {
+          event {
+            hash
+            content_groups(orderasc:content_group_sequence, first:1) {
+              contents(orderasc:label)  {
+                label
+                value
+               }
+             }
+        
+          account {
+            hash
+            content_groups(orderasc:content_group_sequence, first:1) {
+              contents(orderasc:label)  {
+                label
+                value
+               }
+             }
+          }
+          content_groups(orderasc:content_group_sequence, first:1) {
+            contents(orderasc:label)  {
+              label
+              value
+            }
+          }
+        }
+      }
+    }
+    `
+
+    const vars = { $uid: uid }
+
+    let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
+
+    console.log('data of trx', data)
+
+    let transaction = data.transaction.map((cont, idx) => {
+      let trx = cont.content_groups[0].contents
+      var comps = []
+      if (cont.component) {
+        comps = cont.component.map(comp => {
+          let event = (comp.event) ? comp.event[0].content_groups[0].contents : ''
+          let cmpacct = comp.cmpacct[0].content_groups[0].contents
+          let account = comp.cmpacct[0].accountv[0].content_groups[0].contents
+          let compo = comp.content_groups[0].contents
+
+          console.log(compo)
+
+          return {
+            account: {
+              _hasChildren: false,
+              hash: compo.find(el => el.label === 'account') ? compo.find(el => el.label === 'account').value : '',
+              accountName: account.find(el => el.label === 'account_name')?.value || '',
+              accountCode: cmpacct.find(el => el.label === 'account_code')?.value || '',
+              typeTag: cmpacct.find(el => el.label === 'account_tag_type')?.value || ''
+            },
+            isFromEvent: !!comp.event,
+            hash: comp.event ? comp.event[0].hash : '',
+            from: compo.find(el => el.label === 'from')?.value || '',
+            to: compo.find(el => el.label === 'to')?.value || '',
+            currency: compo.find(el => el.label === 'amount').value.split(' ')[1],
+            quantity: compo.find(el => el.label === 'amount').value.split(' ')[0],
+            treasuryId: comp.event ? event.find(el => el.label === 'treasury_id').value : '',
+            source: comp.event ? event.find(el => el.label === 'source').value : '',
+            // usdValue: comp.event ? event.find(el => el.label === 'usd_value').value : '',
+            date: compo.find(el => el.label === 'create_date').value,
+            memo: compo.find(el => el.label === 'memo').value,
+            type: compo.find(el => el.label === 'type') ? compo.find(el => el.label === 'type').value : ''
+          }
+        })
+      }
+
+      return {
+        hash: cont.hash,
+        id: trx.find(el => el.label === 'id').value,
+        name: trx.find(el => el.label === 'trx_name').value,
+        memo: trx.find(el => el.label === 'trx_memo').value,
+        date: trx.find(el => el.label === 'trx_date').value,
+        ledger: trx.find(el => el.label === 'trx_ledger').value,
+        components: comps
+      }
+    })
+    return transaction[0]
+  }
+
   async createTxn ({ accountName, contentGroups }) {
     const actions = [{
       account: Contracts.HYPHA,
