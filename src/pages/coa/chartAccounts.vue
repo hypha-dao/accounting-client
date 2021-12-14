@@ -1,8 +1,9 @@
 <template lang="pug">
 #main-container.main.q-pa-sm
   q-card.q-pa-sm.full-width
-    //- p Hola2!
     #container.q-pa-sm
+      .flex.justify-end.q-mb-sm
+        q-btn(outline size="sm" label="Convert to HUSD" color="secondary" @click="onSelectedConvert")
       //- q-table.sticky-virtscroll-table.accountTable.t-table(
       //-     :columns="columns"
       //-     :data="coa"
@@ -45,17 +46,23 @@
         )
           q-card.responsive-modal
             add-account-form(:account="selectedAccount" @success="onSuccessAdded")
+        q-dialog(
+          v-model="modals.openCurrenciesSelector"
+        )
+          q-card.responsive-modal
+            currencies-selector(@convert="convertValues")
 </template>
 
 <script>
 import AddAccountForm from './addAccountForm.vue'
 import CoaTableTree from './components/COATableTree'
+import CurrenciesSelector from './components/currenciesSelectors'
 
 import { mapActions } from 'vuex'
 
 export default {
   name: 'chartOfAccounts',
-  components: { AddAccountForm, CoaTableTree },
+  components: { AddAccountForm, CoaTableTree, CurrenciesSelector },
   data () {
     return {
       pageSize: 200,
@@ -108,7 +115,8 @@ export default {
         }
       ],
       modals: {
-        openedAccountForm: false
+        openedAccountForm: false,
+        openCurrenciesSelector: false
       }
     }
   },
@@ -148,6 +156,12 @@ export default {
       setTimeout(() => {
         this.getAccounts()
       }, 2000)
+    },
+    onSelectedConvert () {
+      this.modals.openCurrenciesSelector = true
+    },
+    convertValues (currencies) {
+      this.modals.openCurrenciesSelector = false
     }
   },
   created () {
