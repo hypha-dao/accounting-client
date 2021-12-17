@@ -415,6 +415,7 @@ export default {
       this.requestRefreshEvents()
       if (!v) return
       const trx = await this.getTransactionById({ uid: v.value.uid })
+      console.log(trx)
 
       if (trx) {
         this.transaction.value = {
@@ -502,7 +503,7 @@ export default {
         this.transaction.value.name = defaultName
 
         // date
-        let d = new Date()
+        let d = new Date(event.date)
         let month = d.getUTCMonth() + 1
         let day = d.getUTCDate()
         let date = `${d.getUTCFullYear()}/${(month < 10 ? '0' + month : month)}/${(day < 10 ? '0' + day : day)}`
@@ -537,10 +538,13 @@ export default {
       if (!this.addingComponent) {
         this.addingComponent = true
         const tempHash = [...Array(8)].map(() => Math.floor(Math.random() * 16).toString(16)).join('')
-        let d = new Date()
-        let month = d.getUTCMonth() + 1
-        let day = d.getUTCDate()
-        let date = `${d.getUTCFullYear()}/${(month < 10 ? '0' + month : month)}/${(day < 10 ? '0' + day : day)}`
+        let date = this.transaction.value.date
+        if (!date) {
+          let d = new Date()
+          let month = d.getUTCMonth() + 1
+          let day = d.getUTCDate()
+          date = `${d.getUTCFullYear()}/${(month < 10 ? '0' + month : month)}/${(day < 10 ? '0' + day : day)}`
+        }
         this.components.push({
           hash: tempHash,
           isCustomComponent: true,
