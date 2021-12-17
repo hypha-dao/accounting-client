@@ -110,7 +110,7 @@ class TransactionApi extends BaseEosApi {
   async getApprovedTransactions () {
     const query = `
     {
-      trxbucket(func: has(unapproved)) @cascade {
+      trxbucket(func: has(approved)) @cascade {
         approved {
           hash
           uid
