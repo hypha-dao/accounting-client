@@ -650,7 +650,7 @@ export default {
 
       component[1].value[1] = memo
       component[2].value[1] = account.hash
-      component[3].value[1] = (currency === 'BTC') ? `${parseFloat(quantity).toFixed(1)} ${currency}` : `${quantity} ${currency}`
+      component[3].value[1] = `${quantity} ${currency}`
       // component[3].value[1] = (currency === 'BTC') ? `${parseInt(quantity).toFixed(1)} ${currency}` : `${quantity} ${currency}`
       component[4].value[1] = from
       component[5].value[1] = to
