@@ -62,7 +62,7 @@ q-card.q-pa-sm.full-width
             v-model="transaction.value.memo"
             color="secondary"
         )
-    .col-2.myCommit
+    .col-2
       q-input(filled v-model="transaction.value.date" dense mask="date" label="Date" color="secondary")
         template(v-slot:append)
          q-icon(name="event" class="cursor-pointer")
