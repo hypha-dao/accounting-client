@@ -26,5 +26,9 @@ export const componentPayout = [
   {
     'label': 'type',
     'value': ['string', '']
+  },
+  {
+    'label': 'trx_date',
+    'value': ['time_point', '']
   }
 ]

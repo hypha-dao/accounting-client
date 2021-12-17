@@ -560,6 +560,7 @@ export default {
       }
     },
     onClickSaveRow (row) {
+      console.log(row)
       if (!this.validateRow(row)) {
         this.showErrorMsg(this.$t('forms.errors.allComponentFilled'))
         return
@@ -614,6 +615,7 @@ export default {
       fullTrx[0].find(el => el.label === 'trx_name').value[1] = this.transaction.value.name
       fullTrx[0].find(el => el.label === 'trx_memo').value[1] = this.transaction.value.memo || ''
 
+      console.log(this.components, 'Components')
       for (let comp of this.components) {
         fullTrx.push(await this.formattedComponent(comp))
       }
@@ -638,7 +640,7 @@ export default {
         this.showErrorMsg(e)
       }
     },
-    formattedComponent ({ memo, account, quantity, currency, hash, isCustomComponent, isFromEvent, from, to, type }) {
+    formattedComponent ({ memo, account, quantity, currency, hash, isCustomComponent, isFromEvent, from, to, type, date }) {
       let component = JSON.parse(JSON.stringify(componentPayout))
 
       if (!isCustomComponent && isFromEvent) {
@@ -650,11 +652,12 @@ export default {
 
       component[1].value[1] = memo
       component[2].value[1] = account.hash
-      component[3].value[1] = (currency === 'BTC') ? `${parseFloat(quantity).toFixed(1)} ${currency}` : `${quantity} ${currency}`
+      component[3].value[1] = `${quantity} ${currency}`
       // component[3].value[1] = (currency === 'BTC') ? `${parseInt(quantity).toFixed(1)} ${currency}` : `${quantity} ${currency}`
       component[4].value[1] = from
       component[5].value[1] = to
       component[6].value[1] = type
+      component[7].value[1] = date.includes('/') ? `${(date).replaceAll('/', '-')}T00:00:00` : date
 
       return component
     },
