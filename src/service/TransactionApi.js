@@ -75,16 +75,14 @@ class TransactionApi extends BaseEosApi {
   async getUnapprovedTransactions () {
     const query = `
     {
-      node(func: uid(0x18933)) {
-        trxbucket {
-          unapproved {
-            hash
-            uid
-            content_groups(orderasc:content_group_sequence, first:1) {
-              contents {
-                label
-                value
-              }
+      trxbucket(func: has(unapproved)) @cascade {
+        unapproved {
+          hash
+          uid
+          content_groups(orderasc:content_group_sequence, first:1) {
+            contents @filter(allofterms(label, "trx_date") or allofterms(label, "trx_name") or allofterms(label, "trx_memo") or allofterms(label, "trx_ledger") or allofterms(label, "id") ) {
+              label
+              value
             }
           }
         }
@@ -92,8 +90,8 @@ class TransactionApi extends BaseEosApi {
     }
     `
     let { data } = await this.dgraph.newTxn().query(query)
-    if (!data.node[0]) return []
-    let mappedTransactions = data.node[0].trxbucket[0].unapproved.map((trans, i) => {
+    if (!data.trxbucket[0]) return []
+    let mappedTransactions = data.trxbucket[0].unapproved.map((trans, i) => {
       let contents = trans.content_groups[0].contents
       return {
         id: contents.find(el => el.label === 'id').value,
@@ -101,7 +99,7 @@ class TransactionApi extends BaseEosApi {
         uid: trans.uid,
         date: contents.find(el => el.label === 'trx_date').value,
         ledger: contents.find(el => el.label === 'trx_ledger').value,
-        memo: contents.find(el => el.label === 'trx_memo').value,
+        memo: contents.find(el => el.label === 'trx_memo')?.value || '',
         name: contents.find(el => el.label === 'trx_name').value,
         approved: false
       }
@@ -112,16 +110,14 @@ class TransactionApi extends BaseEosApi {
   async getApprovedTransactions () {
     const query = `
     {
-      node(func: uid(0x18933)) {
-        trxbucket {
-          approved {
-            hash
-            uid
-            content_groups(orderasc:content_group_sequence, first:1) {
-              contents {
-                label
-                value
-              }
+      trxbucket(func: has(approved)) @cascade {
+        approved {
+          hash
+          uid
+          content_groups(orderasc:content_group_sequence, first:1) {
+            contents @filter(allofterms(label, "trx_date") or allofterms(label, "trx_name") or allofterms(label, "trx_memo") or allofterms(label, "trx_ledger") or allofterms(label, "id") ) {
+              label
+              value
             }
           }
         }
@@ -130,7 +126,7 @@ class TransactionApi extends BaseEosApi {
     `
     let { data } = await this.dgraph.newTxn().query(query)
 
-    let mappedTransactions = data.node[0].trxbucket[0].approved.map((trans, i) => {
+    let mappedTransactions = data.trxbucket[0].approved.map((trans, i) => {
       let contents = trans.content_groups[0].contents
       return {
         hash: trans.hash,
