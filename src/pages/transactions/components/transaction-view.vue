@@ -712,7 +712,7 @@ export default {
       component[4].value[1] = from
       component[5].value[1] = to
       component[6].value[1] = type
-      component[7].value[1] = date.includes('/') ? `${(date).replaceAll('/', '-')}T00:00:00` : date
+      component[7].value[1] = date.includes('/') ? `${(date).replaceAll('/', '-')}T00:00:00` : date.split('.')[0]
 
       return component
     },
