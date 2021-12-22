@@ -73,7 +73,7 @@ export default {
       transaction: 'New Transaction',
       transactions: 'Transactions',
       or: 'Or',
-      memo: 'memo',
+      memo: 'Memo',
       date: 'Date Time (UTC)',
       approved: 'Transaction approved successfully',
       balanced: 'Balanced',
