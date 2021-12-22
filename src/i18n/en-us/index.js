@@ -96,7 +96,10 @@ export default {
       addComponent: 'Add Component',
       unbalanced: 'Unbalanced',
       deleted: 'Transaction deleted successfully',
-      saved: 'Transaction saved successfully'
+      saved: 'Transaction saved successfully',
+      currency_convertion: 'You are approving currency conversion transaction with the following exchange rate: ',
+      exchange_recorded: 'This exchange rate will be recorded and can be audited in the Chart of Accounts.',
+      currency_conversion_transaction: 'Currency conversion transaction'
     },
     events: {
       events: 'Events',
