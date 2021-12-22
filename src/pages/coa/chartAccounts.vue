@@ -32,8 +32,9 @@
       //-       q-btn(icon="edit" round size="xs" color="positive" @click="onClickEditAccount(props.row)")
       coa-table-tree(@onClickEditAccount="v => onClickEditAccount(v)" @selectedAccount="onSelectedAccount")
       #transaction-components
-        p {{ selectedDetailsAccount }}
-        p {{ detailsAccountSelected }}
+        //- p {{ selectedDetailsAccount }}
+        //- p {{ detailsAccountSelected }}
+        components-table(:components="detailsAccountSelected")
       .row.q-my-sm.justify-start
           q-btn(
             :label="this.$t('pages.coa.addAccount')"
@@ -57,12 +58,13 @@
 import AddAccountForm from './addAccountForm.vue'
 import CoaTableTree from './components/COATableTree'
 import CurrenciesSelector from './components/currenciesSelectors'
+import ComponentsTable from './components/componentsTable'
 
 import { mapActions } from 'vuex'
 
 export default {
   name: 'chartOfAccounts',
-  components: { AddAccountForm, CoaTableTree, CurrenciesSelector },
+  components: { AddAccountForm, CoaTableTree, CurrenciesSelector, ComponentsTable },
   data () {
     return {
       pageSize: 200,
