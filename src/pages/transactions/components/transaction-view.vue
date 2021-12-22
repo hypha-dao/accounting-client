@@ -54,6 +54,7 @@ q-card.q-pa-sm.full-width
             )
               q-icon(name="add" v-if="isSelect")
               .label-mode-btn {{ labelModeSelectTransaction }}
+            q-checkbox(v-model="conversionTransaction" :label="$t('pages.transactions.currency_conversion_transaction')")
     .col-3
         q-input(
             :label="$t('pages.transactions.notes')"
@@ -158,10 +159,30 @@ q-card.q-pa-sm.full-width
                 size="md"
                 color="primary"
                 :disable="!transactionBalanced || (!transaction.value.hash && !transactionBalanced)"
+                @click="approveConvertion"
+                v-if="conversionTransaction"
+            )
+            q-btn.full-width(
+                :label="$t('pages.transactions.approve')"
+                dense
+                size="md"
+                color="primary"
+                :disable="!transactionBalanced || (!transaction.value.hash && !transactionBalanced)"
                 @click="aproveTransaction()"
+                v-else
             )
         .col.self-center
             q-btn.full-width(
+                :label="$t('pages.transactions.save')"
+                dense
+                size="md"
+                color="secondary"
+                @click="transactionConvertion = true"
+                :disable="!readyToSave"
+                v-if="conversionTransaction"
+            )
+            q-btn.full-width(
+                v-else
                 :label="$t('pages.transactions.save')"
                 dense
                 size="md"
@@ -178,6 +199,8 @@ q-card.q-pa-sm.full-width
                 @click="deleteTransaction()"
                 :disable="!readyToSave"
             )
+  #modals
+    currency-transaction-modal(:isEnable="transactionConvertion", @cancel="cancellTransactionConvertion" @confirm="isApproveConvertion  ? aproveTransaction() : storeTransaction()" :components="components")
 </template>
 
 <script>
@@ -185,14 +208,18 @@ import { mapActions, mapMutations } from 'vuex'
 import { transactionPayout } from '~/const/payouts/transaction-payout'
 import { componentPayout } from '~/const/payouts/component-payout'
 import CustomTableTree from '~/pages/accounts/components/custom-table-tree'
+import CurrencyTransactionModal from './currency-transaction-modal'
 
 export default {
   name: 'transaction-view',
-  components: { CustomTableTree },
+  components: { CustomTableTree, CurrencyTransactionModal },
   data () {
     return {
       autoSelect: false,
       // transactionBalanced: false,
+      transactionConvertion: false,
+      conversionTransaction: false,
+      isApproveConvertion: false,
       optionsCurrencies: [
         'BTC', 'ETH', 'TLOS', 'HUSD', 'HYPHA', 'SEEDS'
       ],
@@ -357,7 +384,35 @@ export default {
       const everyCurrencyBalanced = currencies.every(curr => curr.balanced)
       const moreThanOneComponent = this.components.length > 0
 
+      if (this.validateBalancesWithDifferentsCurrencies) return true
+
       return moreThanOneComponent && everyCurrencyBalanced && everyCompWithAccount
+    },
+    componentHasDifferentCurrencies () {
+      const currencies = this.components.filter(c => c.currency).map(c => c.currency)
+      const onlyCurrency = new Set(currencies)
+      return onlyCurrency.size > 1
+    },
+    componentAreDifferentTypeTransaction () {
+      if (!this.componentHasDifferentCurrencies) return false
+      let currencyByType = {}
+      this.components.forEach(component => {
+        if (!currencyByType[component.currency]) currencyByType[component.currency] = { debit: 0, credit: 0 }
+        if (component.type === 'DEBIT') currencyByType[component.currency].debit++
+        if (component.type === 'CREDIT') currencyByType[component.currency].credit++
+      })
+
+      let debit = 0
+      let credit = 0
+      Object.values(currencyByType).forEach(type => {
+        debit += type.debit
+        credit += type.credit
+      })
+
+      return debit === credit
+    },
+    validateBalancesWithDifferentsCurrencies () {
+      return this.componentHasDifferentCurrencies && this.componentAreDifferentTypeTransaction && this.conversionTransaction
     }
   },
   watch: {
@@ -685,6 +740,7 @@ export default {
           this.showSuccessMsg(this.$t('pages.transactions.approved'))
           this.cleanTrx()
         }
+        if (this.isApproveConvertion) this.isApproveConvertion = false
       } catch (e) {
         console.error(e)
       }
@@ -713,6 +769,14 @@ export default {
     async loadTokens () {
       const tokens = await this.getTokens()
       this.optionsCurrencies = tokens.map(token => token.symbol)
+    },
+    approveConvertion () {
+      this.isApproveConvertion = true
+      this.transactionConvertion = true
+    },
+    cancellTransactionConvertion () {
+      this.isApproveConvertion = false
+      this.transactionConvertion = false
     }
   }
 }
