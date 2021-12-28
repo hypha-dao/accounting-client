@@ -694,6 +694,7 @@ export default {
       } catch (e) {
         this.showErrorMsg(e)
       }
+      if (this.transactionConvertion) this.transactionConvertion = false
     },
     formattedComponent ({ memo, account, quantity, currency, hash, isCustomComponent, isFromEvent, from, to, type, date }) {
       let component = JSON.parse(JSON.stringify(componentPayout))
