@@ -38,3 +38,17 @@ export const removeToken = async function ({ commit }, { symbol }) {
     commit('general/setIsLoading', false, { root: true })
   }
 }
+
+export const getExchangeRates = async function ({ commit }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const { data: tokens } = await this.$tokensApi.getExchangeForTokens()
+    console.log('Exchange rate', tokens)
+    commit('setTokensWithExchange', tokens)
+  } catch (e) {
+    console.error('An error ocurred while trying to get exchange rates', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
