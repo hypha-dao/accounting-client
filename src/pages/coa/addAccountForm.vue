@@ -1,8 +1,9 @@
 <template lang="pug">
  #container.q-pa-md.q-gutter-sm
-    .text-title1 {{$t('pages.coa.addAccount')}}
+    .text-title1(v-if="!edit") {{$t('pages.coa.addAccount')}}
+    .text-title1(v-else) Editing account
     q-form(@submit="onSubmit" ref="form")
-      q-checkbox(v-model="params.rootAccount" label="Do you want create a root account?")
+      q-checkbox(v-model="params.rootAccount" :disable="edit" label="Do you want create a root account?")
       div.cursor-pointer
         q-input.cursor-pointer(
             v-model="labelParentAccount"
@@ -10,6 +11,7 @@
             :rules="!params.rootAccount ? [rules.required] : []"
             readonly
             @click="modals.showAllAccounts = true"
+            :disable="edit"
         )
       q-input(
           v-model="params.accountName"
@@ -22,6 +24,7 @@
           :rules="[rules.required, customRules.accountCode]"
           :prefix="baseChildrenAccount"
           type="number"
+          :disable="edit"
       )
       //- p {{baseChildrenAccount}}
       q-btn.full-width(
@@ -46,7 +49,8 @@ export default {
   components: { CustomTableTree },
   mixins: [validation],
   props: {
-    account: Object
+    account: Object,
+    edit: Boolean
   },
   async beforeMount () {
     if (!this.isNew) {

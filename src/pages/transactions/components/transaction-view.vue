@@ -68,7 +68,7 @@ q-card.q-pa-sm.full-width
         template(v-slot:append)
          q-icon(name="event" class="cursor-pointer")
           q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
-            q-date(v-model="transaction.value.date")
+            q-date(v-model="transaction.value.date" today-btn mask="DD-MM-YYYY")
               div(class="row items-center justify-end")
                 q-btn(v-close-popup label="Close" color="primary" flat)
   #container
@@ -97,11 +97,12 @@ q-card.q-pa-sm.full-width
           q-input.short-input(v-if="(editingRow === props.row.hash && props.row.isCustomComponent) || props.row.isEditable.from" autofocus v-model="props.row.from" dense :label="$t('pages.transactions.from')" color="secondary")
           .text-cell.short-input(v-else) {{ props.row.from }}
       template(v-slot:body-cell-type="props")
-        q-select(
-          :options="optionTypeComponent"
-          v-model="props.row.type"
-          dense
-        )
+        q-td.short-input
+          q-select(
+            :options="optionTypeComponent"
+            v-model="props.row.type"
+            dense
+          )
         //- q-select(
         //-   :options="optionTypeComponent"
         //-   v-model="props.row.type"
@@ -137,7 +138,7 @@ q-card.q-pa-sm.full-width
                   q-date(v-model="props.row.date")
                     div(class="row items-center justify-end")
                       q-btn(v-close-popup label="Close" color="primary" flat)
-          .text-cell(v-else) {{ new Date(props.row.date).toUTCString().replace('GMT', '') }}
+          .text-cell(v-else) {{ dateToString(props.row.date) }}
       template(v-slot:body-cell-actions="props")
         q-td.q-gutter-xs.text-right
           q-btn(v-if="editingRow !== props.row.hash && !addingComponent && !props.row.isFromEvent" icon="edit" round size="xs" color="positive" @click="onClickEditRow(props.row)")

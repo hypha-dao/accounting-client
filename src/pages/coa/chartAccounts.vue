@@ -46,7 +46,7 @@
           v-model="modals.openedAccountForm"
         )
           q-card.responsive-modal
-            add-account-form(:account="selectedAccount" @success="onSuccessAdded")
+            add-account-form(:account="selectedAccount" :edit="!!selectedAccount" @success="onSuccessAdded")
         q-dialog(
           v-model="modals.openCurrenciesSelector"
         )
