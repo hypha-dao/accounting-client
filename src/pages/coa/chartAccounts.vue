@@ -3,7 +3,7 @@
   q-card.q-pa-sm.full-width
     #container.q-pa-sm
       .flex.justify-end.q-mb-sm
-        q-btn(outline size="sm" label="Convert to HUSD" color="secondary" @click="onSelectedConvert")
+        q-btn(outline size="sm" label="Convert to USD" color="secondary" @click="onSelectedConvert")
       //- q-table.sticky-virtscroll-table.accountTable.t-table(
       //-     :columns="columns"
       //-     :data="coa"

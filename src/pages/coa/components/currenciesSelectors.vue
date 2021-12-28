@@ -51,7 +51,7 @@ export default {
         },
         {
           name: 'exchange',
-          label: 'HUSD Exchange Rate',
+          label: 'USD Exchange Rate',
           align: 'left',
           sortable: false
         }
