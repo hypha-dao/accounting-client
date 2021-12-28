@@ -3,12 +3,14 @@ q-dialog(v-model="isEnable" persistent)
   q-card
     q-card-section
       .text-bold.text-subtitle1 {{ $t('pages.transactions.currency_convertion') }}
-    q-card-section.text-center
-      .text-h5 {{ debitCurrency.split(' ')[0] }}
-      .text-caption {{ debitCurrency.split(' ')[1] }}
-      q-separator.width-50
-      .text-h5 {{ creditCurrency.split(' ')[0] }}
-      .text-caption {{ creditCurrency.split(' ')[1] }}
+    q-card-section.text-center.flex.justify-center.items-center
+      div
+        .text-h4 {{ debitCurrency.split(' ')[0] }}
+        .text-caption {{ debitCurrency.split(' ')[1] }}
+      div.text-middle.q-mx-md.q-mt-md &tilde;
+      div
+        .text-h4 {{ creditCurrency.split(' ')[0] }}
+        .text-caption {{ creditCurrency.split(' ')[1] }}
     q-card-section
       .text-body2 {{ $t('pages.transactions.exchange_recorded') }}
     q-card-actions.flex.justify-center
@@ -54,9 +56,16 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .width-50 {
   width: 200px;
   margin: 0 auto;
+}
+
+.text-middle {
+  text-align: center;
+  vertical-align: middle;
+  line-height: 0px !important;
+  font-size: 3rem;
 }
 </style>
