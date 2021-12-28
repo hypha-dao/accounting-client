@@ -161,7 +161,7 @@ q-card.q-pa-sm.full-width
                 color="primary"
                 :disable="!transactionBalanced || (!transaction.value.hash && !transactionBalanced)"
                 @click="approveConvertion"
-                v-if="conversionTransaction"
+                v-if="validateBalancesWithDifferentsCurrencies"
             )
             q-btn.full-width(
                 :label="$t('pages.transactions.approve')"
@@ -180,7 +180,7 @@ q-card.q-pa-sm.full-width
                 color="secondary"
                 @click="transactionConvertion = true"
                 :disable="!readyToSave"
-                v-if="conversionTransaction"
+                v-if="validateBalancesWithDifferentsCurrencies"
             )
             q-btn.full-width(
                 v-else
@@ -695,6 +695,7 @@ export default {
       } catch (e) {
         this.showErrorMsg(e)
       }
+      if (this.transactionConvertion) this.transactionConvertion = false
     },
     formattedComponent ({ memo, account, quantity, currency, hash, isCustomComponent, isFromEvent, from, to, type, date }) {
       let component = JSON.parse(JSON.stringify(componentPayout))

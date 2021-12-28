@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 
 export default {
   name: 'currenciesSelector',
@@ -51,7 +51,7 @@ export default {
         },
         {
           name: 'exchange',
-          label: 'HUSD Exchange Rate',
+          label: 'USD Exchange Rate',
           align: 'left',
           sortable: false
         }
@@ -61,21 +61,31 @@ export default {
   async mounted () {
     await this.loadTokens()
   },
+  computed: {
+    ...mapState('tokens', ['tokensWithExchange', 'tokensWithUserExange'])
+  },
   methods: {
     ...mapActions('tokens', ['getTokens']),
+    ...mapMutations('tokens', ['setTokensWithUserExange']),
     async loadTokens () {
-      const tokens = await this.getTokens()
-      this.currencies = tokens.map(token => {
-        console.log(token)
+      if (this.tokensWithUserExange) {
+        this.currencies = JSON.parse(JSON.stringify(this.tokensWithUserExange))
+        return
+      }
+      const userTokens = await this.getTokens()
+      this.currencies = userTokens.map(token => {
+        const { price } = this.tokensWithExchange.find(t => t.symbol === token.symbol.toLowerCase()) || 0
+
         return {
           name: token.symbol,
           isSelected: false,
-          exchange: 0
+          exchange: price || 0
         }
       })
     },
     onSelectedConvert () {
       if (!this.currencies) return
+      this.setTokensWithUserExange(this.currencies)
       const selected = this.currencies.filter(curr => curr.isSelected === true)
       this.$emit('convert', selected)
     }

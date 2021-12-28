@@ -3,7 +3,7 @@
   q-card.q-pa-sm.full-width
     #container.q-pa-sm
       .flex.justify-end.q-mb-sm
-        q-btn(outline size="sm" label="Convert to HUSD" color="secondary" @click="onSelectedConvert")
+        q-btn(outline size="sm" label="Convert to USD" color="secondary" @click="onSelectedConvert")
       //- q-table.sticky-virtscroll-table.accountTable.t-table(
       //-     :columns="columns"
       //-     :data="coa"
@@ -30,7 +30,7 @@
       //-   template(v-slot:body-cell-actions="props")
       //-     q-td(:props="props")
       //-       q-btn(icon="edit" round size="xs" color="positive" @click="onClickEditAccount(props.row)")
-      coa-table-tree(@onClickEditAccount="v => onClickEditAccount(v)" @selectedAccount="onSelectedAccount")
+      coa-table-tree(@onClickEditAccount="v => onClickEditAccount(v)" @selectedAccount="onSelectedAccount" :exchanges="exchanges")
       #transaction-components
         //- p {{ selectedDetailsAccount }}
         //- p {{ detailsAccountSelected }}
@@ -119,7 +119,8 @@ export default {
       modals: {
         openedAccountForm: false,
         openCurrenciesSelector: false
-      }
+      },
+      exchanges: undefined
     }
   },
   methods: {
@@ -169,6 +170,7 @@ export default {
     },
     convertValues (currencies) {
       this.modals.openCurrenciesSelector = false
+      this.exchanges = currencies
     }
   },
   created () {

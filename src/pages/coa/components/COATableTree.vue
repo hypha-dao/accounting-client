@@ -48,6 +48,9 @@
       template.cursor-pointer.flex(slot='HYPHA' slot-scope='props')
         .row.justify-end.cursor-pointer
             p {{ props.row.HYPHA }}
+      template(v-if="exchanges").cursor-pointer.flex(slot='USD' slot-scope='props')
+        .row.justify-end
+            p {{ props.row.USD }}
       template.container-btn.cursor-pointer.flex(slot='actions' slot-scope='props')
         .row.justify-center
           q-icon.animated-icon(
@@ -73,7 +76,11 @@ export default {
   },
   props: {
     value: {},
-    allSelecteable: Boolean
+    allSelecteable: Boolean,
+    exchanges: {
+      type: Array,
+      default: () => undefined
+    }
   },
   mounted (v) {
     // console.log('account on mounted', this.value)
@@ -99,10 +106,14 @@ export default {
     accountSelected (v) {
       this.$emit('selectedAccount', v)
       // this.$emit('input', v)
+    },
+    exchanges () {
+      this.loadAccounts()
     }
   },
   computed: {
-    ...mapState('contAccount', ['treeAccounts'])
+    ...mapState('contAccount', ['treeAccounts']),
+    ...mapState('tokens', ['tokensWithUserExange'])
   },
   methods: {
     ...mapActions('contAccount', ['getChartOfAccounts', 'getAccountById', 'getAccountByCode']),
@@ -158,7 +169,7 @@ export default {
       // }
     },
     async loadAccounts () {
-      console.log('loadAccounts')
+      console.log('loadAccounts', this.columns)
       this.accounts = await this.getChartOfAccounts()
       if (!this.accounts || !this.accounts.accounts) return undefined
       const result = this.accounts.accounts.map(account => {
@@ -177,6 +188,22 @@ export default {
         const HUSD = balances.find(v => v.label === 'global_HUSD')
         const SEEDS = balances.find(v => v.label === 'global_SEEDS')
         const HYPHA = balances.find(v => v.label === 'global_HYPHA')
+        let usdInfo
+        if (this.exchanges) {
+          this.addColumnOnTable()
+          let usd = 0
+          balances.forEach(balance => {
+            const token = this.exchanges?.find(v => balance.label.includes('global_' + v.name))
+            console.log(token)
+            if (token) {
+              const balanceValue = balance ? balance.value.replace(/[^\d.-]/g, '') : 0
+              usd = (Number(balanceValue) * token.exchange) + Number(usd)
+            }
+          })
+          usdInfo = {
+            USD: usd
+          }
+        }
 
         console.log('loadAccounts balances', balances)
         return {
@@ -198,6 +225,7 @@ export default {
           SEEDS: SEEDS ? SEEDS.value.replace(/[^\d.-]/g, '') : '0 ',
           HYPHA: HYPHA ? HYPHA.value.replace(/[^\d.-]/g, '') : '0 ',
           parentHash,
+          ...usdInfo,
           //   ETH: balances.find(v => v.label === 'global_ETH').value || 0,
           amount
         }
@@ -237,6 +265,21 @@ export default {
         const SEEDS = balances.find(v => v.label === 'global_SEEDS')
         const HYPHA = balances.find(v => v.label === 'global_HYPHA')
 
+        let usdInfo
+        if (this.exchanges) {
+          let usd = 0
+          balances.forEach(balance => {
+            const token = this.exchanges?.find(v => balance.label.includes('global_' + v.name))
+            if (token) {
+              const balanceValue = balance ? balance.value.replace(/[^\d.-]/g, '') : 0
+              usd = (Number(balanceValue) * token.exchange) + Number(usd)
+            }
+          })
+          usdInfo = {
+            USD: usd
+          }
+        }
+
         return {
           accountName: accountv.find(v => v.label === 'account_name').value,
           // parentAccount: content.find(v => v.label === 'parent_account').value,
@@ -256,7 +299,8 @@ export default {
           HUSD: HUSD ? HUSD.value.replace(/[^\d.-]/g, '') : '0',
           SEEDS: SEEDS ? SEEDS.value.replace(/[^\d.-]/g, '') : '0 ',
           HYPHA: HYPHA ? HYPHA.value.replace(/[^\d.-]/g, '') : '0 ',
-          parentHash
+          parentHash,
+          ...usdInfo
           // _meta: { visibleChildren: !!account.account }
         }
       })
@@ -333,6 +377,24 @@ export default {
       return ownComps.reduce((acc, curr) => {
         return acc + curr
       }, 0)
+    },
+    addColumnOnTable () {
+      if (!this.exchanges.length === 0) return 0
+      const column = this.columns.find(c => c.property === 'USD')
+      console.log(column, 'Is column on columns', this.exchanges.length > 0)
+      if (!column && this.exchanges.length > 0) {
+        const n = this.exchanges.length - 1
+        this.columns.splice(n - 1, n, {
+          property: 'USD',
+          title: 'USD',
+          direction: null,
+          filterable: true,
+          collapseIcon: false
+        })
+        console.log(this.columns, 'COlumnas')
+      } else {
+        this.columns = this.columns.filter(c => c.property !== 'USD')
+      }
     }
   },
   data () {
