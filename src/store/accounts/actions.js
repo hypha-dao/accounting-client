@@ -32,6 +32,7 @@ export const login = async function ({ commit, dispatch }, { idx, account, retur
       localStorage.setItem('account', accountName)
       localStorage.setItem('returning', true)
       // console.log('returnUrl', returnUrl)
+      await this.dispatch('tokens/getExchangeRates', { root: true })
       // console.log('defaultReturnUrl', defaultReturnUrl)
       // this.$router.push({ path: '/home' })
       this.$router.push({ path: returnUrl || defaultReturnUrl })

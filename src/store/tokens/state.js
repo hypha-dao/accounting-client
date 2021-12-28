@@ -1,3 +1,5 @@
 export default () => ({
-  tokens: null
+  tokens: null,
+  tokensWithExchange: [],
+  tokensWithUserExange: undefined
 })

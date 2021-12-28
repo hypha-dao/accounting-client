@@ -25,6 +25,7 @@
   "dependencies": {
     "@quasar/extras": "^1.10.2",
     "axios": "^0.18.1",
+    "coingecko-api": "^1.0.10",
     "date-diff": "^0.2.1",
     "dgraph-js-http": "^21.3.0",
     "dotenv": "^8.1.0",
