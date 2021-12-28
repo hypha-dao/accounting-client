@@ -34,7 +34,7 @@
       #transaction-components
         //- p {{ selectedDetailsAccount }}
         //- p {{ detailsAccountSelected }}
-        components-table(:components="detailsAccountSelected")
+        components-table(:components="detailsAccountSelected" v-if="detailsAccountSelected")
       .row.q-my-sm.justify-start
           q-btn(
             :label="this.$t('pages.coa.addAccount')"
@@ -126,8 +126,13 @@ export default {
     ...mapActions('contAccount', ['getAllAccounts', 'getAccountById', 'getAccountByCode']),
     ...mapActions('transaction', ['getTransactionById', 'getComponentsByAccountId']),
     async onSelectedAccount (account) {
+      console.log('onSelectedAccount', account)
       this.selectedDetailsAccount = account
-      this.detailsAccountSelected = await this.getComponentsByAccountId({ uid: this.selectedDetailsAccount.uid })
+      if (account) {
+        this.detailsAccountSelected = await this.getComponentsByAccountId({ uid: this.selectedDetailsAccount.uid })
+      } else {
+        this.detailsAccountSelected = undefined
+      }
     },
     async getAccounts () {
       let accs = await this.getAllAccounts({ first: 10, offset: 0 })

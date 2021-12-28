@@ -102,7 +102,8 @@ export default {
           field: row => row.date,
           sortable: true,
           headerClasses: 'bg-secondary text-white',
-          format: v => new Date(v).toUTCString().replace('GMT', '')
+          // format: v => new Date(v).toUTCString().replace('GMT', ''),
+          format: v => { return this.dateToString(v) }
         },
         {
           name: 'actions',

@@ -32,7 +32,8 @@ export default {
           label: this.$t('pages.transactions.date'),
           field: row => `${row.create_date}`,
           sortable: true,
-          headerClasses: 'bg-secondary text-white'
+          headerClasses: 'bg-secondary text-white',
+          format: v => { return this.dateToString(v) }
         },
         {
           name: 'from',
@@ -40,7 +41,12 @@ export default {
           label: this.$t('pages.transactions.from'),
           field: row => `${row.from}`,
           sortable: true,
-          headerClasses: 'bg-secondary text-white'
+          headerClasses: 'bg-secondary text-white',
+          format: (value) => {
+            if (value && value !== undefined && value !== 'undefined') {
+              return value
+            } else return 'N/A'
+          }
         },
         {
           name: 'to',
@@ -48,7 +54,12 @@ export default {
           label: this.$t('pages.transactions.to'),
           field: row => `${row.to}`,
           sortable: true,
-          headerClasses: 'bg-secondary text-white'
+          headerClasses: 'bg-secondary text-white',
+          format: (value) => {
+            if (value && value !== undefined && value !== 'undefined') {
+              return value
+            } else return 'N/A'
+          }
         },
         {
           name: 'type',

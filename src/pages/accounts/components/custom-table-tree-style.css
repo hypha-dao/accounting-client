@@ -163,6 +163,12 @@ canvas, iframe, object {
 .vue-ads-bg-teal-500 {
     background-color: #38b2b2;
 }
+.vue-ads-bg-selected {
+    background-color: #38b2b2;
+}
+.vue-ads-bg-selected:hover {
+    background-color: #489191;
+}
 .vue-ads-rounded-sm {
     border-radius: .125rem;
 }

@@ -15,39 +15,48 @@
       @filter-change='filterChanged',
       @page-change='pageChanged',
       :filter="filter"
+      :classes="tableTreeClasses"
+      selectable
+      @selection-change="selectAccount"
     )
       template(slot="top")
         div
-      template.container-btn.cursor-pointer.flex(slot='accountName' slot-scope='props' @click="selectAccount(props.row)")
+      template.container-btn.cursor-pointer.flex.selectedRow(slot='accountName' slot-scope='props' @click="selectAccount(props.row)")
         .main-column(@click="selectAccount(props.row)")
-          .row(:class="(props.row.isSelectable || allSelecteable) ? 'selectableRow' : undefined")
-            q-icon.q-mr-sm(name="account_balance", size="20px")
-            q-radio.q-mr-sm(v-if="props.row.isSelectable || allSelecteable" dense v-model="accountSelected" :val="props.row")
+          .row(@click="selectAccount(props.row)" :class="(props.row.isSelectable || allSelecteable) ? 'selectableRow' : undefined")
+            q-icon.q-mr-sm(v-if="!props.row.isSelectable" name="account_balance", size="20px")
+            //- q-radio.q-mr-sm(v-if="props.row.isSelectable || allSelecteable" dense v-model="accountSelected" :val="props.row")
             p {{ props.row.accountName }}
       template.cursor-pointer.flex(slot='BTC' slot-scope='props')
-        .row.justify-end
+        .row.justify-end(@click="selectAccount(props.row)" :class="(props.row === accountSelected) ? 'selectedRow' : ''")
             p {{ props.row.BTC }}
       template.cursor-pointer.flex(slot='ETH' slot-scope='props')
-        .row.justify-end
+        .row.justify-end.cursor-pointer
             p {{ props.row.ETH }}
       template.cursor-pointer.flex(slot='EOS' slot-scope='props')
-        .row.justify-end
+        .row.justify-end.cursor-pointer
             p {{ props.row.EOS }}
       template.cursor-pointer.flex(slot='TLOS' slot-scope='props')
-        .row.justify-end
+        .row.justify-end.cursor-pointer
             p {{ props.row.TLOS }}
       template.cursor-pointer.flex(slot='HUSD' slot-scope='props')
-        .row.justify-end
+        .row.justify-end.cursor-pointer
             p {{ props.row.HUSD }}
       template.cursor-pointer.flex(slot='SEEDS' slot-scope='props')
-        .row.justify-end
+        .row.justify-end.cursor-pointer
             p {{ props.row.SEEDS }}
       template.cursor-pointer.flex(slot='HYPHA' slot-scope='props')
-        .row.justify-end
+        .row.justify-end.cursor-pointer
             p {{ props.row.HYPHA }}
       template.container-btn.cursor-pointer.flex(slot='actions' slot-scope='props')
         .row.justify-center
-            q-btn(icon="edit" size="sm" rounded label="Edit" color="positive" @click="onEditAccount(props.row)")
+          q-icon.animated-icon(
+              name="edit"
+              v-ripple
+              size="sm"
+              color="positive"
+              @click="onEditAccount(props.row)"
+          )
 </template>
 
 <script>
@@ -138,9 +147,15 @@ export default {
       }
     },
     selectAccount (account) {
-      if (account.account) {
-        this.accountSelected = account
+      console.log('selectedAccount', account)
+      if (account[0]) {
+        this.accountSelected = account[0]
+      } else {
+        this.accountSelected = undefined
       }
+      // if (account.account) {
+      //   console.log('selectedAccount', account)
+      // }
     },
     async loadAccounts () {
       console.log('loadAccounts')
@@ -171,6 +186,8 @@ export default {
           uid: account.uid,
           _id: account.uid,
           _hasChildren: !!account.account,
+          isSelectable: !account.account,
+          _selectable: !account.account,
           accountCode: content.find(v => v.label === 'account_code').value,
           typeTag: content.find(v => v.label === 'account_tag_type').value,
           BTC: BTC ? BTC.value.replace(/[^\d.-]/g, '') : '0',
@@ -227,8 +244,9 @@ export default {
           hash: account.hash,
           uid: account.uid,
           _hasChildren: !!account.account,
-          _id: account.uid,
           isSelectable: !account.account,
+          _selectable: !account.account,
+          _id: account.uid,
           typeTag: content.find(v => v.label === 'account_tag_type').value,
           accountCode: content.find(v => v.label === 'account_code').value,
           BTC: BTC ? BTC.value.replace(/[^\d.-]/g, '') : '0',
@@ -319,6 +337,55 @@ export default {
   },
   data () {
     return {
+      tableTreeClasses: {
+        table: {
+          'vue-ads-border': true,
+          'vue-ads-w-full': true
+        },
+        info: {
+          'vue-ads-text-center': true,
+          'vue-ads-py-6': true,
+          'vue-ads-text-sm': true,
+          'vue-ads-border-t': true
+        },
+        group: {
+          'vue-ads-font-bold': true,
+          'vue-ads-border-b': true,
+          'vue-ads-italic': true
+        },
+        selected: {
+          'vue-ads-bg-selected': true
+        },
+        'all/': {
+          'hover:vue-ads-bg-gray-200': true
+        },
+        'all/all': {
+          'vue-ads-px-4': true,
+          'vue-ads-py-2': true,
+          'vue-ads-text-sm': true
+        },
+        'even/': {
+          'vue-ads-bg-gray-100': true
+        },
+        'odd/': {
+          'vue-ads-bg-white': true
+        },
+        '0/': {
+          'vue-ads-bg-gray-100': false,
+          'hover:vue-ads-bg-gray-200': false
+        },
+        '0/all': {
+          'vue-ads-px-4': true,
+          'vue-ads-py-2': true,
+          'vue-ads-text-left': true
+        },
+        '0_-1/': {
+          'vue-ads-border-b': true
+        },
+        '/0_-1': {
+          'vue-ads-border-r': true
+        }
+      },
       treeAccountsTemp: [],
       childrenOpened: [],
       page: 0,
@@ -424,6 +491,9 @@ export default {
   background-color: red
 .selectableRow
   cursor: pointer
+table
+  background-color: green !important
+  padding: 100px !important
 #container-tree
   min-width: 100px
   max-width: 2000px
