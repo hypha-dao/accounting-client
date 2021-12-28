@@ -1,4 +1,5 @@
 import { Api, JsonRpc } from 'eosjs'
+import CoinGecko from 'coingecko-api'
 
 import {
   ConcurrencyApi,
@@ -53,6 +54,7 @@ export default ({ store }) => {
   const rpc = new JsonRpc(`${process.env.NETWORK_PROTOCOL}://${process.env.NETWORK_HOST}:${process.env.NETWORK_PORT}`)
   store['$defaultApi'] = new Api({ rpc, textDecoder: new TextDecoder(), textEncoder: new TextEncoder() })
   const dgraph = store.$dgraph
+  const coingecko = new CoinGecko()
 
   const api = {
     signTransaction: signTransaction.bind(store),
@@ -91,7 +93,8 @@ export default ({ store }) => {
 
   const tokensApi = new TokensApi({
     eosApi: api,
-    dgraph
+    dgraph,
+    coingecko
   })
 
   store['$api'] = api
