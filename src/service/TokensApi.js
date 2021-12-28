@@ -7,7 +7,8 @@ class TokensApi extends BaseEosApi {
   constructor ({
     eosApi,
     dgraph,
-    notifier
+    notifier,
+    coingecko
   }) {
     super(
       eosApi,
@@ -21,6 +22,7 @@ class TokensApi extends BaseEosApi {
     )
     this.dgraph = dgraph
     this.baseNodeHash = process.env.DGRAPH_BASE_NODE_HASH
+    this.coingecko = coingecko
   }
 
   /** *
@@ -80,6 +82,14 @@ class TokensApi extends BaseEosApi {
       }
     }]
     return this.eosApi.signTransaction(actions)
+  }
+
+  getExchangeForTokens () {
+    return this.coingecko.coins.markets()
+  }
+
+  getCoinList () {
+    return this.coingecko.coins.list()
   }
 }
 
