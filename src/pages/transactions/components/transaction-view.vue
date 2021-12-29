@@ -94,7 +94,7 @@ q-card.q-pa-sm.full-width
               custom-table-tree(v-model="props.row.account")
       template(v-slot:body-cell-from="props")
         q-td.short-input
-          q-input.short-input(v-if="(editingRow === props.row.hash && props.row.isCustomComponent) || props.row.isEditable.from" autofocus v-model="props.row.from" dense :label="$t('pages.transactions.from')" color="secondary")
+          q-input.short-input(v-if="(editingRow === props.row.hash && !props.row.isFromEvent) || props.row.isEditable.from" autofocus v-model="props.row.from" dense :label="$t('pages.transactions.from')" color="secondary")
           .text-cell.short-input(v-else) {{ props.row.from }}
       template(v-slot:body-cell-type="props")
         q-td.short-input
@@ -111,27 +111,27 @@ q-card.q-pa-sm.full-width
         //- )
       template(v-slot:body-cell-to="props")
         q-td.short-input
-          q-input.short-input(v-if="(editingRow === props.row.hash && props.row.isCustomComponent) || props.row.isEditable.to" v-model="props.row.to" dense :label="$t('pages.transactions.to')" color="secondary")
+          q-input.short-input(v-if="(editingRow === props.row.hash && !props.row.isFromEvent) || props.row.isEditable.to" v-model="props.row.to" dense :label="$t('pages.transactions.to')" color="secondary")
           .text-cell(v-else) {{ props.row.to }}
       template(v-slot:body-cell-amount="props")
         q-td.text-right
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.quantity" type="number" step="0.1" min="0" dense :label="$t('pages.transactions.amount')" color="secondary")
+          q-input(v-if="editingRow === props.row.hash && !props.row.isFromEvent" v-model="props.row.quantity" type="number" step="0.1" min="0" dense :label="$t('pages.transactions.amount')" color="secondary")
           .text-cell(v-else) {{ props.row.quantity }}
       template(v-slot:body-cell-currency="props")
         q-td
           q-select(
             :options="optionsCurrencies"
-            v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense :label="$t('pages.transactions.currency')" color="secondary"
+            v-if="editingRow === props.row.hash && !props.row.isFromEvent" v-model="props.row.currency" dense :label="$t('pages.transactions.currency')" color="secondary"
           )
           .text-cell(v-else) {{ props.row.currency }}
       template(v-slot:body-cell-memo="props")
         q-td.responsive-cell
-          q-input.larger-input(v-if="(editingRow === props.row.hash && props.row.isCustomComponent) || props.row.isEditable.memo" v-model="props.row.memo" dense :label="$t('pages.transactions.memo')" color="secondary")
+          q-input.larger-input(v-if="(editingRow === props.row.hash && !props.row.isFromEvent) || props.row.isEditable.memo" v-model="props.row.memo" dense :label="$t('pages.transactions.memo')" color="secondary")
           .text-memo(v-else) {{ props.row.memo }}
             q-tooltip {{ props.row.memo }}
       template(v-slot:body-cell-date="props")
         q-td
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.date" dense :label="$t('pages.transactions.date')" mask="date" color="secondary")
+          q-input(v-if="editingRow === props.row.hash && !props.row.isFromEvent" v-model="props.row.date" dense :label="$t('pages.transactions.date')" mask="date" color="secondary")
             template(v-slot:append)
               q-icon(name="event" class="cursor-pointer")
                 q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
@@ -484,8 +484,11 @@ export default {
         }
 
         this.components = trx.components.map(v => {
+          const hash = (v.hash === '' || !v.hash) ? [...Array(8)].map(() => Math.floor(Math.random() * 16).toString(16)).join('') : v.hash
+
           return {
             ...v,
+            hash,
             isEditable: {
               memo: false,
               from: false,
@@ -495,6 +498,7 @@ export default {
             showEditAccount: false
           }
         })
+        console.log(this.components, 'Componentes ya mapeados')
       }
     }
   },
@@ -589,6 +593,7 @@ export default {
         }
       }
       this.editingRow = row.hash
+      console.log(this.editingRow)
     },
     onClickAddRow () {
       if (!this.addingComponent) {
