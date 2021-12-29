@@ -27,27 +27,30 @@
             q-icon.q-mr-sm(v-if="!props.row.isSelectable" name="account_balance", size="20px")
             //- q-radio.q-mr-sm(v-if="props.row.isSelectable || allSelecteable" dense v-model="accountSelected" :val="props.row")
             p {{ props.row.accountName }}
-      template.cursor-pointer.flex(slot='BTC' slot-scope='props')
-        .row.justify-end(@click="selectAccount(props.row)" :class="(props.row === accountSelected) ? 'selectedRow' : ''")
-            p {{ props.row.BTC }}
-      template.cursor-pointer.flex(slot='ETH' slot-scope='props')
-        .row.justify-end.cursor-pointer
-            p {{ props.row.ETH }}
-      template.cursor-pointer.flex(slot='EOS' slot-scope='props')
-        .row.justify-end.cursor-pointer
-            p {{ props.row.EOS }}
-      template.cursor-pointer.flex(slot='TLOS' slot-scope='props')
-        .row.justify-end.cursor-pointer
-            p {{ props.row.TLOS }}
-      template.cursor-pointer.flex(slot='HUSD' slot-scope='props')
-        .row.justify-end.cursor-pointer
-            p {{ props.row.HUSD }}
-      template.cursor-pointer.flex(slot='SEEDS' slot-scope='props')
-        .row.justify-end.cursor-pointer
-            p {{ props.row.SEEDS }}
-      template.cursor-pointer.flex(slot='HYPHA' slot-scope='props')
-        .row.justify-end.cursor-pointer
-            p {{ props.row.HYPHA }}
+      //- template.cursor-pointer.flex(slot='BTC' slot-scope='props')
+      //-   .row.justify-end(@click="selectAccount(props.row)" :class="(props.row === accountSelected) ? 'selectedRow' : ''")
+      //-       p {{ props.row.BTC }}
+      //- template.cursor-pointer.flex(slot='BTC' slot-scope='props')
+      //-   .row.justify-end(@click="selectAccount(props.row)" :class="(props.row === accountSelected) ? 'selectedRow' : ''")
+      //-       p {{ props.row.BTC }}
+      //- template.cursor-pointer.flex(slot='ETH' slot-scope='props')
+      //-   .row.justify-end.cursor-pointer
+      //-       p {{ props.row.ETH }}
+      //- template.cursor-pointer.flex(slot='EOS' slot-scope='props')
+      //-   .row.justify-end.cursor-pointer
+      //-       p {{ props.row.EOS }}
+      //- template.cursor-pointer.flex(slot='TLOS' slot-scope='props')
+      //-   .row.justify-end.cursor-pointer
+      //-       p {{ props.row.TLOS }}
+      //- template.cursor-pointer.flex(slot='HUSD' slot-scope='props')
+      //-   .row.justify-end.cursor-pointer
+      //-       p {{ props.row.HUSD }}
+      //- template.cursor-pointer.flex(slot='SEEDS' slot-scope='props')
+      //-   .row.justify-end.cursor-pointer
+      //-       p {{ props.row.SEEDS }}
+      //- template.cursor-pointer.flex(slot='HYPHA' slot-scope='props')
+      //-   .row.justify-end.cursor-pointer
+      //-       p {{ props.row.HYPHA }}
       template(v-if="exchanges").cursor-pointer.flex(slot='USD' slot-scope='props')
         .row.justify-end
             p {{ props.row.USD }}
@@ -80,11 +83,14 @@ export default {
     exchanges: {
       type: Array,
       default: () => undefined
-    }
+    },
+    tokens: undefined
   },
-  mounted (v) {
+  async mounted (v) {
     // console.log('account on mounted', this.value)
-    this.loadAccounts()
+    await this.loadAccounts()
+    this.tokens = await this.getTokens()
+    this.setUpColumns()
     // if (this.treeAccounts.length === 0) {
     // } else {
     //   this.treeAccountsTemp = Array.from(this.treeAccounts)
@@ -118,6 +124,29 @@ export default {
   methods: {
     ...mapActions('contAccount', ['getChartOfAccounts', 'getAccountById', 'getAccountByCode']),
     ...mapState('contAccount', ['components']),
+    ...mapActions('tokens', ['getTokens']),
+    setUpColumns () {
+      const tokensColumns = this.tokens.map(token => {
+        return {
+          property: token.symbol,
+          title: token.symbol,
+          direction: null,
+          filterable: true,
+          collapseIcon: false
+        }
+      })
+      tokensColumns.push({
+        property: 'actions',
+        title: 'Actions',
+        filterable: false,
+        sortable: false,
+        sort: false,
+        direction: 'right',
+        collapseIcon: false
+      })
+      // this.columns.push(tokensColumns)
+      this.columns = this.columns.concat(tokensColumns)
+    },
     onEditAccount (row) {
       // accountCode
       // accountName
@@ -424,7 +453,8 @@ export default {
         'all/all': {
           'vue-ads-px-4': true,
           'vue-ads-py-2': true,
-          'vue-ads-text-sm': true
+          'vue-ads-text-sm': true,
+          'cursor-pointer': true
         },
         'even/': {
           'vue-ads-bg-gray-100': true
@@ -465,63 +495,63 @@ export default {
           direction: null,
           filterable: true,
           collapseIcon: false
-        },
-        {
-          property: 'BTC',
-          title: 'BTC',
-          filterable: true,
-          collapseIcon: false
-        },
-        {
-          property: 'ETH',
-          title: 'ETH',
-          filterable: true,
-          collapseIcon: false
-        },
-        {
-          property: 'EOS',
-          title: 'EOS',
-          direction: null,
-          filterable: true,
-          collapseIcon: false
-        },
-        {
-          property: 'TLOS',
-          title: 'TLOS',
-          direction: null,
-          filterable: true,
-          collapseIcon: false
-        },
-        {
-          property: 'HUSD',
-          title: 'HUSD',
-          direction: null,
-          filterable: true,
-          collapseIcon: false
-        },
-        {
-          property: 'SEEDS',
-          title: 'SEEDS',
-          direction: null,
-          filterable: true,
-          collapseIcon: false
-        },
-        {
-          property: 'HYPHA',
-          title: 'HYPHA',
-          direction: null,
-          filterable: true,
-          collapseIcon: false
-        },
-        {
-          property: 'actions',
-          title: 'Actions',
-          filterable: false,
-          sortable: false,
-          sort: false,
-          direction: 'right',
-          collapseIcon: false
         }
+        // {
+        //   property: 'BTC',
+        //   title: 'BTC',
+        //   filterable: true,
+        //   collapseIcon: false
+        // },
+        // {
+        //   property: 'ETH',
+        //   title: 'ETH',
+        //   filterable: true,
+        //   collapseIcon: false
+        // },
+        // {
+        //   property: 'EOS',
+        //   title: 'EOS',
+        //   direction: null,
+        //   filterable: true,
+        //   collapseIcon: false
+        // },
+        // {
+        //   property: 'TLOS',
+        //   title: 'TLOS',
+        //   direction: null,
+        //   filterable: true,
+        //   collapseIcon: false
+        // },
+        // {
+        //   property: 'HUSD',
+        //   title: 'HUSD',
+        //   direction: null,
+        //   filterable: true,
+        //   collapseIcon: false
+        // },
+        // {
+        //   property: 'SEEDS',
+        //   title: 'SEEDS',
+        //   direction: null,
+        //   filterable: true,
+        //   collapseIcon: false
+        // },
+        // {
+        //   property: 'HYPHA',
+        //   title: 'HYPHA',
+        //   direction: null,
+        //   filterable: true,
+        //   collapseIcon: false
+        // },
+        // {
+        //   property: 'actions',
+        //   title: 'Actions',
+        //   filterable: false,
+        //   sortable: false,
+        //   sort: false,
+        //   direction: 'right',
+        //   collapseIcon: false
+        // }
         // {
         //   property: 'typeTag',
         //   title: 'Type',
