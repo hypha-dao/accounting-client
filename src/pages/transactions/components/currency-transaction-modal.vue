@@ -7,7 +7,7 @@ q-dialog(v-model="isEnable" persistent)
       div
         .text-h4 {{ debitCurrency.split(' ')[0] }}
         .text-caption {{ debitCurrency.split(' ')[1] }}
-      div.text-middle.q-mx-md.q-mt-md &tilde;
+      div.text-middle.q-mx-md ≅
       div
         .text-h4 {{ creditCurrency.split(' ')[0] }}
         .text-caption {{ creditCurrency.split(' ')[1] }}
@@ -65,7 +65,6 @@ export default {
 .text-middle {
   text-align: center;
   vertical-align: middle;
-  line-height: 0px !important;
-  font-size: 3rem;
+  font-size: 2.5rem;
 }
 </style>
