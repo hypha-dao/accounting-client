@@ -462,6 +462,7 @@ export default {
     async selectedTransaction (v) {
       this.addingComponent = false
       this.editingRow = false
+      this.conversionTransaction = Boolean(v.value.isCurrencyConversion)
       this.transaction.value = {
         memo: undefined,
         date: undefined,
