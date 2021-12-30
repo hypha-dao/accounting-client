@@ -123,15 +123,7 @@ export default {
   computed: {
     eventsFreeze () {
       const events = this.events.rows.slice(0, this.pageSize * (this.nextKey - 2))
-      const eventsFiltered = events.filter(e => {
-        const tokens = this.tokens.map(v => v.symbol)
-        const includes = tokens.includes(e.currency)
-        console.log('includes', includes, e.currency, tokens)
-        if (tokens.includes(e.currency)) {
-          return e
-        }
-      })
-      return Object.freeze(eventsFiltered)
+      return Object.freeze(events)
     }
   },
   methods: {
@@ -156,9 +148,19 @@ export default {
       try {
         if (!this.loading && this.events.more && index > (to - 15) && direction === 'increase') {
           this.pagination.rowsPerPage = this.pagination.rowsPerPage + this.pageSize
+          this.showIsLoading(true)
           this.loading = true
           let newRows = await this.loadEvents()
-          this.events.rows = this.events.rows.concat(newRows.rows)
+          if (newRows.rows.length === 0) return
+          let filteredEvents = this.filterEvents(newRows.rows)
+          while (filteredEvents.length === 0 && newRows.more) {
+            newRows = await this.loadEvents()
+            filteredEvents = this.filterEvents(newRows.rows)
+            this.offset = this.offset + this.pageSize
+            this.limit = this.offset + this.pageSize
+          }
+          this.showIsLoading(false)
+          this.events.rows = this.events.rows.concat(filteredEvents)
           this.events.more = newRows.more
           this.nextKey = this.nextKey + 1
           this.loading = false
@@ -182,6 +184,16 @@ export default {
       this.offset = 0
       this.nextPage = 2
       this.onScroll({ to: -1, ref: this.$refs.table, index: 0, direction: 'increase' })
+    },
+    filterEvents (events) {
+      return events?.filter(e => {
+        const tokens = this.tokens.map(v => v.symbol)
+        const includes = tokens.includes(e.currency)
+        console.log('includes', includes, e.currency, tokens)
+        if (tokens.includes(e.currency)) {
+          return e
+        }
+      })
     }
   }
 }
