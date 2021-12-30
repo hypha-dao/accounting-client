@@ -159,9 +159,9 @@ q-card.q-pa-sm.full-width
                 dense
                 size="md"
                 color="primary"
-                :disable="!transactionBalanced || (!transaction.value.hash && !transactionBalanced)"
+                :disable="!validateBalancesWithDifferentsCurrencies"
                 @click="approveConvertion"
-                v-if="validateBalancesWithDifferentsCurrencies"
+                v-if="conversionTransaction"
             )
             q-btn.full-width(
                 :label="$t('pages.transactions.approve')"
@@ -179,8 +179,8 @@ q-card.q-pa-sm.full-width
                 size="md"
                 color="secondary"
                 @click="transactionConvertion = true"
-                :disable="!readyToSave"
-                v-if="validateBalancesWithDifferentsCurrencies"
+                :disable="!validateBalancesWithDifferentsCurrencies"
+                v-if="conversionTransaction"
             )
             q-btn.full-width(
                 v-else
@@ -201,7 +201,7 @@ q-card.q-pa-sm.full-width
                 :disable="!readyToSave"
             )
   #modals
-    currency-transaction-modal(:isEnable="transactionConvertion", @cancel="cancellTransactionConvertion" @confirm="isApproveConvertion  ? aproveTransaction() : storeTransaction()" :components="components")
+    currency-transaction-modal(:isEnable="transactionConvertion", @cancel="cancellTransactionConvertion" @confirm="isApproveConvertion  ? approveTransactionWithCurrencyConvertion() : storeTransactionWithCurrencyConvertion()" :components="components")
 </template>
 
 <script>
@@ -498,7 +498,6 @@ export default {
             showEditAccount: false
           }
         })
-        console.log(this.components, 'Componentes ya mapeados')
       }
     }
   },
@@ -507,7 +506,7 @@ export default {
     this.loadTokens()
   },
   methods: {
-    ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById', 'deteleTxn', 'balanceTxn']),
+    ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById', 'deteleTxn', 'balanceTxn', 'balanceCurrencyConversion', 'createCurrencyConvertion', 'updateCurrencyConversion']),
     ...mapActions('contAccount', ['getAccountByCode']),
     ...mapActions('tokens', ['getTokens']),
     ...mapMutations('general', ['setIsLoading']),
@@ -750,6 +749,74 @@ export default {
         if (this.isApproveConvertion) this.isApproveConvertion = false
       } catch (e) {
         console.error(e)
+      }
+    },
+    async approveTransactionWithCurrencyConvertion () {
+      try {
+        let fullTrx = JSON.parse(JSON.stringify(transactionPayout))
+        fullTrx[0].find(el => el.label === 'trx_date').value[1] = `${(this.transaction.value.date).replaceAll('/', '-')}T00:00:00` // Need to have this formmat
+        fullTrx[0].find(el => el.label === 'trx_name').value[1] = this.transaction.value.name
+        fullTrx[0].find(el => el.label === 'trx_memo').value[1] = this.transaction.value.memo || ''
+
+        for (let comp of this.components) {
+          fullTrx.push(await this.formattedComponent(comp))
+        }
+        console.log('Update Trx', fullTrx)
+        const res = await this.balanceCurrencyConversion({ transactionHash: this.transaction.value.hash, contentGroups: fullTrx })
+        console.log('Update Trx res', res)
+
+        if (res) {
+          this.showSuccessMsg(this.$t('pages.transactions.approved'))
+          this.cleanTrx()
+        }
+        this.transactionConvertion = false
+        this.conversionTransaction = false
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    async storeTransactionWithCurrencyConvertion () {
+      let fullTrx = JSON.parse(JSON.stringify(transactionPayout))
+
+      let trxHash = ''
+      if (this.isSelect) {
+        trxHash = this.transaction.value.hash
+
+        fullTrx[0].push({
+          label: 'id',
+          value: ['int64', this.transaction.value.id]
+        })
+      }
+
+      fullTrx[0].find(el => el.label === 'trx_date').value[1] = `${(this.transaction.value.date).replaceAll('/', '-')}T00:00:00` // Need to have this formmat
+      fullTrx[0].find(el => el.label === 'trx_name').value[1] = this.transaction.value.name
+      fullTrx[0].find(el => el.label === 'trx_memo').value[1] = this.transaction.value.memo || ''
+
+      console.log(this.components, 'Components')
+      for (let comp of this.components) {
+        fullTrx.push(await this.formattedComponent(comp))
+      }
+
+      // console.log(JSON.stringify(fullTrx, null, 2))
+
+      try {
+        let { name } = this.transaction.value
+        let response
+        console.log('trxUpsert', this.isSelect, fullTrx)
+        if (!this.isSelect) {
+          response = await this.createCurrencyConvertion({ contentGroups: fullTrx })
+        } else {
+          response = await this.updateCurrencyConversion({ contentGroups: fullTrx, transactionHash: trxHash })
+        }
+        if (response) {
+          await this.cleanTrx(name)
+          this.autoSelect = false
+          this.showSuccessMsg(this.$t('pages.transactions.saved'))
+        }
+        this.transactionConvertion = false
+        this.conversionTransaction = false
+      } catch (e) {
+        this.showErrorMsg(e)
       }
     },
     async cleanTrx (name = undefined) {

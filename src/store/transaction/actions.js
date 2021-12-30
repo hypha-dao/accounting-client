@@ -132,3 +132,47 @@ export const deteleTxn = async function ({ commit }, { transactionHash }) {
     commit('general/setIsLoading', false, { root: true })
   }
 }
+
+export const createCurrencyConvertion = async function ({ commit }, { contentGroups }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const accountName = await this.getters['accounts/account']
+    const transaction = await this.$transactionApi.createCurrencyConversion({ contentGroups, accountName })
+
+    return transaction
+  } catch (e) {
+    console.error('An error ocurred while trying to create txn', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
+
+export const updateCurrencyConversion = async function ({ commit }, { transactionHash, contentGroups }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const updater = await this.getters['accounts/account']
+    // console.log('store', contentGroups)
+    const transaction = await this.$transactionApi.updateCurrencyConversion({ updater, transactionHash, contentGroups })
+    return transaction
+  } catch (e) {
+    console.error('An error ocurred while trying to crerate txn with event', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
+
+export const balanceCurrencyConversion = async function ({ commit }, { transactionHash, contentGroups }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const issuer = await this.getters['accounts/account']
+    const transaction = await this.$transactionApi.balanceCurrencyConversion({ issuer, transactionHash, contentGroups })
+    return transaction
+  } catch (e) {
+    console.error('An error ocurred while trying to approve currency conversion', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}
