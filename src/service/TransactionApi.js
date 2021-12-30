@@ -80,7 +80,7 @@ class TransactionApi extends BaseEosApi {
           hash
           uid
           content_groups(orderasc:content_group_sequence, first:1) {
-            contents @filter(allofterms(label, "trx_date") or allofterms(label, "trx_name") or allofterms(label, "trx_memo") or allofterms(label, "trx_ledger") or allofterms(label, "id") ) {
+            contents @filter(allofterms(label, "trx_date") or allofterms(label, "trx_name") or allofterms(label, "trx_memo") or allofterms(label, "trx_ledger") or allofterms(label, "id") or allofterms(label, "currency_conversion")) {
               label
               value
             }
@@ -101,6 +101,7 @@ class TransactionApi extends BaseEosApi {
         ledger: contents.find(el => el.label === 'trx_ledger').value,
         memo: contents.find(el => el.label === 'trx_memo')?.value || '',
         name: contents.find(el => el.label === 'trx_name').value,
+        isCurrencyConversion: contents.find(el => el.label === 'currency_conversion')?.value || 0,
         approved: false
       }
     })
