@@ -273,6 +273,15 @@ class TransactionApi extends BaseEosApi {
               value
             }
           }
+          transaction @cascade {
+            uid
+            content_groups(orderasc:content_group_sequence, first:1) {
+              contents(orderasc:label) @filter(allofterms(label, "currency_conversion"))  {
+                label
+                value
+              }
+            }
+          }
         }
       }
     }
@@ -285,10 +294,16 @@ class TransactionApi extends BaseEosApi {
     let account = data.account[0]
     const components = account.acctcmp.map(comp => {
       const details = comp.content_groups[0].contents
+      const transaction = comp.transaction
+      let isCurrencyConversion = false
+      if (transaction) {
+        isCurrencyConversion = Boolean(transaction[0].content_groups[0].contents[0].value)
+      }
       let props = {}
       details.forEach(detail => {
         props = {
           ...props,
+          isCurrencyConversion,
           [detail.label]: detail.value
         }
       })
