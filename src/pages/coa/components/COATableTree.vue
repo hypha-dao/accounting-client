@@ -83,8 +83,7 @@ export default {
     exchanges: {
       type: Array,
       default: () => undefined
-    },
-    tokens: undefined
+    }
   },
   async mounted (v) {
     // console.log('account on mounted', this.value)
@@ -563,7 +562,8 @@ export default {
       rows: [],
       accounts: undefined,
       accountsTree: undefined,
-      accountSelected: undefined
+      accountSelected: undefined,
+      tokens: undefined
     }
   }
 }
