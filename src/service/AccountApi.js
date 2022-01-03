@@ -365,6 +365,20 @@ class AccountApi extends BaseEosApi {
 
     return { value: mappedAccount }
   }
+
+  deleteAccount ({ deleter, accountHash }) {
+    console.log(deleter, accountHash)
+    const actions = [{
+      account: Contracts.HYPHA,
+      name: 'deleteacc',
+      data: {
+        deleter,
+        account_hash: accountHash
+      }
+    }]
+
+    return this.eosApi.signTransaction(actions)
+  }
 }
 
 export default AccountApi

@@ -107,3 +107,18 @@ export const getAccountByHash = async function ({ commit }, { hash }) {
     commit('general/setIsLoading', false, { root: true })
   }
 }
+
+export const deleteAccount = async function ({ commit }, { accountHash }) {
+  try {
+    commit('general/setIsLoading', true, { root: true })
+    const deleter = this.getters['accounts/account']
+    const account = await this.$accountApi.deleteAccount({ deleter, accountHash })
+    return account
+  } catch (e) {
+    console.error('An error ocurred while trying to delete account', e)
+    commit('general/setErrorMsg', e.message || e, { root: true })
+    throw new Error(e)
+  } finally {
+    commit('general/setIsLoading', false, { root: true })
+  }
+}

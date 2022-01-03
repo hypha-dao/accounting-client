@@ -118,7 +118,8 @@ export default {
       addAccount: 'Add an account',
       chooseParent: 'Choose parent account',
       saveAccount: 'Save Account',
-      balance: 'Balance'
+      balance: 'Balance',
+      deleteAccount: 'Delete account'
     },
     tokens: {
       symbol: 'Symbol',

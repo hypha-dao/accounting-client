@@ -27,6 +27,12 @@
           :disable="edit"
       )
       //- p {{baseChildrenAccount}}
+      q-btn.full-width.q-mb-md(
+        :label="$t('pages.coa.deleteAccount')"
+        color="negative"
+        v-if="edit && canBeDelete"
+        @click="deleteAccountWithHash"
+      )
       q-btn.full-width(
         :label="$t('pages.coa.saveAccount')"
         type="submit"
@@ -58,8 +64,10 @@ export default {
       this.params.parentAccount = await this.getAccountByHash({ hash: this.account.parentHash })
     }
   },
-  mounted () {
-
+  async mounted () {
+    if (this.edit) {
+      this.canBeDelete = await this.validateIfAccountHasChildrenOrIsNodeAccount()
+    }
   },
   watch: {
     baseChildrenAccount () {
@@ -108,7 +116,8 @@ export default {
           }
           return true
         }
-      }
+      },
+      canBeDelete: false
     }
   },
   computed: {
@@ -136,7 +145,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions('contAccount', ['createAccount', 'updateAccount', 'getAccountByHash']),
+    ...mapActions('contAccount', ['createAccount', 'updateAccount', 'getAccountByHash', 'deleteAccount', 'getAccountById']),
+    ...mapActions('transaction', ['getComponentsByAccountId']),
     ...mapMutations('contAccount', ['setTreeAccounts']),
     async onSubmit () {
       try {
@@ -153,6 +163,31 @@ export default {
 
         if (response) {
           this.showSuccessMsg('Account saved successfully')
+          this.setTreeAccounts([])
+          this.$emit('success')
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    async validateIfAccountHasChildrenOrIsNodeAccount () {
+      try {
+        const { data } = await this.getAccountById({ uid: this.account.uid })
+        const children = data.account[0]
+        if (children.account) return false
+        const detailsAccountSelected = await this.getComponentsByAccountId({ uid: this.account.uid })
+        if (detailsAccountSelected) return false
+        return true
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    async deleteAccountWithHash () {
+      try {
+        console.log(this.account)
+        const response = await this.deleteAccount({ accountHash: this.account.hash })
+        if (response) {
+          this.showSuccessMsg('Account deleted successfully')
           this.setTreeAccounts([])
           this.$emit('success')
         }
