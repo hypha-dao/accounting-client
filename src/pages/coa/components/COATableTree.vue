@@ -152,6 +152,7 @@ export default {
       // hash
       // parentHash
       const account = {
+        uid: row.uid,
         accountCode: row.accountCode,
         accountName: row.accountName,
         hash: row.hash,
