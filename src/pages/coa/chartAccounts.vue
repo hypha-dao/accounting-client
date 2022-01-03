@@ -30,7 +30,7 @@
       //-   template(v-slot:body-cell-actions="props")
       //-     q-td(:props="props")
       //-       q-btn(icon="edit" round size="xs" color="positive" @click="onClickEditAccount(props.row)")
-      coa-table-tree(@onClickEditAccount="v => onClickEditAccount(v)" @selectedAccount="onSelectedAccount" :exchanges="exchanges")
+      coa-table-tree(@onClickEditAccount="v => onClickEditAccount(v)" @selectedAccount="onSelectedAccount" :exchanges="exchanges" ref="coaTable")
       #transaction-components
         //- p {{ selectedDetailsAccount }}
         //- p {{ detailsAccountSelected }}
@@ -162,7 +162,8 @@ export default {
       this.selectedAccount = undefined
       this.modals.openedAccountForm = false
       setTimeout(() => {
-        this.getAccounts()
+        this.$refs.coaTable.loadAccounts()
+        console.log('Refresh coa list table')
       }, 2000)
     },
     onSelectedConvert () {
