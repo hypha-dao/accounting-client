@@ -370,6 +370,51 @@ class TransactionApi extends BaseEosApi {
     return this.eosApi.signTransaction(actions)
   }
 
+  async createCurrencyConversion ({ accountName, contentGroups }) {
+    const actions = [{
+      account: Contracts.HYPHA,
+      name: 'crryconvtrx',
+      data: {
+        trx_hash: '0000000000000000000000000000000000000000000000000000000000000000',
+        issuer: accountName,
+        trx_info: contentGroups,
+        approve: false
+      }
+    }]
+    return this.eosApi.signTransaction(actions)
+  }
+
+  async updateCurrencyConversion ({ updater, transactionHash, contentGroups }) {
+    const actions = [{
+      account: Contracts.HYPHA,
+      name: 'crryconvtrx',
+      data: {
+        issuer: updater,
+        trx_hash: transactionHash,
+        trx_info: contentGroups,
+        approve: false
+      }
+    }]
+
+    console.log(JSON.stringify(actions, null, 2))
+    return this.eosApi.signTransaction(actions)
+  }
+
+  async balanceCurrencyConversion ({ issuer, transactionHash, contentGroups }) {
+    const actions = [{
+      account: Contracts.HYPHA,
+      name: 'crryconvtrx',
+      data: {
+        issuer,
+        trx_hash: transactionHash || '0000000000000000000000000000000000000000000000000000000000000000',
+        trx_info: contentGroups,
+        approve: true
+      }
+    }]
+
+    return this.eosApi.signTransaction(actions)
+  }
+
   async deteleTxn ({ deleter, transactionHash }) {
     const actions = [{
       account: Contracts.HYPHA,

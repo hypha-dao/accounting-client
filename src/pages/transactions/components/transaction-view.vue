@@ -68,7 +68,7 @@ q-card.q-pa-sm.full-width
         template(v-slot:append)
          q-icon(name="event" class="cursor-pointer")
           q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
-            q-date(v-model="transaction.value.date" today-btn mask="DD-MM-YYYY")
+            q-date(v-model="transaction.value.date" today-btn)
               div(class="row items-center justify-end")
                 q-btn(v-close-popup label="Close" color="primary" flat)
   #container
@@ -94,7 +94,7 @@ q-card.q-pa-sm.full-width
               custom-table-tree(v-model="props.row.account")
       template(v-slot:body-cell-from="props")
         q-td.short-input
-          q-input.short-input(v-if="(editingRow === props.row.hash && props.row.isCustomComponent) || props.row.isEditable.from" autofocus v-model="props.row.from" dense :label="$t('pages.transactions.from')" color="secondary")
+          q-input.short-input(v-if="(editingRow === props.row.hash && !props.row.isFromEvent) || props.row.isEditable.from" autofocus v-model="props.row.from" dense :label="$t('pages.transactions.from')" color="secondary")
           .text-cell.short-input(v-else) {{ props.row.from }}
       template(v-slot:body-cell-type="props")
         q-td.short-input
@@ -111,27 +111,27 @@ q-card.q-pa-sm.full-width
         //- )
       template(v-slot:body-cell-to="props")
         q-td.short-input
-          q-input.short-input(v-if="(editingRow === props.row.hash && props.row.isCustomComponent) || props.row.isEditable.to" v-model="props.row.to" dense :label="$t('pages.transactions.to')" color="secondary")
+          q-input.short-input(v-if="(editingRow === props.row.hash && !props.row.isFromEvent) || props.row.isEditable.to" v-model="props.row.to" dense :label="$t('pages.transactions.to')" color="secondary")
           .text-cell(v-else) {{ props.row.to }}
       template(v-slot:body-cell-amount="props")
         q-td.text-right
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.quantity" type="number" step="0.1" min="0" dense :label="$t('pages.transactions.amount')" color="secondary")
+          q-input(v-if="editingRow === props.row.hash && !props.row.isFromEvent" v-model="props.row.quantity" type="number" step="0.1" min="0" dense :label="$t('pages.transactions.amount')" color="secondary")
           .text-cell(v-else) {{ props.row.quantity }}
       template(v-slot:body-cell-currency="props")
         q-td
           q-select(
             :options="optionsCurrencies"
-            v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.currency" dense :label="$t('pages.transactions.currency')" color="secondary"
+            v-if="editingRow === props.row.hash && !props.row.isFromEvent" v-model="props.row.currency" dense :label="$t('pages.transactions.currency')" color="secondary"
           )
           .text-cell(v-else) {{ props.row.currency }}
       template(v-slot:body-cell-memo="props")
         q-td.responsive-cell
-          q-input.larger-input(v-if="(editingRow === props.row.hash && props.row.isCustomComponent) || props.row.isEditable.memo" v-model="props.row.memo" dense :label="$t('pages.transactions.memo')" color="secondary")
+          q-input.larger-input(v-if="(editingRow === props.row.hash && !props.row.isFromEvent) || props.row.isEditable.memo" v-model="props.row.memo" dense :label="$t('pages.transactions.memo')" color="secondary")
           .text-memo(v-else) {{ props.row.memo }}
             q-tooltip {{ props.row.memo }}
       template(v-slot:body-cell-date="props")
         q-td
-          q-input(v-if="editingRow === props.row.hash && props.row.isCustomComponent" v-model="props.row.date" dense :label="$t('pages.transactions.date')" mask="date" color="secondary")
+          q-input(v-if="editingRow === props.row.hash && !props.row.isFromEvent" v-model="props.row.date" dense :label="$t('pages.transactions.date')" mask="date" color="secondary")
             template(v-slot:append)
               q-icon(name="event" class="cursor-pointer")
                 q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
@@ -159,9 +159,9 @@ q-card.q-pa-sm.full-width
                 dense
                 size="md"
                 color="primary"
-                :disable="!transactionBalanced || (!transaction.value.hash && !transactionBalanced)"
+                :disable="!validateBalancesWithDifferentsCurrencies"
                 @click="approveConvertion"
-                v-if="validateBalancesWithDifferentsCurrencies"
+                v-if="conversionTransaction"
             )
             q-btn.full-width(
                 :label="$t('pages.transactions.approve')"
@@ -179,8 +179,8 @@ q-card.q-pa-sm.full-width
                 size="md"
                 color="secondary"
                 @click="transactionConvertion = true"
-                :disable="!readyToSave"
-                v-if="validateBalancesWithDifferentsCurrencies"
+                :disable="!validateBalancesWithDifferentsCurrencies"
+                v-if="conversionTransaction"
             )
             q-btn.full-width(
                 v-else
@@ -201,7 +201,7 @@ q-card.q-pa-sm.full-width
                 :disable="!readyToSave"
             )
   #modals
-    currency-transaction-modal(:isEnable="transactionConvertion", @cancel="cancellTransactionConvertion" @confirm="isApproveConvertion  ? aproveTransaction() : storeTransaction()" :components="components")
+    currency-transaction-modal(:isEnable="transactionConvertion", @cancel="cancellTransactionConvertion" @confirm="isApproveConvertion  ? approveTransactionWithCurrencyConvertion() : storeTransactionWithCurrencyConvertion()" :components="components")
 </template>
 
 <script>
@@ -485,8 +485,11 @@ export default {
         }
 
         this.components = trx.components.map(v => {
+          const hash = (v.hash === '' || !v.hash) ? [...Array(8)].map(() => Math.floor(Math.random() * 16).toString(16)).join('') : v.hash
+
           return {
             ...v,
+            hash,
             isEditable: {
               memo: false,
               from: false,
@@ -504,7 +507,7 @@ export default {
     this.loadTokens()
   },
   methods: {
-    ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById', 'deteleTxn', 'balanceTxn']),
+    ...mapActions('transaction', ['getUnapprovedTransactions', 'createTxn', 'updateTxn', 'getTransactionById', 'deteleTxn', 'balanceTxn', 'balanceCurrencyConversion', 'createCurrencyConvertion', 'updateCurrencyConversion']),
     ...mapActions('contAccount', ['getAccountByCode']),
     ...mapActions('tokens', ['getTokens']),
     ...mapMutations('general', ['setIsLoading']),
@@ -590,6 +593,7 @@ export default {
         }
       }
       this.editingRow = row.hash
+      console.log(this.editingRow)
     },
     onClickAddRow () {
       if (!this.addingComponent) {
@@ -746,6 +750,74 @@ export default {
         if (this.isApproveConvertion) this.isApproveConvertion = false
       } catch (e) {
         console.error(e)
+      }
+    },
+    async approveTransactionWithCurrencyConvertion () {
+      try {
+        let fullTrx = JSON.parse(JSON.stringify(transactionPayout))
+        fullTrx[0].find(el => el.label === 'trx_date').value[1] = `${(this.transaction.value.date).replaceAll('/', '-')}T00:00:00` // Need to have this formmat
+        fullTrx[0].find(el => el.label === 'trx_name').value[1] = this.transaction.value.name
+        fullTrx[0].find(el => el.label === 'trx_memo').value[1] = this.transaction.value.memo || ''
+
+        for (let comp of this.components) {
+          fullTrx.push(await this.formattedComponent(comp))
+        }
+        console.log('Update Trx', fullTrx)
+        const res = await this.balanceCurrencyConversion({ transactionHash: this.transaction.value.hash, contentGroups: fullTrx })
+        console.log('Update Trx res', res)
+
+        if (res) {
+          this.showSuccessMsg(this.$t('pages.transactions.approved'))
+          this.cleanTrx()
+        }
+        this.transactionConvertion = false
+        this.conversionTransaction = false
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    async storeTransactionWithCurrencyConvertion () {
+      let fullTrx = JSON.parse(JSON.stringify(transactionPayout))
+
+      let trxHash = ''
+      if (this.isSelect) {
+        trxHash = this.transaction.value.hash
+
+        fullTrx[0].push({
+          label: 'id',
+          value: ['int64', this.transaction.value.id]
+        })
+      }
+
+      fullTrx[0].find(el => el.label === 'trx_date').value[1] = `${(this.transaction.value.date).replaceAll('/', '-')}T00:00:00` // Need to have this formmat
+      fullTrx[0].find(el => el.label === 'trx_name').value[1] = this.transaction.value.name
+      fullTrx[0].find(el => el.label === 'trx_memo').value[1] = this.transaction.value.memo || ''
+
+      console.log(this.components, 'Components')
+      for (let comp of this.components) {
+        fullTrx.push(await this.formattedComponent(comp))
+      }
+
+      // console.log(JSON.stringify(fullTrx, null, 2))
+
+      try {
+        let { name } = this.transaction.value
+        let response
+        console.log('trxUpsert', this.isSelect, fullTrx)
+        if (!this.isSelect) {
+          response = await this.createCurrencyConvertion({ contentGroups: fullTrx })
+        } else {
+          response = await this.updateCurrencyConversion({ contentGroups: fullTrx, transactionHash: trxHash })
+        }
+        if (response) {
+          await this.cleanTrx(name)
+          this.autoSelect = false
+          this.showSuccessMsg(this.$t('pages.transactions.saved'))
+        }
+        this.transactionConvertion = false
+        this.conversionTransaction = false
+      } catch (e) {
+        this.showErrorMsg(e)
       }
     },
     async cleanTrx (name = undefined) {

@@ -407,21 +407,23 @@ export default {
       }, 0)
     },
     addColumnOnTable () {
-      if (!this.exchanges.length === 0) return 0
+      if (this.exchanges.length === 0) return
       const column = this.columns.find(c => c.property === 'USD')
-      console.log(column, 'Is column on columns', this.exchanges.length > 0)
+      if (column && this.exchanges.length === 0) {
+        this.columns = this.columns.filter(c => c.property !== 'USD')
+        return
+      }
+      if (column) return
       if (!column && this.exchanges.length > 0) {
-        const n = this.exchanges.length - 1
-        this.columns.splice(n - 1, n, {
+        const n = this.columns.length
+        this.columns.splice(n - 1, 0, {
           property: 'USD',
           title: 'USD',
           direction: null,
           filterable: true,
           collapseIcon: false
         })
-        console.log(this.columns, 'COlumnas')
-      } else {
-        this.columns = this.columns.filter(c => c.property !== 'USD')
+        console.log(this.columns, 'Columnas')
       }
     }
   },
