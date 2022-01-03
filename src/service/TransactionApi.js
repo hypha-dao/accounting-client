@@ -292,7 +292,7 @@ class TransactionApi extends BaseEosApi {
     let { data } = await this.dgraph.newTxn().queryWithVars(query, vars)
 
     let account = data.account[0]
-    const components = account.acctcmp.map(comp => {
+    const components = account.acctcmp?.map(comp => {
       const details = comp.content_groups[0].contents
       const transaction = comp.transaction
       let isCurrencyConversion = false
