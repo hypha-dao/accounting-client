@@ -1,7 +1,8 @@
 export const setTokensWithExchange = (state, tokens) => {
   state.tokensWithExchange = tokens.map(token => {
-    const { symbol, current_price: currentPrice } = token
+    const { symbol, current_price: currentPrice, id } = token
     return {
+      id,
       symbol,
       price: currentPrice
     }
