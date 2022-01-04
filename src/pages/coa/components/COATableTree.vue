@@ -217,7 +217,8 @@ export default {
         const HUSD = balances.find(v => v.label === 'global_HUSD')
         const SEEDS = balances.find(v => v.label === 'global_SEEDS')
         const HYPHA = balances.find(v => v.label === 'global_HYPHA')
-        let usdInfo
+        let usdInfo = {}
+        let tokens = 'USD exchange '
         if (this.exchanges) {
           this.addColumnOnTable()
           let usd = 0
@@ -227,11 +228,11 @@ export default {
             if (token) {
               const balanceValue = balance ? balance.value.replace(/[^\d.-]/g, '') : 0
               usd = (Number(balanceValue) * token.exchange) + Number(usd)
+              tokens += `${token.name},`
             }
           })
-          usdInfo = {
-            USD: usd
-          }
+          tokens = tokens.slice(0, tokens.length - 1)
+          usdInfo[tokens] = usd
         }
 
         console.log('loadAccounts balances', balances)
@@ -294,7 +295,8 @@ export default {
         const SEEDS = balances.find(v => v.label === 'global_SEEDS')
         const HYPHA = balances.find(v => v.label === 'global_HYPHA')
 
-        let usdInfo
+        let usdInfo = {}
+        let tokens = 'USD exchange '
         if (this.exchanges) {
           let usd = 0
           balances.forEach(balance => {
@@ -302,11 +304,11 @@ export default {
             if (token) {
               const balanceValue = balance ? balance.value.replace(/[^\d.-]/g, '') : 0
               usd = (Number(balanceValue) * token.exchange) + Number(usd)
+              tokens = `${token.name},`
             }
           })
-          usdInfo = {
-            USD: usd
-          }
+          tokens = tokens.slice(0, tokens.length - 1)
+          usdInfo[tokens] = usd
         }
 
         return {
@@ -409,17 +411,23 @@ export default {
     },
     addColumnOnTable () {
       if (this.exchanges.length === 0) return
-      const column = this.columns.find(c => c.property === 'USD')
+      let column = this.columns.find(c => c.property.includes('USD exchange'))
       if (column && this.exchanges.length === 0) {
-        this.columns = this.columns.filter(c => c.property !== 'USD')
+        this.columns = this.columns.filter(c => !c.property.includes('USD exchange'))
         return
       }
-      if (column) return
+      if (column) {
+        this.columns = this.columns.filter(c => !c.property.includes('USD exchange'))
+        column = undefined
+      }
       if (!column && this.exchanges.length > 0) {
         const n = this.columns.length
+        const tokens = this.exchanges.filter(v => v.isSelected).map(v => v.name + ',')
+        let title = 'USD exchange '.concat(...tokens)
+        title = title.slice(0, title.length - 1)
         this.columns.splice(n - 1, 0, {
-          property: 'USD',
-          title: 'USD',
+          property: title,
+          title,
           direction: null,
           filterable: true,
           collapseIcon: false
