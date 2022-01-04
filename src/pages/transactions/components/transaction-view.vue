@@ -161,7 +161,7 @@ q-card.q-pa-sm.full-width
                 color="primary"
                 :disable="!validateBalancesWithDifferentsCurrencies"
                 @click="approveConvertion"
-                v-if="conversionTransaction"
+                v-if="conversionTransaction && !editingRow"
             )
             q-btn.full-width(
                 :label="$t('pages.transactions.approve')"
@@ -180,7 +180,7 @@ q-card.q-pa-sm.full-width
                 color="secondary"
                 @click="transactionConvertion = true"
                 :disable="!validateBalancesWithDifferentsCurrencies"
-                v-if="conversionTransaction"
+                v-if="conversionTransaction && !editingRow"
             )
             q-btn.full-width(
                 v-else
@@ -357,6 +357,7 @@ export default {
       if (!this.transaction.value.date) {
         ready = false
       }
+      if (this.editingRow) ready = false
       return ready
     },
     transactionBalanced () {

@@ -75,6 +75,9 @@ export default {
   async mounted () {
     this.tokens = await this.getTokens()
   },
+  watch: {
+
+  },
   methods: {
     ...mapActions('tokens', ['addToken', 'removeToken', 'getTokens']),
     onClickAddRow () {
@@ -98,6 +101,7 @@ export default {
       this.editingRow = row.hash
     },
     async onClickSaveRow (row) {
+      row.symbol = row.symbol.toUpperCase()
       if (!this.validateRow(row)) {
         this.showErrorMsg(this.$t('pages.tokens.fields_required'))
         return

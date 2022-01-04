@@ -50,7 +50,7 @@
         q-dialog(
           v-model="modals.openCurrenciesSelector"
         )
-          q-card.responsive-modal
+          q-card.responsive-modal.currencies
             currencies-selector(@convert="convertValues")
 </template>
 
@@ -194,4 +194,7 @@ export default {
   padding: 3px
   padding-left: 10px
   padding-right: 10px
+.currencies
+  max-width: 1000px
+  max-height: 1000px
 </style>
