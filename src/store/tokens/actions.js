@@ -52,3 +52,12 @@ export const getExchangeRates = async function ({ commit }) {
     commit('general/setIsLoading', false, { root: true })
   }
 }
+
+export const getExchangeRateForDateAndToken = async function ({ commit }, { date, token }) {
+  try {
+    const { data: { market_data: { current_price: { usd } } } } = await this.$tokensApi.getExchangeRateForDateAndToken({ date, token })
+    return usd
+  } catch (e) {
+    console.error('An error ocurred while trying to get exchange rates', e)
+  }
+}

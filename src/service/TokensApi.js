@@ -91,6 +91,12 @@ class TokensApi extends BaseEosApi {
   getCoinList () {
     return this.coingecko.coins.list()
   }
+
+  getExchangeRateForDateAndToken ({ token, date }) {
+    return this.coingecko.coins.fetchHistory(token, {
+      date
+    })
+  }
 }
 
 export default TokensApi
