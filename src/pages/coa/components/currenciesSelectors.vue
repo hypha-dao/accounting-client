@@ -8,6 +8,14 @@
     :rows-per-page-options="[0]"
     hide-bottom
   )
+    template(v-slot:top-right)
+      q-input(filled v-model="date" dense mask="date" label="Date" color="secondary")
+        template(v-slot:append)
+         q-icon(name="event" class="cursor-pointer")
+          q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
+            q-date(v-model="date" today-btn)
+              div(class="row items-center justify-end")
+                q-btn(v-close-popup label="Close" color="primary" flat)
     template(v-slot:header="props")
       q-tr(:props="props")
         q-th(
@@ -34,6 +42,7 @@
 
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
+import TimeUtil from '../../../utils/TimeUtil'
 
 export default {
   name: 'currenciesSelector',
@@ -55,18 +64,37 @@ export default {
           align: 'left',
           sortable: false
         }
-      ]
+      ],
+      date: undefined,
+      dateNow: undefined
     }
   },
   async mounted () {
-    await this.loadTokens()
+    if (!this.exchangeDate) {
+      const date = new Date(Date.now())
+      this.date = TimeUtil.formatDateForDatePicker(date)
+      this.dateNow = TimeUtil.formatDateForDatePicker(date)
+      this.loadTokens()
+      return
+    }
+    this.date = this.exchangeDate
+    if (this.tokensWithUserExange) {
+      this.currencies = JSON.parse(JSON.stringify(this.tokensWithUserExange))
+      return
+    }
+    await this.loadTokenByDate()
   },
   computed: {
-    ...mapState('tokens', ['tokensWithExchange', 'tokensWithUserExange'])
+    ...mapState('tokens', ['tokensWithExchange', 'tokensWithUserExange', 'exchangeDate'])
+  },
+  watch: {
+    date () {
+      if (this.date !== this.dateNow) this.loadTokenByDate()
+    }
   },
   methods: {
-    ...mapActions('tokens', ['getTokens']),
-    ...mapMutations('tokens', ['setTokensWithUserExange']),
+    ...mapActions('tokens', ['getTokens', 'getExchangeRateForDateAndToken']),
+    ...mapMutations('tokens', ['setTokensWithUserExange', 'setExchangeDate']),
     async loadTokens () {
       if (this.tokensWithUserExange) {
         this.currencies = JSON.parse(JSON.stringify(this.tokensWithUserExange))
@@ -74,9 +102,10 @@ export default {
       }
       const userTokens = await this.getTokens()
       this.currencies = userTokens.map(token => {
-        const { price } = this.tokensWithExchange.find(t => t.symbol === token.symbol.toLowerCase()) || 0
+        const { price, id } = this.tokensWithExchange.find(t => t.symbol === token.symbol.toLowerCase()) || 0
 
         return {
+          id,
           name: token.symbol,
           isSelected: false,
           exchange: price || 0
@@ -86,14 +115,31 @@ export default {
     onSelectedConvert () {
       if (!this.currencies) return
       this.setTokensWithUserExange(this.currencies)
+      this.setExchangeDate(this.date)
       const selected = this.currencies.filter(curr => curr.isSelected === true)
       this.$emit('convert', selected)
+    },
+    async loadTokenByDate () {
+      if (!this.date) return
+      if (this.date === this.dateNow) {
+        this.loadTokens()
+        return
+      }
+      const [year, month, day] = this.date.split('/')
+      const date = `${day}-${month}-${year}`
+      for (const [index, token] of this.currencies.entries()) {
+        if (token.id) {
+          const exchange = await this.getExchangeRateForDateAndToken({ token: token.id, date: date })
+          this.currencies[index].exchange = exchange
+        }
+      }
     }
   }
 }
 </script>
 
 <style lang="sass" scoped>
-.scroll
-  max-height: 500px
+.sticky-virtscroll-table
+  max-height: 700px
+  height: 400px
 </style>
