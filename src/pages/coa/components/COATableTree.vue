@@ -24,7 +24,7 @@
       template.container-btn.cursor-pointer.flex.selectedRow(slot='accountName' slot-scope='props' @click="selectAccount(props.row)")
         .main-column(@click="selectAccount(props.row)")
           .row(@click="selectAccount(props.row)" :class="(props.row.isSelectable || allSelecteable) ? 'selectableRow' : undefined")
-            q-icon.q-mr-sm(v-if="!props.row.isSelectable" name="account_balance", size="20px")
+            //- q-icon.q-mr-sm(v-if="!props.row.isSelectable" name="account_balance", size="20px")
             //- q-radio.q-mr-sm(v-if="props.row.isSelectable || allSelecteable" dense v-model="accountSelected" :val="props.row")
             p {{ props.row.accountName }}
       //- template.cursor-pointer.flex(slot='BTC' slot-scope='props')
