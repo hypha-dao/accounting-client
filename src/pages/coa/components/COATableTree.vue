@@ -113,12 +113,20 @@ export default {
       // this.$emit('input', v)
     },
     exchanges () {
+      console.log(this.exchanges)
       this.loadAccounts()
     }
   },
   computed: {
     ...mapState('contAccount', ['treeAccounts']),
-    ...mapState('tokens', ['tokensWithUserExange'])
+    ...mapState('tokens', ['tokensWithUserExange']),
+    usdExchangeTitle () {
+      if (!this.exchanges) return ''
+      const names = this.exchanges.map(e => `${e.name},`)
+      let title = 'USD exchange '.concat(...names)
+      title = title.slice(0, title.length - 1)
+      return title
+    }
   },
   methods: {
     ...mapActions('contAccount', ['getChartOfAccounts', 'getAccountById', 'getAccountByCode']),
@@ -218,7 +226,6 @@ export default {
         const SEEDS = balances.find(v => v.label === 'global_SEEDS')
         const HYPHA = balances.find(v => v.label === 'global_HYPHA')
         let usdInfo = {}
-        let tokens = 'USD exchange '
         if (this.exchanges) {
           this.addColumnOnTable()
           let usd = 0
@@ -228,11 +235,9 @@ export default {
             if (token) {
               const balanceValue = balance ? balance.value.replace(/[^\d.-]/g, '') : 0
               usd = (Number(balanceValue) * token.exchange) + Number(usd)
-              tokens += `${token.name},`
             }
           })
-          tokens = tokens.slice(0, tokens.length - 1)
-          usdInfo[tokens] = usd
+          usdInfo['exchange'] = usd
         }
 
         console.log('loadAccounts balances', balances)
@@ -296,7 +301,6 @@ export default {
         const HYPHA = balances.find(v => v.label === 'global_HYPHA')
 
         let usdInfo = {}
-        let tokens = 'USD exchange '
         if (this.exchanges) {
           let usd = 0
           balances.forEach(balance => {
@@ -304,11 +308,11 @@ export default {
             if (token) {
               const balanceValue = balance ? balance.value.replace(/[^\d.-]/g, '') : 0
               usd = (Number(balanceValue) * token.exchange) + Number(usd)
-              tokens = `${token.name},`
+            } else {
+              console.log(balance, accountv.find(v => v.label === 'account_name').value)
             }
           })
-          tokens = tokens.slice(0, tokens.length - 1)
-          usdInfo[tokens] = usd
+          usdInfo['exchange'] = usd
         }
 
         return {
@@ -385,6 +389,7 @@ export default {
         // console.log('loadChildren response', e.uid, children)
         console.log(children)
         const childrenFormatted = await this.setUpAccountChildren(children)
+        console.log(childrenFormatted, 'Formato de los hijos')
         // console.log('loadChildren', childrenFormatted)
         return childrenFormatted
       } catch (e) {
@@ -411,23 +416,20 @@ export default {
     },
     addColumnOnTable () {
       if (this.exchanges.length === 0) return
-      let column = this.columns.find(c => c.property.includes('USD exchange'))
+      let column = this.columns.find(c => c.property.includes('exchange'))
       if (column && this.exchanges.length === 0) {
-        this.columns = this.columns.filter(c => !c.property.includes('USD exchange'))
+        this.columns = this.columns.filter(c => !c.property.includes('exchange'))
         return
       }
       if (column) {
-        this.columns = this.columns.filter(c => !c.property.includes('USD exchange'))
+        this.columns = this.columns.filter(c => !c.property.includes('exchange'))
         column = undefined
       }
       if (!column && this.exchanges.length > 0) {
         const n = this.columns.length
-        const tokens = this.exchanges.filter(v => v.isSelected).map(v => v.name + ',')
-        let title = 'USD exchange '.concat(...tokens)
-        title = title.slice(0, title.length - 1)
         this.columns.splice(n - 1, 0, {
-          property: title,
-          title,
+          property: 'exchange',
+          title: this.usdExchangeTitle,
           direction: null,
           filterable: true,
           collapseIcon: false
