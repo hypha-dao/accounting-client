@@ -35,6 +35,7 @@
           type="number"
           borderless
           v-model="props.row.exchange"
+          min="0"
         )
   .flex.justify-center.q-mt-lg
     q-btn.q-my-auto(label="Convert" color="primary" @click="onSelectedConvert")
@@ -85,7 +86,10 @@ export default {
     await this.loadTokenByDate()
   },
   computed: {
-    ...mapState('tokens', ['tokensWithExchange', 'tokensWithUserExange', 'exchangeDate'])
+    ...mapState('tokens', ['tokensWithExchange', 'tokensWithUserExange', 'exchangeDate']),
+    validExchangeValues () {
+      return this.currencies.find(v => v.exchange < 0)
+    }
   },
   watch: {
     date () {
@@ -114,6 +118,10 @@ export default {
     },
     onSelectedConvert () {
       if (!this.currencies) return
+      if (this.validExchangeValues) {
+        this.showErrorMsg(this.$t('pages.tokens.exchange_rate_invalid'))
+        return
+      }
       this.setTokensWithUserExange(this.currencies)
       this.setExchangeDate(this.date)
       const selected = this.currencies.filter(curr => curr.isSelected === true)
