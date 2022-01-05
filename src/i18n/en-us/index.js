@@ -128,7 +128,8 @@ export default {
       addToken: 'Add Token',
       saved: 'Token saved successfully',
       deleted: 'Token deleted successfully',
-      fields_required: 'All fields are required'
+      fields_required: 'All fields are required',
+      exchange_rate_invalid: 'USD Exchange Rate must contain positive number'
     }
   }
 }

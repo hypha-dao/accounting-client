@@ -13,7 +13,7 @@
         template(v-slot:append)
          q-icon(name="event" class="cursor-pointer")
           q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
-            q-date(v-model="date" today-btn)
+            q-date(v-model="date" today-btn :options="optionDate")
               div(class="row items-center justify-end")
                 q-btn(v-close-popup label="Close" color="primary" flat)
     template(v-slot:header="props")
@@ -35,6 +35,7 @@
           type="number"
           borderless
           v-model="props.row.exchange"
+          min="0"
         )
   .flex.justify-center.q-mt-lg
     q-btn.q-my-auto(label="Convert" color="primary" @click="onSelectedConvert")
@@ -85,7 +86,10 @@ export default {
     await this.loadTokenByDate()
   },
   computed: {
-    ...mapState('tokens', ['tokensWithExchange', 'tokensWithUserExange', 'exchangeDate'])
+    ...mapState('tokens', ['tokensWithExchange', 'tokensWithUserExange', 'exchangeDate']),
+    validExchangeValues () {
+      return this.currencies.find(v => v.exchange < 0)
+    }
   },
   watch: {
     date () {
@@ -114,13 +118,18 @@ export default {
     },
     onSelectedConvert () {
       if (!this.currencies) return
+      if (this.validExchangeValues) {
+        this.showErrorMsg(this.$t('pages.tokens.exchange_rate_invalid'))
+        return
+      }
       this.setTokensWithUserExange(this.currencies)
       this.setExchangeDate(this.date)
       const selected = this.currencies.filter(curr => curr.isSelected === true)
       this.$emit('convert', selected)
     },
     async loadTokenByDate () {
-      if (!this.date) return
+      const isValidDate = this.optionDate(this.date)
+      if (!this.date && isValidDate) return
       if (this.date === this.dateNow) {
         this.loadTokens()
         return
@@ -133,6 +142,11 @@ export default {
           this.currencies[index].exchange = exchange
         }
       }
+    },
+    optionDate (date) {
+      const now = new Date(Date.now())
+      const formatNow = TimeUtil.formatDateForDatePicker(now)
+      return date <= formatNow
     }
   }
 }
