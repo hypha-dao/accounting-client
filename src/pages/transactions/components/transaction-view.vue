@@ -461,6 +461,7 @@ export default {
       }
     },
     async selectedTransaction (v) {
+      if (!v) return
       this.addingComponent = false
       this.editingRow = false
       this.conversionTransaction = Boolean(v.value.isCurrencyConversion)
