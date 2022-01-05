@@ -13,7 +13,7 @@
         template(v-slot:append)
          q-icon(name="event" class="cursor-pointer")
           q-popup-proxy(ref="qDateProxy" transition-show="scale" transition-hide="scale")
-            q-date(v-model="date" today-btn)
+            q-date(v-model="date" today-btn :options="optionDate")
               div(class="row items-center justify-end")
                 q-btn(v-close-popup label="Close" color="primary" flat)
     template(v-slot:header="props")
@@ -128,7 +128,8 @@ export default {
       this.$emit('convert', selected)
     },
     async loadTokenByDate () {
-      if (!this.date) return
+      const isValidDate = this.optionDate(this.date)
+      if (!this.date && isValidDate) return
       if (this.date === this.dateNow) {
         this.loadTokens()
         return
@@ -141,6 +142,11 @@ export default {
           this.currencies[index].exchange = exchange
         }
       }
+    },
+    optionDate (date) {
+      const now = new Date(Date.now())
+      const formatNow = TimeUtil.formatDateForDatePicker(now)
+      return date <= formatNow
     }
   }
 }
