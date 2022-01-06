@@ -21,9 +21,9 @@
     )
       template(slot="top")
         div
-      template.container-btn.cursor-pointer.flex.selectedRow(slot='accountName' slot-scope='props' @click="selectAccount(props.row)")
-        .main-column(@click="selectAccount(props.row)")
-          .row(@click="selectAccount(props.row)" :class="(props.row.isSelectable || allSelecteable) ? 'selectableRow' : undefined")
+      template.container-btn.cursor-pointer.flex.selectedRow(slot='accountName' slot-scope='props' @click="selectAccount([props.row])")
+        .main-column(@click="selectAccount([props.row])")
+          .row(@click="selectAccount([props.row])" :class="(props.row.isSelectable || allSelecteable) ? 'selectableRow' : undefined")
             //- q-icon.q-mr-sm(v-if="!props.row.isSelectable" name="account_balance", size="20px")
             //- q-radio.q-mr-sm(v-if="props.row.isSelectable || allSelecteable" dense v-model="accountSelected" :val="props.row")
             p {{ props.row.accountName }}
@@ -87,6 +87,7 @@ export default {
   },
   async mounted (v) {
     // console.log('account on mounted', this.value)
+    console.log(this.allSelecteable)
     await this.loadAccounts()
     this.tokens = await this.getTokens()
     this.setUpColumns()
@@ -314,6 +315,7 @@ export default {
           })
           usdInfo['exchange'] = usd
         }
+        console.log(!!account.account, account.account, !account.account, accountv.find(v => v.label === 'account_name').value)
 
         return {
           accountName: accountv.find(v => v.label === 'account_name').value,
