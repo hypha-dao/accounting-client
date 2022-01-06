@@ -90,7 +90,7 @@ export default {
     :filter="search"
   )
      template(v-slot:body-cell-amount="props")
-      q-td(:props="props" :class="{ 'text-secondary': !props.row.isCurrencyConversion }") {{ props.row.amount}}
+      q-td(:props="props" :class="{ 'text-secondary': props.row.isCurrencyConversion }") {{ props.row.amount}}
      template(v-slot:top-right)
        q-input(
          v-model="search"
