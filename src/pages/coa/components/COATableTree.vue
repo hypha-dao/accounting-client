@@ -498,7 +498,7 @@ export default {
         {
           property: 'accountName',
           title: 'Account Name',
-          direction: 'right',
+          direction: null,
           filterable: true
         },
         {
