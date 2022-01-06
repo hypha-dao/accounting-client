@@ -5,7 +5,7 @@
     //-   label="Filter by Account Code"
     //-   autofocus
     //- )
-    vue-ads-table-tree.full-width(
+    vue-ads-table-tree.full-width.scroll(
       :columns='columns',
       :rows='treeAccountsTemp',
       :page='page',
