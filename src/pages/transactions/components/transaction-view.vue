@@ -168,7 +168,7 @@ q-card.q-pa-sm.full-width
                 dense
                 size="md"
                 color="primary"
-                :disable="!transactionBalanced || (!transaction.value.hash && !transactionBalanced)"
+                :disable="!transactionBalanced || (!transaction.value.hash && !transactionBalanced) || editingRow !== false"
                 @click="aproveTransaction()"
                 v-else
             )
