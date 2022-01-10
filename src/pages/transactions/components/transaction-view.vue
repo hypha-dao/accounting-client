@@ -168,7 +168,7 @@ q-card.q-pa-sm.full-width
                 dense
                 size="md"
                 color="primary"
-                :disable="!transactionBalanced || (!transaction.value.hash && !transactionBalanced)"
+                :disable="!transactionBalanced || (!transaction.value.hash && !transactionBalanced) || editingRow !== false"
                 @click="aproveTransaction()"
                 v-else
             )
@@ -428,6 +428,7 @@ export default {
     //   this.checkIsBalancedTransaction()
     // },
     async isSelect (v) {
+      debugger
       this.transaction.value = {
         memo: undefined,
         date: undefined,
@@ -459,12 +460,11 @@ export default {
       } else {
         this.$refs.newTrxInput.focus()
       }
+      debugger
     },
     async selectedTransaction (v) {
-      if (!v) return
       this.addingComponent = false
       this.editingRow = false
-      this.conversionTransaction = Boolean(v.value.isCurrencyConversion)
       this.transaction.value = {
         memo: undefined,
         date: undefined,
@@ -473,6 +473,7 @@ export default {
       this.components = []
       this.requestRefreshEvents()
       if (!v) return
+      this.conversionTransaction = Boolean(v.value.isCurrencyConversion)
       const trx = await this.getTransactionById({ uid: v.value.uid })
       console.log(trx)
 
@@ -696,7 +697,6 @@ export default {
         }
         if (response) {
           await this.cleanTrx(name)
-          this.autoSelect = false
           this.showSuccessMsg(this.$t('pages.transactions.saved'))
         }
       } catch (e) {
@@ -813,7 +813,6 @@ export default {
         }
         if (response) {
           await this.cleanTrx(name)
-          this.autoSelect = false
           this.showSuccessMsg(this.$t('pages.transactions.saved'))
         }
         this.transactionConvertion = false
@@ -829,7 +828,6 @@ export default {
       setTimeout(async () => {
         await this.loadUnapprovedTransactions()
         if (name) {
-          this.autoSelect = true
           this.isSelect = true
           this.setIsLoading(true)
           let trx = this.unapprovedTransactions.filter(el => el.name === name)
