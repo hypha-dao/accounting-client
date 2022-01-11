@@ -237,7 +237,7 @@ export default {
               usd = (Number(balanceValue) * token.exchange) + Number(usd)
             }
           })
-          usdInfo['exchange'] = usd.toFixed(2)
+          usdInfo['exchange'] = this.formatAmount(usd)
         }
 
         console.log('loadAccounts balances', balances)
@@ -312,7 +312,7 @@ export default {
               console.log(balance, accountv.find(v => v.label === 'account_name').value)
             }
           })
-          usdInfo['exchange'] = usd
+          usdInfo['exchange'] = this.formatAmount(usd)
         }
         console.log(!!account.account, account.account, !account.account, accountv.find(v => v.label === 'account_name').value)
 
