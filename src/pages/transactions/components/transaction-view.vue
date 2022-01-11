@@ -91,7 +91,7 @@ q-card.q-pa-sm.full-width
               q-icon.q-ml-xs.cursor-pointer(name="edit" color="positive" @click="props.row.showEditAccount = !props.row.showEditAccount")
           q-dialog(v-model="props.row.showEditAccount" position="top")
             q-card.q-pa-md(style="min-width: 800px")
-              custom-table-tree(v-model="props.row.account")
+              custom-table-tree(v-model="props.row.account" @account-selected="props.row.showEditAccount = !props.row.showEditAccount")
       template(v-slot:body-cell-from="props")
         q-td.short-input
           q-input.short-input(v-if="(editingRow === props.row.hash && !props.row.isFromEvent) || props.row.isEditable.from" autofocus v-model="props.row.from" dense :label="$t('pages.transactions.from')" color="secondary")
