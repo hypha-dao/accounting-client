@@ -652,8 +652,6 @@ export default {
         isValidRow = false
       } else if (!row.currency) {
         isValidRow = false
-      } else if (!row.memo) {
-        isValidRow = false
       } else if (!row.date) {
         isValidRow = false
       } else if (!row.type) {
@@ -713,7 +711,7 @@ export default {
         })
       }
 
-      component[1].value[1] = memo
+      component[1].value[1] = memo ?? ''
       component[2].value[1] = account.hash
       component[3].value[1] = `${quantity} ${currency}`
       // component[3].value[1] = (currency === 'BTC') ? `${parseInt(quantity).toFixed(1)} ${currency}` : `${quantity} ${currency}`
