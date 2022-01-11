@@ -528,6 +528,9 @@ export default {
         },
         '/0_-1': {
           'vue-ads-border-r': true
+        },
+        'all/2_-1': {
+          'text-right': true
         }
       },
       treeAccountsTemp: [],
