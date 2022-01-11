@@ -125,7 +125,18 @@ export default {
   },
   computed: {
     ...mapState('contAccount', ['treeAccounts']),
-    ...mapState('tokens', ['tokensWithUserExange'])
+    ...mapState('tokens', ['tokensWithUserExange']),
+    keyFromSyles () {
+      let key = ''
+      if (!this.exchanges) return ''
+      const tokens = this.exchanges.map(v => v.name)
+      this.columns.forEach((c, index) => {
+        if (tokens.includes(c.title)) {
+          key = `${key}${index},`
+        }
+      })
+      return key.slice(0, key.length - 1)
+    }
   },
   methods: {
     ...mapActions('contAccount', ['getChartOfAccounts', 'getAccountById', 'getAccountByCode']),
@@ -206,7 +217,6 @@ export default {
     },
     async loadAccounts () {
       console.log('loadAccounts', this.columns)
-      this.tokensColumns = ''
       this.accounts = await this.getChartOfAccounts()
       if (!this.accounts || !this.accounts.accounts) return undefined
       const result = this.accounts.accounts.map(account => {
@@ -232,7 +242,6 @@ export default {
             const token = this.exchanges?.find(v => balance.label.includes('global_' + v.name))
             console.log(token)
             if (token) {
-              this.tokensColumns = this.tokensColumns + `${index + 1},`
               const balanceValue = balance ? balance.value.replace(/[^\d.-]/g, '') : 0
               usd = (Number(balanceValue) * token.exchange) + Number(usd)
             }
@@ -416,7 +425,10 @@ export default {
       }, 0)
     },
     addColumnOnTable () {
-      if (this.exchanges?.length > 0) return
+      if (this.exchanges?.length === 0) {
+        this.columns = this.columns.filter(c => !c.property.includes('exchange'))
+        return
+      }
       let column = this.columns.find(c => c.property.includes('exchange'))
       if (column && this.exchanges.length === 0) {
         this.columns = this.columns.filter(c => !c.property.includes('exchange'))
@@ -440,15 +452,30 @@ export default {
       }
     },
     addStyleForExchangeColumn () {
-      if (this.tokensColumns === '') return
-      this.tokensColumns = this.tokensColumns.slice(0, this.tokensColumns.length - 1)
-      const key = '0/' + this.tokensColumns
-      this.tableTreeClasses[key] = {
+      if ((!this.exchanges || this.exchanges.length === 0) && this.tokensColumns !== '') {
+        delete this.tableTreeClasses[this.tokensColumns]
+        delete this.tableTreeClasses['0/2']
+        this.tableTreeClasses = JSON.parse(JSON.stringify(this.tableTreeClasses))
+        return
+      }
+      if (this.keyFromSyles === '') return
+      const key = '0/' + this.keyFromSyles
+      if (key === this.tokensColumns) return
+      if (this.tableTreeClasses[this.tokensColumns]) {
+        delete this.tableTreeClasses[this.tokensColumns]
+        delete this.tableTreeClasses['0/2']
+      }
+      this.tokensColumns = key
+      const newObj = {
+        '0/2': {
+          'text-green-11': true
+        }
+      }
+      newObj[key] = {
         'text-green-11': true
       }
-      this.tableTreeClasses['0/2'] = {
-        'text-green-11': true
-      }
+      this.tableTreeClasses = { ...this.tableTreeClasses, ...newObj }
+      console.log(this.tableTreeClasses, 'Styles')
     }
   },
   data () {
