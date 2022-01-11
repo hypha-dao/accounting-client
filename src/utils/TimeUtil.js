@@ -148,8 +148,8 @@ class TimeUtil {
     return `${date.getDate()}-${date.getMonth()}-${date.getFullYear()} ${hours}:${minutes}:${seconds}`
   }
   static formatDateForDatePicker (date) {
-    const day = date.getDate().length === 1 ? date.getDate() : `0${date.getDate()}`
-    const month = date.getMonth().length === 1 ? date.getMonth() + 1 : `0${date.getMonth() + 1}`
+    const day = date.getDate() >= 10 ? date.getDate() : `0${date.getDate()}`
+    const month = date.getMonth() >= 10 ? date.getMonth() + 1 : `0${date.getMonth() + 1}`
     return `${date.getFullYear()}/${month}/${day}`
   }
 }

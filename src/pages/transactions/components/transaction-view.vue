@@ -91,7 +91,7 @@ q-card.q-pa-sm.full-width
               q-icon.q-ml-xs.cursor-pointer(name="edit" color="positive" @click="props.row.showEditAccount = !props.row.showEditAccount")
           q-dialog(v-model="props.row.showEditAccount" position="top")
             q-card.q-pa-md(style="min-width: 800px")
-              custom-table-tree(v-model="props.row.account")
+              custom-table-tree(v-model="props.row.account" @account-selected="props.row.showEditAccount = !props.row.showEditAccount")
       template(v-slot:body-cell-from="props")
         q-td.short-input
           q-input.short-input(v-if="(editingRow === props.row.hash && !props.row.isFromEvent) || props.row.isEditable.from" autofocus v-model="props.row.from" dense :label="$t('pages.transactions.from')" color="secondary")
@@ -428,7 +428,6 @@ export default {
     //   this.checkIsBalancedTransaction()
     // },
     async isSelect (v) {
-      debugger
       this.transaction.value = {
         memo: undefined,
         date: undefined,
@@ -460,7 +459,6 @@ export default {
       } else {
         this.$refs.newTrxInput.focus()
       }
-      debugger
     },
     async selectedTransaction (v) {
       this.addingComponent = false
@@ -563,7 +561,8 @@ export default {
         // const defaultName = `${event.from} to ${event.to} (${event.quantity} ${event.currency})`
         await this.$nextTick()
         const defaultName = `${event.memo} - ${event.quantity} ${event.currency}`
-        this.transaction.value.name = defaultName
+        const transactionName = this.transaction.value.name
+        this.transaction.value.name = transactionName ? `${transactionName} - ${defaultName}` : defaultName
 
         // date
         let d = new Date(event.date)
@@ -653,8 +652,6 @@ export default {
         isValidRow = false
       } else if (!row.currency) {
         isValidRow = false
-      } else if (!row.memo) {
-        isValidRow = false
       } else if (!row.date) {
         isValidRow = false
       } else if (!row.type) {
@@ -714,7 +711,7 @@ export default {
         })
       }
 
-      component[1].value[1] = memo
+      component[1].value[1] = memo ?? ''
       component[2].value[1] = account.hash
       component[3].value[1] = `${quantity} ${currency}`
       // component[3].value[1] = (currency === 'BTC') ? `${parseInt(quantity).toFixed(1)} ${currency}` : `${quantity} ${currency}`
@@ -835,6 +832,7 @@ export default {
             value: trx[trx.length - 1],
             label: name
           }
+          this.autoSelect = false
         } else {
           this.selectedTransaction = undefined
         }

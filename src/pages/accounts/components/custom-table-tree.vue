@@ -68,8 +68,8 @@ export default {
   },
   watch: {
     accountSelected (v) {
-      // this.$emit('accountChanged', v)
       this.$emit('input', v)
+      this.$emit('account-selected')
     }
   },
   computed: {
