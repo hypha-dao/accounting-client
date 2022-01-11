@@ -49,6 +49,9 @@ export const utils = {
         'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul',
         'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
       ][date.getMonth()] + ' ' + date.getFullYear()
+    },
+    formatAmount (number, precision = 2) {
+      return Number(number).toLocaleString('en-US', { style: 'decimal', minimumFractionDigits: precision, maximumFractionDigits: precision })
     }
   }
 }
