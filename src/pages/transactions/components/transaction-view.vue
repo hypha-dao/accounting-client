@@ -561,7 +561,8 @@ export default {
         // const defaultName = `${event.from} to ${event.to} (${event.quantity} ${event.currency})`
         await this.$nextTick()
         const defaultName = `${event.memo} - ${event.quantity} ${event.currency}`
-        this.transaction.value.name = defaultName
+        const transactionName = this.transaction.value.name
+        this.transaction.value.name = transactionName ? `${transactionName} - ${defaultName}` : defaultName
 
         // date
         let d = new Date(event.date)
