@@ -468,11 +468,11 @@ export default {
       this.tokensColumns = key
       const newObj = {
         '0/2': {
-          'text-green-11': true
+          'text-positive': true
         }
       }
       newObj[key] = {
-        'text-green-11': true
+        'text-positive': true
       }
       this.tableTreeClasses = { ...this.tableTreeClasses, ...newObj }
       console.log(this.tableTreeClasses, 'Styles')
@@ -528,6 +528,9 @@ export default {
         },
         '/0_-1': {
           'vue-ads-border-r': true
+        },
+        'all/2_-1': {
+          'text-right': true
         }
       },
       treeAccountsTemp: [],
