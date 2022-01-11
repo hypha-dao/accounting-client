@@ -91,6 +91,9 @@ export default {
     await this.loadAccounts()
     this.tokens = await this.getTokens()
     this.setUpColumns()
+
+    this.addColumnOnTable()
+    this.addStyleForExchangeColumn()
     // if (this.treeAccounts.length === 0) {
     // } else {
     //   this.treeAccountsTemp = Array.from(this.treeAccounts)
@@ -116,18 +119,13 @@ export default {
     exchanges () {
       console.log(this.exchanges)
       this.loadAccounts()
+      this.addColumnOnTable()
+      this.addStyleForExchangeColumn()
     }
   },
   computed: {
     ...mapState('contAccount', ['treeAccounts']),
-    ...mapState('tokens', ['tokensWithUserExange']),
-    usdExchangeTitle () {
-      if (!this.exchanges) return ''
-      const names = this.exchanges.map(e => `${e.name},`)
-      let title = 'USD exchange '.concat(...names)
-      title = title.slice(0, title.length - 1)
-      return title
-    }
+    ...mapState('tokens', ['tokensWithUserExange'])
   },
   methods: {
     ...mapActions('contAccount', ['getChartOfAccounts', 'getAccountById', 'getAccountByCode']),
@@ -208,6 +206,7 @@ export default {
     },
     async loadAccounts () {
       console.log('loadAccounts', this.columns)
+      this.tokensColumns = ''
       this.accounts = await this.getChartOfAccounts()
       if (!this.accounts || !this.accounts.accounts) return undefined
       const result = this.accounts.accounts.map(account => {
@@ -228,17 +227,17 @@ export default {
         const HYPHA = balances.find(v => v.label === 'global_HYPHA')
         let usdInfo = {}
         if (this.exchanges) {
-          this.addColumnOnTable()
           let usd = 0
-          balances.forEach(balance => {
+          balances.forEach((balance, index) => {
             const token = this.exchanges?.find(v => balance.label.includes('global_' + v.name))
             console.log(token)
             if (token) {
+              this.tokensColumns = this.tokensColumns + `${index + 1},`
               const balanceValue = balance ? balance.value.replace(/[^\d.-]/g, '') : 0
               usd = (Number(balanceValue) * token.exchange) + Number(usd)
             }
           })
-          usdInfo['exchange'] = usd
+          usdInfo['exchange'] = usd.toFixed(2)
         }
 
         console.log('loadAccounts balances', balances)
@@ -417,7 +416,7 @@ export default {
       }, 0)
     },
     addColumnOnTable () {
-      if (this.exchanges.length === 0) return
+      if (this.exchanges?.length > 0) return
       let column = this.columns.find(c => c.property.includes('exchange'))
       if (column && this.exchanges.length === 0) {
         this.columns = this.columns.filter(c => !c.property.includes('exchange'))
@@ -427,16 +426,28 @@ export default {
         this.columns = this.columns.filter(c => !c.property.includes('exchange'))
         column = undefined
       }
-      if (!column && this.exchanges.length > 0) {
-        const n = this.columns.length
-        this.columns.splice(n - 1, 0, {
+      if (!column && this.exchanges?.length > 0) {
+        const n = this.columns.findIndex(c => c.property === 'accountCode')
+        console.log(n, 'Este es el index')
+        this.columns.splice(n + 1, 0, {
           property: 'exchange',
-          title: this.usdExchangeTitle,
+          title: 'USD',
           direction: null,
           filterable: true,
           collapseIcon: false
         })
         console.log(this.columns, 'Columnas')
+      }
+    },
+    addStyleForExchangeColumn () {
+      if (this.tokensColumns === '') return
+      this.tokensColumns = this.tokensColumns.slice(0, this.tokensColumns.length - 1)
+      const key = '0/' + this.tokensColumns
+      this.tableTreeClasses[key] = {
+        'text-green-11': true
+      }
+      this.tableTreeClasses['0/2'] = {
+        'text-green-11': true
       }
     }
   },
@@ -578,7 +589,8 @@ export default {
       accounts: undefined,
       accountsTree: undefined,
       accountSelected: undefined,
-      tokens: undefined
+      tokens: undefined,
+      tokensColumns: ''
     }
   }
 }
