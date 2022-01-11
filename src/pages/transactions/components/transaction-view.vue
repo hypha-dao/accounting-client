@@ -428,7 +428,6 @@ export default {
     //   this.checkIsBalancedTransaction()
     // },
     async isSelect (v) {
-      debugger
       this.transaction.value = {
         memo: undefined,
         date: undefined,
@@ -460,7 +459,6 @@ export default {
       } else {
         this.$refs.newTrxInput.focus()
       }
-      debugger
     },
     async selectedTransaction (v) {
       this.addingComponent = false
