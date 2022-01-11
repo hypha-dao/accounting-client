@@ -832,6 +832,7 @@ export default {
             value: trx[trx.length - 1],
             label: name
           }
+          this.autoSelect = false
         } else {
           this.selectedTransaction = undefined
         }
