@@ -121,11 +121,18 @@ export default {
       this.loadAccounts()
       this.addColumnOnTable()
       this.addStyleForExchangeColumn()
+    },
+    tokensWithUserSort () {
+      this.columns = this.columns.slice(0, 2)
+      this.setUpColumns()
+      this.addColumnOnTable()
+      this.addStyleForExchangeColumn()
     }
   },
   computed: {
     ...mapState('contAccount', ['treeAccounts']),
     ...mapState('tokens', ['tokensWithUserExange']),
+    ...mapState('tokens', ['tokensWithUserSort']),
     keyFromSyles () {
       let key = ''
       if (!this.exchanges) return ''
@@ -143,15 +150,29 @@ export default {
     ...mapState('contAccount', ['components']),
     ...mapActions('tokens', ['getTokens']),
     setUpColumns () {
-      const tokensColumns = this.tokens.map(token => {
-        return {
-          property: token.symbol,
-          title: token.symbol,
-          direction: null,
-          filterable: true,
-          collapseIcon: false
-        }
-      })
+      let tokensColumns
+      if (!this.tokensWithUserSort) {
+        tokensColumns = this.tokens.map(token => {
+          return {
+            property: token.symbol,
+            title: token.symbol,
+            direction: null,
+            filterable: true,
+            collapseIcon: false
+          }
+        })
+      } else {
+        tokensColumns = this.tokensWithUserSort.map(token => {
+          return {
+            property: token.symbol,
+            title: token.symbol,
+            direction: null,
+            filterable: true,
+            collapseIcon: false
+          }
+        })
+      }
+
       tokensColumns.push({
         property: 'actions',
         title: 'Actions',
