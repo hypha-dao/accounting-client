@@ -12,7 +12,9 @@
               color="negative"
               @click="restarExchangeRate"
           )
-        q-btn(outline size="sm" label="Convert to USD" color="secondary" @click="onSelectedConvert")
+        div
+          q-btn(outline size="sm" label="Change token sort" color="secondary" @click="modals.tokenOrder = true").q-mr-md
+          q-btn(outline size="sm" label="Convert to USD" color="secondary" @click="onSelectedConvert")
       //- q-table.sticky-virtscroll-table.accountTable.t-table(
       //-     :columns="columns"
       //-     :data="coa"
@@ -61,6 +63,10 @@
         )
           q-card.responsive-modal.currencies
             currencies-selector(@convert="convertValues")
+        q-dialog(
+          v-model="modals.tokenOrder"
+        )
+          modal-drag-token-list(@close="modals.tokenOrder = false")
 </template>
 
 <script>
@@ -68,12 +74,13 @@ import AddAccountForm from './addAccountForm.vue'
 import CoaTableTree from './components/COATableTree'
 import CurrenciesSelector from './components/currenciesSelectors'
 import ComponentsTable from './components/componentsTable'
+import ModalDragTokenList from '../tokens/list/modalDragTokenList.vue'
 
 import { mapActions, mapMutations } from 'vuex'
 
 export default {
   name: 'chartOfAccounts',
-  components: { AddAccountForm, CoaTableTree, CurrenciesSelector, ComponentsTable },
+  components: { AddAccountForm, CoaTableTree, CurrenciesSelector, ComponentsTable, ModalDragTokenList },
   data () {
     return {
       pageSize: 200,
@@ -127,7 +134,8 @@ export default {
       ],
       modals: {
         openedAccountForm: false,
-        openCurrenciesSelector: false
+        openCurrenciesSelector: false,
+        tokenOrder: false
       },
       exchanges: undefined
     }

@@ -61,3 +61,15 @@ export const getExchangeRateForDateAndToken = async function ({ commit }, { date
     console.error('An error ocurred while trying to get exchange rates', e)
   }
 }
+
+export const getTokenWithUserSort = function ({ commit }) {
+  const tokens = JSON.parse(localStorage.getItem('user-sort'))
+  commit('setTokensWithUserSort', tokens)
+}
+
+export const saveTokenWithUserSort = function ({ commit }, tokens) {
+  commit('general/setIsLoading', true, { root: true })
+  commit('setTokensWithUserSort', tokens)
+  localStorage.setItem('user-sort', JSON.stringify(tokens))
+  commit('general/setIsLoading', false, { root: true })
+}
