@@ -19,7 +19,7 @@ q-card.responsive-modal
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 import draggable from 'vuedraggable'
 
 export default {
@@ -35,16 +35,26 @@ export default {
     }
   },
   async created () {
+    if (!this.tokensWithUserSort) {
+      this.getTokenWithUserSort()
+    }
     await this.getUserTokens()
   },
+  computed: {
+    ...mapState('tokens', ['tokensWithUserSort'])
+  },
   methods: {
-    ...mapActions('tokens', ['getTokens']),
+    ...mapActions('tokens', ['getTokens', 'saveTokenWithUserSort', 'getTokenWithUserSort']),
     async getUserTokens () {
-      this.tokens = await this.getTokens()
-      console.log(this.tokens)
+      if (!this.tokensWithUserSort) {
+        this.tokens = await this.getTokens()
+        return
+      }
+      this.tokens = JSON.parse(JSON.stringify(this.tokensWithUserSort))
     },
     onSelectedSave () {
-      console.log('Save')
+      this.saveTokenWithUserSort(this.tokens)
+      this.$emit('close')
     }
   }
 }
