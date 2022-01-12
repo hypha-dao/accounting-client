@@ -2,7 +2,16 @@
 #main-container.main.q-pa-sm
   q-card.q-pa-sm.full-width
     #container.q-pa-sm
-      .flex.justify-end.q-mb-sm
+      .flex.justify-end.items-end.q-mb-sm(:class="{ 'justify-between': exchageListIsNotEmpty}")
+        q-banner(class="bg-grey-3 text-negative text-caption q-pa-none q-px-sm" dense v-if="exchageListIsNotEmpty")
+          | Restar exchanges rates
+          q-icon.animated-icon.q-ml-sm(
+              name="restart_alt"
+              v-ripple
+              size="xs"
+              color="negative"
+              @click="restarExchangeRate"
+          )
         q-btn(outline size="sm" label="Convert to USD" color="secondary" @click="onSelectedConvert")
       //- q-table.sticky-virtscroll-table.accountTable.t-table(
       //-     :columns="columns"
@@ -60,7 +69,7 @@ import CoaTableTree from './components/COATableTree'
 import CurrenciesSelector from './components/currenciesSelectors'
 import ComponentsTable from './components/componentsTable'
 
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 
 export default {
   name: 'chartOfAccounts',
@@ -126,6 +135,7 @@ export default {
   methods: {
     ...mapActions('contAccount', ['getAllAccounts', 'getAccountById', 'getAccountByCode']),
     ...mapActions('transaction', ['getTransactionById', 'getComponentsByAccountId']),
+    ...mapMutations('tokens', ['setTokensWithUserExange']),
     async onSelectedAccount (account) {
       console.log('onSelectedAccount', account)
       this.selectedDetailsAccount = account
@@ -172,10 +182,21 @@ export default {
     convertValues (currencies) {
       this.modals.openCurrenciesSelector = false
       this.exchanges = currencies
+    },
+    restarExchangeRate () {
+      this.exchanges = []
+      this.setTokensWithUserExange(undefined)
     }
   },
   created () {
     this.getAccounts()
+  },
+  computed: {
+    exchageListIsNotEmpty () {
+      if (!this.exchanges) return false
+      if (this.exchanges.length === 0) return false
+      return true
+    }
   }
 }
 </script>
