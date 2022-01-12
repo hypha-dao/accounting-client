@@ -12,7 +12,9 @@
               color="negative"
               @click="restarExchangeRate"
           )
-        q-btn(outline size="sm" label="Convert to USD" color="secondary" @click="onSelectedConvert")
+        div
+          q-btn(outline size="sm" label="Change token sort" color="secondary" @click="modals.tokenOrder = true").q-mr-md
+          q-btn(outline size="sm" label="Convert to USD" color="secondary" @click="onSelectedConvert")
       //- q-table.sticky-virtscroll-table.accountTable.t-table(
       //-     :columns="columns"
       //-     :data="coa"
@@ -64,7 +66,7 @@
         q-dialog(
           v-model="modals.tokenOrder"
         )
-          modal-drag-token-list
+          modal-drag-token-list(@close="modals.tokenOrder = false")
 </template>
 
 <script>
