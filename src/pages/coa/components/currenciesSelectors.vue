@@ -75,7 +75,7 @@ export default {
       const date = new Date(Date.now())
       this.date = TimeUtil.formatDateForDatePicker(date)
       this.dateNow = TimeUtil.formatDateForDatePicker(date)
-      this.loadTokens()
+      await this.loadTokens()
       return
     }
     this.date = this.exchangeDate
@@ -130,7 +130,7 @@ export default {
     async loadTokenByDate () {
       const isValidDate = this.optionDate(this.date)
       if (!this.date && isValidDate) return
-      if (this.date === this.dateNow) {
+      if (isValidDate) {
         this.loadTokens()
         return
       }
