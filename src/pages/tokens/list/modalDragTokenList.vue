@@ -9,11 +9,18 @@ q-card.responsive-modal
           th(class="bg-secondary text-uppercase no-border")
             span(class="text-bold text-caption") Token
       draggable(v-model="tokens" tag="tbody")
-        tr(v-for="[index, token] in Object.entries(tokens)" :key="token.tempHash")
+        tr.drag.cursor-pointer(v-for="[index, token] in Object.entries(tokens)" :key="token.tempHash")
           td(class="col-2")
-            .text {{ Number(index) + 1 }}
+            .row.items-center
+              q-icon.q-mr-sm(
+                name="drag_handle"
+                size="md"
+                color="grey-8"
+              )
+              .text.no-padding {{ Number(index) + 1 }}
           td
             .text {{ token.symbol }}
+          q-tooltip(:delay="1000" :offset="[10, 10]") Drag to sort
     .flex.justify-center.q-mt-lg
       q-btn.q-my-auto(label="Save" color="primary" @click="onSelectedSave")
 </template>
@@ -59,8 +66,9 @@ export default {
   }
 }
 </script>
-<style scoped>
-.buttons {
-  margin-top: 35px;
-}
+<style lang="sass" scoped>
+.buttons
+  margin-top: 35px
+.drag
+  transition: all 1.5s
 </style>
