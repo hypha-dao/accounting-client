@@ -16,3 +16,7 @@ export const setTokensWithUserExange = (state, tokens) => {
 export const setExchangeDate = (state, date) => {
   state.exchangeDate = date
 }
+
+export const setTokensWithUserSort = (state, tokens) => {
+  state.tokensWithUserSort = tokens
+}
