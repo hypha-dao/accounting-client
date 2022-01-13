@@ -268,7 +268,7 @@ export default {
             }
           })
           const usdExchange = this.formatAmount(usd)
-          usdInfo['exchange'] = usdExchange > 0 ? `$${usdExchange}` : `-$${usdExchange * -1}`
+          usdInfo['exchange'] = usd > 0 ? `$${usdExchange}` : `-$${usdExchange.slice(1)}`
         }
 
         console.log('loadAccounts balances', balances)
@@ -344,7 +344,7 @@ export default {
             }
           })
           const usdExchange = this.formatAmount(usd)
-          usdInfo['exchange'] = usdExchange > 0 ? `$${usdExchange}` : `-$${usdExchange * -1}`
+          usdInfo['exchange'] = usd > 0 ? `$${usdExchange}` : `-$${usdExchange.slice(1)}`
         }
         console.log(!!account.account, account.account, !account.account, accountv.find(v => v.label === 'account_name').value)
 
