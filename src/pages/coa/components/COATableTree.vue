@@ -87,6 +87,7 @@ export default {
   },
   async mounted (v) {
     // console.log('account on mounted', this.value)
+    this.getTokenWithUserSort()
     console.log(this.allSelecteable)
     await this.loadAccounts()
     this.tokens = await this.getTokens()
@@ -123,7 +124,6 @@ export default {
       this.addStyleForExchangeColumn()
     },
     tokensWithUserSort () {
-      this.columns = this.columns.slice(0, 2)
       this.setUpColumns()
       this.addColumnOnTable()
       this.addStyleForExchangeColumn()
@@ -131,8 +131,7 @@ export default {
   },
   computed: {
     ...mapState('contAccount', ['treeAccounts']),
-    ...mapState('tokens', ['tokensWithUserExange']),
-    ...mapState('tokens', ['tokensWithUserSort']),
+    ...mapState('tokens', ['tokensWithUserExange', 'tokensWithUserSort']),
     keyFromSyles () {
       let key = ''
       if (!this.exchanges) return ''
@@ -148,8 +147,9 @@ export default {
   methods: {
     ...mapActions('contAccount', ['getChartOfAccounts', 'getAccountById', 'getAccountByCode']),
     ...mapState('contAccount', ['components']),
-    ...mapActions('tokens', ['getTokens']),
+    ...mapActions('tokens', ['getTokens', 'getTokenWithUserSort']),
     setUpColumns () {
+      this.columns = this.columns.slice(0, 2)
       let tokensColumns
       if (!this.tokensWithUserSort) {
         tokensColumns = this.tokens.map(token => {
