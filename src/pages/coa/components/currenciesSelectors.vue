@@ -122,9 +122,15 @@ export default {
         this.showErrorMsg(this.$t('pages.tokens.exchange_rate_invalid'))
         return
       }
-      this.setTokensWithUserExange(this.currencies)
+      const formartCurrencies = this.currencies.map(c => {
+        return {
+          ...c,
+          exchange: c.exchange.value
+        }
+      })
+      this.setTokensWithUserExange(formartCurrencies)
       this.setExchangeDate(this.date)
-      const selected = this.currencies.filter(curr => curr.isSelected === true)
+      const selected = formartCurrencies.filter(curr => curr.isSelected === true)
       this.$emit('convert', selected)
     },
     async loadTokenByDate () {
