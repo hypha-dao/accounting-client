@@ -35,8 +35,9 @@
           prefix="$"
           borderless
         )
-  .flex.justify-center.q-mt-lg
-    q-btn.q-my-auto(label="Convert" color="primary" @click="onSelectedConvert")
+  .row.justify-center.q-mt-lg
+    .col
+      q-btn.full-width.q-my-auto(label="Convert" color="primary" @click="onSelectedConvert")
 </template>
 
 <script>

@@ -21,8 +21,9 @@ q-card.responsive-modal
           td
             .text {{ token.symbol }}
           q-tooltip(:delay="1000" :offset="[10, 10]") Drag to sort
-    .flex.justify-center.q-mt-lg
-      q-btn.q-my-auto(label="Save" color="primary" @click="onSelectedSave")
+    .row.justify-center.q-mt-lg
+      .col
+        q-btn.full-width.q-my-auto(label="Save" color="primary" @click="onSelectedSave")
 </template>
 
 <script>
