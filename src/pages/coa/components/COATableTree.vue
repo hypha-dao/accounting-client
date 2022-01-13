@@ -267,7 +267,7 @@ export default {
               usd = (Number(balanceValue) * token.exchange) + Number(usd)
             }
           })
-          usdInfo['exchange'] = this.formatAmount(usd)
+          usdInfo['exchange'] = '$' + this.formatAmount(usd)
         }
 
         console.log('loadAccounts balances', balances)
