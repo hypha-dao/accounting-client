@@ -101,18 +101,21 @@ export default {
     ...mapMutations('tokens', ['setTokensWithUserExange', 'setExchangeDate']),
     async loadTokens () {
       if (this.tokensWithUserExange) {
-        this.currencies = JSON.parse(JSON.stringify(this.tokensWithUserExange))
+        const tokens = JSON.parse(JSON.stringify(this.tokensWithUserExange))
+        const mappedList = tokens.map(v => ({ ...v, exchange: { value: v.exchange } }))
+        this.currencies = mappedList
         return
       }
       const userTokens = await this.getTokens()
       this.currencies = userTokens.map(token => {
         const { price, id } = this.tokensWithExchange.find(t => t.symbol === token.symbol.toLowerCase()) || 0
+        const exchange = { value: price || 0 }
 
         return {
           id,
           name: token.symbol,
           isSelected: false,
-          exchange: price || 0
+          exchange
         }
       })
     },
