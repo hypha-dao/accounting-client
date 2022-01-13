@@ -30,12 +30,10 @@
         q-checkbox(size="xs" :label="props.row.name" v-model="props.row.isSelected")
     template(v-slot:body-cell-exchange="props")
       q-td(:props="props")
-        q-input(
-          prefix="$"
-          type="number"
-          borderless
+        money-input(
           v-model="props.row.exchange"
-          min="0"
+          prefix="$"
+          borderless
         )
   .flex.justify-center.q-mt-lg
     q-btn.q-my-auto(label="Convert" color="primary" @click="onSelectedConvert")
@@ -44,9 +42,11 @@
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
 import TimeUtil from '../../../utils/TimeUtil'
+import MoneyInput from '~/components/inputs/money-input'
 
 export default {
   name: 'currenciesSelector',
+  components: { MoneyInput },
   data () {
     return {
       currencies: undefined,
