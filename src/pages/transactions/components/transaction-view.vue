@@ -115,8 +115,15 @@ q-card.q-pa-sm.full-width
           .text-cell(v-else) {{ props.row.to }}
       template(v-slot:body-cell-amount="props")
         q-td.text-right
-          q-input(v-if="editingRow === props.row.hash && !props.row.isFromEvent" v-model="props.row.quantity" type="number" step="0.1" min="0" dense :label="$t('pages.transactions.amount')" color="secondary")
-          .text-cell(v-else) {{ props.row.quantity }}
+          //- q-input(v-if="editingRow === props.row.hash && !props.row.isFromEvent" v-model="props.row.quantity" type="number" step="0.1" min="0" dense :label="$t('pages.transactions.amount')" color="secondary")
+          money-input(
+            v-if="editingRow === props.row.hash && !props.row.isFromEvent"
+            v-model="props.row.quantity"
+            :label="$t('pages.transactions.amount')"
+            dense
+            ref="moneyInput"
+          )
+          .text-cell(v-else) {{ props.row.quantity.display }}
       template(v-slot:body-cell-currency="props")
         q-td
           q-select(
@@ -210,10 +217,11 @@ import { transactionPayout } from '~/const/payouts/transaction-payout'
 import { componentPayout } from '~/const/payouts/component-payout'
 import CustomTableTree from '~/pages/accounts/components/custom-table-tree'
 import CurrencyTransactionModal from './currency-transaction-modal'
+import MoneyInput from '~/components/inputs/money-input'
 
 export default {
   name: 'transaction-view',
-  components: { CustomTableTree, CurrencyTransactionModal },
+  components: { CustomTableTree, CurrencyTransactionModal, MoneyInput },
   data () {
     return {
       autoSelect: false,
