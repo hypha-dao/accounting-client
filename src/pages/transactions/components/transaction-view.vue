@@ -652,7 +652,7 @@ export default {
       const rowIndex = this.components.findIndex(v => row === v)
       this.components.splice(rowIndex, 1)
       if (row.isFromEvent) {
-        this.$emit('eventRemoved', row)
+        this.$emit('eventRemoved', { ...row, quantity: row.quantity.value })
       }
     },
     validateRow (row) {
