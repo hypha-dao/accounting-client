@@ -1,6 +1,7 @@
 <template lang="pug">
 q-card.responsive-modal
   #container.q-pa-md.q-gutter-sm
+    .text-subtitle1 You can rearrange the list
     q-markup-table(separator="cell").scroll
       thead
         tr
