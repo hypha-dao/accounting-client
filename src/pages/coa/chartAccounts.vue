@@ -4,9 +4,9 @@
     #container.q-pa-sm
       .flex.justify-end.items-end.q-mb-sm
         div
-          q-btn(outline size="sm" label="Rearrange tokens" color="secondary" @click="modals.tokenOrder = true").q-mr-md
           q-btn(outline size="sm" label="Reset" color="negative" icon-right="restart_alt" @click="restarExchangeRate" v-if="exchageListIsNotEmpty")
           q-btn(outline size="sm" label="Convert to USD" color="secondary" @click="onSelectedConvert" v-else)
+          q-btn(outline size="sm" label="Rearrange tokens" color="secondary" @click="modals.tokenOrder = true").q-ml-md
       //- q-table.sticky-virtscroll-table.accountTable.t-table(
       //-     :columns="columns"
       //-     :data="coa"
