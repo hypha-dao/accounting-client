@@ -495,9 +495,10 @@ export default {
 
         this.components = trx.components.map(v => {
           const hash = (v.hash === '' || !v.hash) ? [...Array(8)].map(() => Math.floor(Math.random() * 16).toString(16)).join('') : v.hash
-
+          const quantity = { value: parseFloat(v.quantity), display: parseFloat(v.quantity) }
           return {
             ...v,
+            quantity,
             hash,
             isEditable: {
               memo: false,
@@ -586,8 +587,10 @@ export default {
         to: !event.to
       }
 
+      const quantity = { value: parseFloat(event.quantity), display: parseFloat(event.quantity) }
       this.components.push({
         ...event,
+        quantity,
         isEditable,
         showEditAccount: false,
         type: undefined
@@ -721,7 +724,7 @@ export default {
 
       component[1].value[1] = memo ?? ''
       component[2].value[1] = account.hash
-      component[3].value[1] = `${quantity} ${currency}`
+      component[3].value[1] = `${quantity.value} ${currency}`
       // component[3].value[1] = (currency === 'BTC') ? `${parseInt(quantity).toFixed(1)} ${currency}` : `${quantity} ${currency}`
       component[4].value[1] = from
       component[5].value[1] = to
