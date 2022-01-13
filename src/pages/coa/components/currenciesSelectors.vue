@@ -30,7 +30,7 @@
         q-checkbox(size="xs" :label="props.row.name" v-model="props.row.isSelected")
     template(v-slot:body-cell-exchange="props")
       q-td(:props="props")
-        money-input(
+        money-input-2(
           v-model="props.row.exchange"
           prefix="$"
           borderless
@@ -42,11 +42,11 @@
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
 import TimeUtil from '../../../utils/TimeUtil'
-import MoneyInput from '~/components/inputs/money-input'
+import MoneyInput2 from '~/components/inputs/money-input-2'
 
 export default {
   name: 'currenciesSelector',
-  components: { MoneyInput },
+  components: { MoneyInput2 },
   data () {
     return {
       currencies: undefined,
