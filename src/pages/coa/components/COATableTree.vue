@@ -464,7 +464,7 @@ export default {
         console.log(n, 'Este es el index')
         this.columns.splice(n + 1, 0, {
           property: 'exchange',
-          title: 'USD',
+          title: 'USD (Converted)',
           direction: null,
           filterable: true,
           collapseIcon: false
