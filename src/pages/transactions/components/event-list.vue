@@ -75,7 +75,10 @@ export default {
           name: 'amount',
           align: 'right',
           label: this.$t('pages.events.amount'),
-          field: row => `${row.quantity}`,
+          field: row => {
+            const precision = row.quantity.split('.')[1].length
+            return `${this.formatAmount(row.quantity, precision)}`
+          },
           sortable: true,
           headerClasses: 'bg-secondary text-white'
         },
