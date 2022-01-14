@@ -1,8 +1,8 @@
 <template lang="pug">
-q-card.responsive-modal
+q-card.responsive-modal.custom-modal
   #container.q-pa-md.q-gutter-sm
-    .text-subtitle1 You can rearrange the list
-    q-markup-table(separator="cell").scroll
+    .text-subtitle1.text-weight-thinDrag and drop a token on the list to change its position in the table
+    q-markup-table(separator="cell" dense).scroll
       thead
         tr
           th(class="bg-secondary text-uppercase")
@@ -73,4 +73,6 @@ export default {
   margin-top: 35px
 .drag
   transition: all 1.5s
+.custom-modal
+  max-height: 600px
 </style>
