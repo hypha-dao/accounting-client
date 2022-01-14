@@ -116,12 +116,13 @@ q-card.q-pa-sm.full-width
       template(v-slot:body-cell-amount="props")
         q-td.text-right
           money-input-2(
+            v-if="editingRow === props.row.hash && !props.row.isFromEvent"
             v-model="props.row.quantity"
             :label="$t('pages.transactions.amount')"
             color="secondary"
             dense
           )
-          //- .text-cell(v-else) {{ props.row.quantity.display }}
+          .text-cell(v-else) {{ props.row.quantity.value }}
       template(v-slot:body-cell-currency="props")
         q-td
           q-select(
