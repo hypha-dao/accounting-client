@@ -381,9 +381,9 @@ export default {
 
         var balance = compsOfCurr.reduce((accumulated, current) => {
           // eslint-disable-next-line no-return-assign
-          if (current.type === 'DEBIT') return accumulated += parseFloat(current.quantity.value)
+          if (current.type === 'DEBIT') return accumulated += parseFloat(current.quantity?.value || 0)
           // eslint-disable-next-line no-return-assign
-          if (current.type === 'CREDIT') return accumulated -= parseFloat(current.quantity.value)
+          if (current.type === 'CREDIT') return accumulated -= parseFloat(current.quantity?.value || 0)
         }, 0) // Sums all components of the current currency
 
         curr.balanced = balance === 0 // Is balanced if balance is 0
