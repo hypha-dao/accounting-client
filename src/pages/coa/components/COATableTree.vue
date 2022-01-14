@@ -267,7 +267,8 @@ export default {
               usd = (Number(balanceValue) * token.exchange) + Number(usd)
             }
           })
-          usdInfo['exchange'] = this.formatAmount(usd)
+          const usdExchange = this.formatAmount(usd)
+          usdInfo['exchange'] = usd > 0 ? `$${usdExchange}` : `-$${usdExchange.slice(1)}`
         }
 
         console.log('loadAccounts balances', balances)
@@ -282,13 +283,13 @@ export default {
           _selectable: !account.account,
           accountCode: content.find(v => v.label === 'account_code').value,
           typeTag: content.find(v => v.label === 'account_tag_type').value,
-          BTC: BTC ? BTC.value.replace(/[^\d.-]/g, '') : '0',
-          ETH: ETH ? ETH.value.replace(/[^\d.-]/g, '') : '0',
-          EOS: EOS ? EOS.value.replace(/[^\d.-]/g, '') : '0',
-          TLOS: TLOS ? TLOS.value.replace(/[^\d.-]/g, '') : '0',
-          HUSD: HUSD ? HUSD.value.replace(/[^\d.-]/g, '') : '0',
-          SEEDS: SEEDS ? SEEDS.value.replace(/[^\d.-]/g, '') : '0 ',
-          HYPHA: HYPHA ? HYPHA.value.replace(/[^\d.-]/g, '') : '0 ',
+          BTC: this.formatAmount(BTC ? BTC.value.replace(/[^\d.-]/g, '') : '0'),
+          ETH: this.formatAmount(ETH ? ETH.value.replace(/[^\d.-]/g, '') : '0'),
+          EOS: this.formatAmount(EOS ? EOS.value.replace(/[^\d.-]/g, '') : '0'),
+          TLOS: this.formatAmount(TLOS ? TLOS.value.replace(/[^\d.-]/g, '') : '0'),
+          HUSD: this.formatAmount(HUSD ? HUSD.value.replace(/[^\d.-]/g, '') : '0'),
+          SEEDS: this.formatAmount(SEEDS ? SEEDS.value.replace(/[^\d.-]/g, '') : '0 '),
+          HYPHA: this.formatAmount(HYPHA ? HYPHA.value.replace(/[^\d.-]/g, '') : '0 '),
           parentHash,
           ...usdInfo,
           //   ETH: balances.find(v => v.label === 'global_ETH').value || 0,
@@ -342,7 +343,8 @@ export default {
               console.log(balance, accountv.find(v => v.label === 'account_name').value)
             }
           })
-          usdInfo['exchange'] = this.formatAmount(usd)
+          const usdExchange = this.formatAmount(usd)
+          usdInfo['exchange'] = usd > 0 ? `$${usdExchange}` : `-$${usdExchange.slice(1)}`
         }
         console.log(!!account.account, account.account, !account.account, accountv.find(v => v.label === 'account_name').value)
 
@@ -358,13 +360,13 @@ export default {
           _id: account.uid,
           typeTag: content.find(v => v.label === 'account_tag_type').value,
           accountCode: content.find(v => v.label === 'account_code').value,
-          BTC: BTC ? BTC.value.replace(/[^\d.-]/g, '') : '0',
-          ETH: ETH ? ETH.value.replace(/[^\d.-]/g, '') : '0',
-          EOS: EOS ? EOS.value.replace(/[^\d.-]/g, '') : '0',
-          TLOS: TLOS ? TLOS.value.replace(/[^\d.-]/g, '') : '0',
-          HUSD: HUSD ? HUSD.value.replace(/[^\d.-]/g, '') : '0',
-          SEEDS: SEEDS ? SEEDS.value.replace(/[^\d.-]/g, '') : '0 ',
-          HYPHA: HYPHA ? HYPHA.value.replace(/[^\d.-]/g, '') : '0 ',
+          BTC: this.formatAmount(BTC ? BTC.value.replace(/[^\d.-]/g, '') : '0'),
+          ETH: this.formatAmount(ETH ? ETH.value.replace(/[^\d.-]/g, '') : '0'),
+          EOS: this.formatAmount(EOS ? EOS.value.replace(/[^\d.-]/g, '') : '0'),
+          TLOS: this.formatAmount(TLOS ? TLOS.value.replace(/[^\d.-]/g, '') : '0'),
+          HUSD: this.formatAmount(HUSD ? HUSD.value.replace(/[^\d.-]/g, '') : '0'),
+          SEEDS: this.formatAmount(SEEDS ? SEEDS.value.replace(/[^\d.-]/g, '') : '0 '),
+          HYPHA: this.formatAmount(HYPHA ? HYPHA.value.replace(/[^\d.-]/g, '') : '0 '),
           parentHash,
           ...usdInfo
           // _meta: { visibleChildren: !!account.account }
@@ -464,7 +466,7 @@ export default {
         console.log(n, 'Este es el index')
         this.columns.splice(n + 1, 0, {
           property: 'exchange',
-          title: 'USD',
+          title: 'USD (Converted)',
           direction: null,
           filterable: true,
           collapseIcon: false

@@ -115,8 +115,13 @@ q-card.q-pa-sm.full-width
           .text-cell(v-else) {{ props.row.to }}
       template(v-slot:body-cell-amount="props")
         q-td.text-right
-          q-input(v-if="editingRow === props.row.hash && !props.row.isFromEvent" v-model="props.row.quantity" type="number" step="0.1" min="0" dense :label="$t('pages.transactions.amount')" color="secondary")
-          .text-cell(v-else) {{ props.row.quantity }}
+          money-input-2(
+            v-model="props.row.quantity"
+            :label="$t('pages.transactions.amount')"
+            color="secondary"
+            dense
+          )
+          //- .text-cell(v-else) {{ props.row.quantity.display }}
       template(v-slot:body-cell-currency="props")
         q-td
           q-select(
@@ -210,10 +215,12 @@ import { transactionPayout } from '~/const/payouts/transaction-payout'
 import { componentPayout } from '~/const/payouts/component-payout'
 import CustomTableTree from '~/pages/accounts/components/custom-table-tree'
 import CurrencyTransactionModal from './currency-transaction-modal'
+import MoneyInput from '~/components/inputs/money-input'
+import MoneyInput2 from '~/components/inputs/money-input-2'
 
 export default {
   name: 'transaction-view',
-  components: { CustomTableTree, CurrencyTransactionModal },
+  components: { CustomTableTree, CurrencyTransactionModal, MoneyInput, MoneyInput2 },
   data () {
     return {
       autoSelect: false,
@@ -487,9 +494,10 @@ export default {
 
         this.components = trx.components.map(v => {
           const hash = (v.hash === '' || !v.hash) ? [...Array(8)].map(() => Math.floor(Math.random() * 16).toString(16)).join('') : v.hash
-
+          const quantity = { value: parseFloat(v.quantity), display: parseFloat(v.quantity) }
           return {
             ...v,
+            quantity,
             hash,
             isEditable: {
               memo: false,
@@ -578,8 +586,10 @@ export default {
         to: !event.to
       }
 
+      const quantity = { value: parseFloat(event.quantity), display: parseFloat(event.quantity) }
       this.components.push({
         ...event,
+        quantity,
         isEditable,
         showEditAccount: false,
         type: undefined
@@ -641,7 +651,7 @@ export default {
       const rowIndex = this.components.findIndex(v => row === v)
       this.components.splice(rowIndex, 1)
       if (row.isFromEvent) {
-        this.$emit('eventRemoved', row)
+        this.$emit('eventRemoved', { ...row, quantity: row.quantity.value })
       }
     },
     validateRow (row) {
@@ -713,7 +723,7 @@ export default {
 
       component[1].value[1] = memo ?? ''
       component[2].value[1] = account.hash
-      component[3].value[1] = `${quantity} ${currency}`
+      component[3].value[1] = `${quantity.value} ${currency}`
       // component[3].value[1] = (currency === 'BTC') ? `${parseInt(quantity).toFixed(1)} ${currency}` : `${quantity} ${currency}`
       component[4].value[1] = from
       component[5].value[1] = to

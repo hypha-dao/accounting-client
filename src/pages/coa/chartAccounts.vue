@@ -2,19 +2,11 @@
 #main-container.main.q-pa-sm
   q-card.q-pa-sm.full-width
     #container.q-pa-sm
-      .flex.justify-end.items-end.q-mb-sm(:class="{ 'justify-between': exchageListIsNotEmpty}")
-        q-banner(class="bg-grey-3 text-negative text-caption q-pa-none q-px-sm" dense v-if="exchageListIsNotEmpty")
-          | Restar exchanges rates
-          q-icon.animated-icon.q-ml-sm(
-              name="restart_alt"
-              v-ripple
-              size="xs"
-              color="negative"
-              @click="restarExchangeRate"
-          )
+      .flex.justify-end.items-end.q-mb-sm
         div
-          q-btn(outline size="sm" label="Change token sort" color="secondary" @click="modals.tokenOrder = true").q-mr-md
-          q-btn(outline size="sm" label="Convert to USD" color="secondary" @click="onSelectedConvert")
+          q-btn(outline size="sm" label="Reset" color="negative" icon-right="restart_alt" @click="restarExchangeRate" v-if="exchageListIsNotEmpty")
+          q-btn(outline size="sm" label="Convert to USD" color="secondary" @click="onSelectedConvert" v-else)
+          q-btn(outline size="sm" label="Rearrange tokens" color="secondary" @click="modals.tokenOrder = true").q-ml-md
       //- q-table.sticky-virtscroll-table.accountTable.t-table(
       //-     :columns="columns"
       //-     :data="coa"

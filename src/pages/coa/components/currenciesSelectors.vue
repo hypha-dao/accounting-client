@@ -30,23 +30,24 @@
         q-checkbox(size="xs" :label="props.row.name" v-model="props.row.isSelected")
     template(v-slot:body-cell-exchange="props")
       q-td(:props="props")
-        q-input(
-          prefix="$"
-          type="number"
-          borderless
+        money-input-2(
           v-model="props.row.exchange"
-          min="0"
+          prefix="$"
+          borderless
         )
-  .flex.justify-center.q-mt-lg
-    q-btn.q-my-auto(label="Convert" color="primary" @click="onSelectedConvert")
+  .row.justify-center.q-mt-lg
+    .col
+      q-btn.full-width.q-my-auto(label="Convert" color="primary" @click="onSelectedConvert")
 </template>
 
 <script>
 import { mapActions, mapMutations, mapState } from 'vuex'
 import TimeUtil from '../../../utils/TimeUtil'
+import MoneyInput2 from '~/components/inputs/money-input-2'
 
 export default {
   name: 'currenciesSelector',
+  components: { MoneyInput2 },
   data () {
     return {
       currencies: undefined,
@@ -101,18 +102,21 @@ export default {
     ...mapMutations('tokens', ['setTokensWithUserExange', 'setExchangeDate']),
     async loadTokens () {
       if (this.tokensWithUserExange) {
-        this.currencies = JSON.parse(JSON.stringify(this.tokensWithUserExange))
+        const tokens = JSON.parse(JSON.stringify(this.tokensWithUserExange))
+        const mappedList = tokens.map(v => ({ ...v, exchange: { value: v.exchange } }))
+        this.currencies = mappedList
         return
       }
       const userTokens = await this.getTokens()
       this.currencies = userTokens.map(token => {
         const { price, id } = this.tokensWithExchange.find(t => t.symbol === token.symbol.toLowerCase()) || 0
+        const exchange = { value: price || 0 }
 
         return {
           id,
           name: token.symbol,
           isSelected: false,
-          exchange: price || 0
+          exchange
         }
       })
     },
@@ -122,9 +126,15 @@ export default {
         this.showErrorMsg(this.$t('pages.tokens.exchange_rate_invalid'))
         return
       }
-      this.setTokensWithUserExange(this.currencies)
+      const formartCurrencies = this.currencies.map(c => {
+        return {
+          ...c,
+          exchange: c.exchange.value
+        }
+      })
+      this.setTokensWithUserExange(formartCurrencies)
       this.setExchangeDate(this.date)
-      const selected = this.currencies.filter(curr => curr.isSelected === true)
+      const selected = formartCurrencies.filter(curr => curr.isSelected === true)
       this.$emit('convert', selected)
     },
     async loadTokenByDate () {

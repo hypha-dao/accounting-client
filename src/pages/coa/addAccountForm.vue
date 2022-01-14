@@ -3,7 +3,7 @@
     .text-title1(v-if="!edit") {{$t('pages.coa.addAccount')}}
     .text-title1(v-else) Editing account
     q-form(@submit="onSubmit" ref="form")
-      q-checkbox(v-model="params.rootAccount" :disable="edit" label="Do you want create a root account?")
+      q-checkbox(v-if="!edit" v-model="params.rootAccount" :disable="edit" label="Do you want create a root account?")
       div.cursor-pointer
         q-input.cursor-pointer(
             v-model="labelParentAccount"
