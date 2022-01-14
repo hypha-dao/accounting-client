@@ -31,17 +31,20 @@ export default {
       require: true
     }
   },
+  mounted () {
+    console.log(this.components)
+  },
   computed: {
     creditCurrency () {
       const credit = this.components.filter(c => c.type === 'CREDIT')
       const currency = credit[0]?.currency || ''
-      const value = credit.map(c => c.quantity).reduce((previousValue, currentValue) => Number(previousValue + currentValue), 0)
+      const value = credit.map(c => c.quantity.value).reduce((previousValue, currentValue) => Number(previousValue + currentValue), 0)
       return `${value} ${currency}`
     },
     debitCurrency () {
       const debit = this.components.filter(c => c.type === 'DEBIT')
       const currency = debit[0]?.currency || ''
-      const value = debit.map(c => c.quantity).reduce((previousValue, currentValue) => Number(previousValue + currentValue), 0)
+      const value = debit.map(c => c.quantity.value).reduce((previousValue, currentValue) => Number(previousValue + currentValue), 0)
       return `${value} ${currency}`
     }
   },
