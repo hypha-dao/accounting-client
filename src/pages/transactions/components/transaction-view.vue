@@ -122,7 +122,7 @@ q-card.q-pa-sm.full-width
             color="secondary"
             dense
           )
-          .text-cell(v-else) {{ formatAmount(props.row.quantity.value, String(props.row.quantity.value).split('.')[1].length ) }}
+          .text-cell(v-else) {{ formatQuantity(props.row.quantity.value) }}
       template(v-slot:body-cell-currency="props")
         q-td
           q-select(
