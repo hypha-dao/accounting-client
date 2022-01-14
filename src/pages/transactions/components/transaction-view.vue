@@ -116,12 +116,13 @@ q-card.q-pa-sm.full-width
       template(v-slot:body-cell-amount="props")
         q-td.text-right
           money-input-2(
+            v-if="editingRow === props.row.hash && !props.row.isFromEvent"
             v-model="props.row.quantity"
             :label="$t('pages.transactions.amount')"
             color="secondary"
             dense
           )
-          //- .text-cell(v-else) {{ props.row.quantity.display }}
+          .text-cell(v-else) {{ formatAmount(props.row.quantity.value, String(props.row.quantity.value).split('.')[1].length ) }}
       template(v-slot:body-cell-currency="props")
         q-td
           q-select(
@@ -380,9 +381,9 @@ export default {
 
         var balance = compsOfCurr.reduce((accumulated, current) => {
           // eslint-disable-next-line no-return-assign
-          if (current.type === 'DEBIT') return accumulated += parseFloat(current.quantity)
+          if (current.type === 'DEBIT') return accumulated += parseFloat(current.quantity.value)
           // eslint-disable-next-line no-return-assign
-          if (current.type === 'CREDIT') return accumulated -= parseFloat(current.quantity)
+          if (current.type === 'CREDIT') return accumulated -= parseFloat(current.quantity.value)
         }, 0) // Sums all components of the current currency
 
         curr.balanced = balance === 0 // Is balanced if balance is 0
