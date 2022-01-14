@@ -463,6 +463,8 @@ export default {
 
       await this.$nextTick()
       if (v) {
+        if (this.selectedTransaction) this.autoSelect = false
+        this.selectedTransaction = undefined
         if (!this.autoSelect) this.$refs.chooseTrxSelect.showPopup()
       } else {
         this.$refs.newTrxInput.focus()
@@ -836,16 +838,19 @@ export default {
       setTimeout(async () => {
         await this.loadUnapprovedTransactions()
         if (name) {
+          this.autoSelect = true
           this.isSelect = true
+          await this.$nextTick()
           this.setIsLoading(true)
           let trx = this.unapprovedTransactions.filter(el => el.name === name)
+          await this.$nextTick()
           this.selectedTransaction = {
             value: trx[trx.length - 1],
             label: name
           }
-          this.autoSelect = false
         } else {
           this.selectedTransaction = undefined
+          this.isSelect = false
         }
         this.setIsLoading(false)
       }, 2100)
