@@ -52,6 +52,11 @@ export const utils = {
     },
     formatAmount (number, precision = 2) {
       return Number(number).toLocaleString('en-US', { style: 'decimal', minimumFractionDigits: precision, maximumFractionDigits: precision })
+    },
+    formatQuantity (amount) {
+      const decimals = String(amount).split('.')[1]
+      let precision = decimals ? decimals.length : 0
+      return this.formatAmount(amount, precision)
     }
   }
 }
